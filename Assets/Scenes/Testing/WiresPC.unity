@@ -292,9 +292,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ee5422d046259144ab0ac0b9127b0be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_WireRadius: 1.5
   m_MinWireOffset: 5
   m_MaxWireOffset: 25
+  m_MinWireLength: 10
+  m_MaxWireLength: 30
+  m_MinWirePercent: 0.2
+  m_MaxWirePercent: 0.8
+  m_SparkPrefab: {fileID: 6774093441718821207, guid: e658119f2c4f14d43ad300590f0c52c3,
+    type: 3}
+  m_PercentBeforeSpawn: 0
 --- !u!4 &1261624768
 Transform:
   m_ObjectHideFlags: 0
