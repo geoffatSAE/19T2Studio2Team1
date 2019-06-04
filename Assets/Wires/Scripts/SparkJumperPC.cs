@@ -13,8 +13,8 @@ namespace TO5.Wires
         public bool m_InvertPitch = false;          // If pitch (looking up and down) should be inverted
         public Camera m_Camera;                     // The camera used for tracing the world
 
-        private float m_RotationX = 0f;                     // Yaw rotation
-        private float m_RotationY = 0f;                     // Pitch rotation
+        private float m_RotationX = 0f;             // Yaw rotation
+        private float m_RotationY = 0f;             // Pitch rotation
 
         void Awake()
         {
@@ -26,6 +26,9 @@ namespace TO5.Wires
         {
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = true;
+
+            // The transform to rotate and base tracing with
+            Transform trans = m_Camera ? m_Camera.transform : transform;
 
             float turnX = Input.GetAxis("Mouse X");
             float turnY = Input.GetAxis("Mouse Y");
@@ -39,13 +42,16 @@ namespace TO5.Wires
                 m_RotationY = Mathf.Clamp(m_RotationY + delta, -85f, 85f);            
             }
 
-            transform.localEulerAngles = new Vector3(m_RotationY, m_RotationX, 0f);
+            trans.localEulerAngles = new Vector3(m_RotationY, m_RotationX, 0f);
 
             if (Input.GetMouseButtonDown(0))
-                if (m_Camera)
-                    TraceSpark(m_Camera.transform.position, m_Camera.transform.rotation);
+            {
+                // Use mouse position if mouse happens to be present
+                if (Input.mousePresent && m_Camera)
+                    TraceSpark(m_Camera.ScreenPointToRay(Input.mousePosition));
                 else
-                    TraceSpark(transform.position, transform.rotation);
+                    TraceSpark(trans.position, trans.rotation);
+            }
         }
     }
 }

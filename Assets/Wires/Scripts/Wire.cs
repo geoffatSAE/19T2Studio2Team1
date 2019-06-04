@@ -7,10 +7,11 @@ namespace TO5.Wires
     public class Wire : MonoBehaviour
     {
         public Spark spark { get; private set; }
-        public SparkJumper sparkJumper;
 
         public float m_Distance = 15f;         // The distance of this wire
         public Vector3 End { get { return transform.position + WireManager.WirePlane * m_Distance; } }
+
+        public SparkJumper m_SparkJumper;      // The jumper that is on this wire
 
         /// <summary>
         /// Ticks the spark, having it travel along the wire
@@ -26,6 +27,14 @@ namespace TO5.Wires
 
             Vector3 offset = spark.transform.position - transform.position;
             float distance = offset.sqrMagnitude;
+
+            if (m_SparkJumper)
+            {
+                Vector3 jumperPosition = m_SparkJumper.transform.position;
+                jumperPosition.z = spark.transform.position.z;
+                m_SparkJumper.transform.position = jumperPosition;
+            }
+
 
             float alpha = distance / (End - transform.position).sqrMagnitude;
             return alpha;

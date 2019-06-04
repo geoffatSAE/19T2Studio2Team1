@@ -5,7 +5,7 @@ using UnityEngine;
 namespace TO5.Wires
 {
     /// <summary>
-    /// Base for the player controller for the wires game mode
+    /// Base for the player controller, provides interface for interacting with wires
     /// </summary>
     public class SparkJumper : MonoBehaviour
     {
@@ -18,8 +18,15 @@ namespace TO5.Wires
         /// <param name="direction">Direction of the trace</param>
         protected void TraceSpark(Vector3 origin, Quaternion direction)
         {
-            Ray ray = new Ray(origin, direction * Vector3.forward);
+            TraceSpark(new Ray(origin, direction * Vector3.forward));   
+        }
 
+        /// <summary>
+        /// Traces the world for other sparks, jumping to them if allowed
+        /// </summary>
+        /// <param name="ray">Ray to use</param>
+        protected void TraceSpark(Ray ray)
+        {
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit, Mathf.Infinity, Physics.AllLayers, QueryTriggerInteraction.Ignore))
             {
@@ -32,7 +39,7 @@ namespace TO5.Wires
         {
             if (spark && spark != m_Spark)
             {
-
+                 
             }
         }
     }
