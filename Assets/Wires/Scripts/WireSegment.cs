@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Liminal.Wires
+namespace TO5.Wires
 {
     public class WireSegment : MonoBehaviour
     {

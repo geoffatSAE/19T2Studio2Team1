@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Liminal.Wires
+namespace TO5.Wires
 {
     public class WireManager : MonoBehaviour
     {
@@ -25,11 +25,20 @@ namespace Liminal.Wires
         private Wire m_PreviousWire;
         [SerializeField] private float m_PercentBeforeSpawn = 0f;
 
+        [Header("Player")]
+        [SerializeField] private SparkJumper m_JumperPrefab;
+
+        private SparkJumper m_SparkJumper;
+
         void Start()
         {
             m_ActiveWire = GenerateWire(Vector2.zero);
             m_PercentBeforeSpawn = Random.Range(m_MinWirePercent, m_MaxWirePercent);
 
+            m_SparkJumper = Instantiate(m_JumperPrefab);
+            m_ActiveWire.spark.AttachJumper(m_SparkJumper);
+
+            m_SparkJumper.enabled = true;
         }
 
         void Update()
@@ -39,6 +48,8 @@ namespace Liminal.Wires
                 float alpha = m_ActiveWire.TickSpark(Time.deltaTime);
                 if (alpha >= 1f)
                 {
+                    m_SparkJumper.transform.parent = null;
+
                     Destroy(m_ActiveWire.spark.gameObject);
                     Destroy(m_ActiveWire.gameObject);
 
@@ -46,6 +57,8 @@ namespace Liminal.Wires
                     m_PercentBeforeSpawn = Random.Range(m_MinWirePercent, m_MaxWirePercent);
                     m_PendingWire = null;
 
+                    m_ActiveWire.spark.AttachJumper(m_SparkJumper);
+                        
                     // We have to call tick here as not doing so will result in a frame without an update
                     m_ActiveWire.TickSpark(Time.deltaTime);
                 }

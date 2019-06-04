@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Liminal.Wires
+namespace TO5.Wires
 {
     /// <summary>
     /// Base for the player controller for the wires game mode
@@ -10,7 +10,6 @@ namespace Liminal.Wires
     public class SparkJumper : MonoBehaviour
     {
         protected Spark m_Spark;
-        [SerializeField] private LayerMask m_SparkLayers;
 
         /// <summary>
         /// Traces the world for other sparks, jumping to them if allowed
@@ -22,7 +21,7 @@ namespace Liminal.Wires
             Ray ray = new Ray(origin, direction * Vector3.forward);
 
             RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity, m_SparkLayers, QueryTriggerInteraction.Ignore))
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity, Physics.AllLayers, QueryTriggerInteraction.Ignore))
             {
                 GameObject hitObject = hit.collider.gameObject;
                 JumpToSpark(hitObject.GetComponent<Spark>());
