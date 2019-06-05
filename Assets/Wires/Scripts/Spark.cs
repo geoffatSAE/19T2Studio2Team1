@@ -9,15 +9,20 @@ namespace TO5.Wires
     [RequireComponent(typeof(SphereCollider))]
     public class Spark : MonoBehaviour
     {
-        public float m_Speed = 2f;
-        [NonSerialized] public Wire m_Wire;
+        public float m_Speed = 2f;              // Speed of the spark
 
-        protected SparkJumper m_SparkJumper;
-        protected SphereCollider m_Collider;
+        protected Wire m_Wire;                  // The wire we belong to
+        protected SparkJumper m_Jumper;         // The jumper following this spark
+        private SphereCollider m_Collider;      // Collider for tracing this spark
 
         void Awake()
         {
             m_Collider = GetComponent<SphereCollider>();
+        }
+
+        public void SetJumper(SparkJumper jumper)
+        {
+            m_Jumper = jumper;
         }
 
         public void AttachJumper(SparkJumper jumper)

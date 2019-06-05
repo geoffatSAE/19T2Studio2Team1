@@ -21,7 +21,7 @@ namespace TO5.Wires
                 float travelled = (spark.transform.position - m_Start.position).magnitude;
 
                 float alpha = travelled / distance;
-                float step = spark.m_Speed * Time.deltaTime;
+                float step = 2f * Time.deltaTime;
 
                 float newAlpha = Mathf.Min(1f, alpha + step);
 

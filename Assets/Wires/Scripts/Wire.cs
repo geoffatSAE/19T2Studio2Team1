@@ -23,7 +23,7 @@ namespace TO5.Wires
             if (!spark)
                 return 1f;
 
-            spark.transform.position += WireManager.WirePlane * spark.m_Speed * Time.deltaTime;
+            //spark.transform.position += WireManager.WirePlane * spark.m_Speed * Time.deltaTime;
 
             Vector3 offset = spark.transform.position - transform.position;
             float distance = offset.sqrMagnitude;
