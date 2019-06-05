@@ -16,6 +16,7 @@ namespace TO5.Wires
         [SerializeField] private float m_MaxWireLength = 30f;                       // The max length of a wire
         [SerializeField] private float m_MinWireSpawnRange = 1.5f;                  // The min time before spawning wires
         [SerializeField] private float m_MaxWireSpawnRange = 2.5f;                  // The max time before spawning wires
+        [SerializeField] private float m_WireSpawnDelay = 1f;                       // Small delay before then generating more wires
         [SerializeField] private int m_WiresToSpawn = 3;                            // The amount of wires to spawn
         
         [Header("Sparks")]
@@ -24,7 +25,8 @@ namespace TO5.Wires
         private Wire m_ActiveWire;
         private Wire m_PendingWire;
         private Wire m_PreviousWire;
-        [SerializeField] private float m_PercentBeforeSpawn = 0f;
+
+        private List<Wire> m_Wires = new List<Wire>();
 
         // Maps for wires surrounding the current active wire
         // 0 = Up - Right
@@ -33,8 +35,6 @@ namespace TO5.Wires
         // 3 = Bottom - Left
         private Wire[] m_WireMap = new Wire[4];
 
-        // Cached number of that are occupied
-        private int m_QuadrantsOccupied = 0;
 
         [Header("Player")]
         [SerializeField] private SparkJumper m_JumperPrefab;
@@ -43,55 +43,47 @@ namespace TO5.Wires
 
         void Awake()
         {
-            for (int i = 0; i < m_WireMap.Length; ++i)
-                m_WireMap[i] = null;
+            m_SparkJumper = Instantiate(m_JumperPrefab);
+            m_SparkJumper.OnJumpToSpark += NotifyActiveSparkChanged;
         }
 
         void Start()
         {
-            m_ActiveWire = GenerateWire(Vector2.zero);
-            m_PercentBeforeSpawn = Random.Range(m_MinWirePercent, m_MaxWirePercent);
+            m_ActiveWire = GenerateWire(transform.position, Random.Range(m_MinWireLength, m_MaxWireLength));
+            if (!m_ActiveWire.spark)
+                m_ActiveWire.SpawnSpark(m_SparkPrefab);
 
-            m_SparkJumper = Instantiate(m_JumperPrefab);
-            m_ActiveWire.spark.AttachJumper(m_SparkJumper);
+            m_Wires.Add(m_ActiveWire);
 
+            m_SparkJumper.JumpToSpark(m_ActiveWire.spark);
             m_SparkJumper.enabled = true;
+            
+            StartCoroutine(LatentGenerateWires());
         }
 
         void Update()
         {
-            if (m_ActiveWire)
+            List<Wire> finishedWires = new List<Wire>();
+
+            foreach (Wire wire in m_Wires)
             {
-                float alpha = m_ActiveWire.TickSpark(Time.deltaTime);
-                if (alpha >= 1f)
+                float progress = wire.TickSpark(Time.deltaTime);
+                if (progress >= 1f)
                 {
-                    m_SparkJumper.transform.parent = null;
-
-                    Destroy(m_ActiveWire.spark.gameObject);
-                    Destroy(m_ActiveWire.gameObject);
-
-                    m_ActiveWire = m_PendingWire;
-                    m_PercentBeforeSpawn = Random.Range(m_MinWirePercent, m_MaxWirePercent);
-                    m_PendingWire = null;
-
-                    m_ActiveWire.spark.AttachJumper(m_SparkJumper);
-                        
-                    // We have to call tick here as not doing so will result in a frame without an update
-                    m_ActiveWire.TickSpark(Time.deltaTime);
-                }
-                else
-                {
-                    if (alpha >= m_PercentBeforeSpawn && !m_PendingWire)
+                    if (wire == m_ActiveWire)
                     {
-                        m_PendingWire = GenerateRandomWire();
-                        m_PendingWire.m_Distance += m_ActiveWire.m_Distance * (1 - alpha);
+
                     }
 
+                    finishedWires.Add(wire);
                 }
             }
 
-            if (m_PendingWire)
-                m_PendingWire.TickSpark(Time.deltaTime);
+            foreach (Wire wire in finishedWires)
+            {
+                m_Wires.Remove(wire);
+                Destroy(wire.gameObject);
+            }
         }
 
         /// <summary>
@@ -106,6 +98,23 @@ namespace TO5.Wires
             float distance = Random.Range(m_MinWireOffset, m_MaxWireOffset);
 
             return GenerateWire(direction * distance);
+        }
+
+        /// <summary>
+        /// Latent action to spawn new wires, this is called when the match starts
+        /// </summary>
+        /// <returns></returns>
+        IEnumerator LatentGenerateWires()
+        {
+            while (true)
+            {
+                float rand = Random.Range(m_MinWireSpawnRange, m_MaxWireSpawnRange);
+                yield return new WaitForSeconds(rand);
+
+                GenerateWires(m_WiresToSpawn);
+
+                yield return new WaitForSeconds(m_WireSpawnDelay);
+            }
         }
 
         /// <summary>
@@ -133,25 +142,67 @@ namespace TO5.Wires
 
         private int GenerateWires(int amount)
         {
-            if (m_QuadrantsOccupied >= 4)
-                return;
+            // Max attempts for generating wires
+            const int maxAttempts = 5;
 
             int wiresGenerated = 0;
+            Vector3 origin = ActiveSpark ? ActiveSpark.transform.position : transform.position;
 
-            // The quadrants that have no wires in them
-            List<int> remainingWires = new List<int>(4 - m_QuadrantsOccupied);
-            for (int i = 0; i < m_WireMap.Length; ++i)
+            for (int i = 0; i < amount; ++i)
             {
-                if (m_WireMap[i] == null)
-                    remainingWires.Add(i);
-            }
-                
-            if (remainingWires.Count > 0)
-            {
+                bool validPos = false;
+                Vector3 wirePos = origin;
 
+                // Try to find a valid position to spawn this wire
+                for (int j = 0; j < maxAttempts; ++j)
+                {
+                    Vector2 direction = GetRandomDirectionInCircle();
+                    float distance = Random.Range(m_MinWireOffset, m_MaxWireOffset);
+
+                    wirePos += (Vector3)(direction * distance);
+                    if (HasSpaceAtLocation(wirePos))
+                    {
+                        validPos = true;
+                        break;
+                    }
+                }
+
+                if (!validPos)
+                {
+                    Debug.Log(string.Format("Tried {0} times to generate wire but failed", maxAttempts));
+                    continue;
+                }
+
+                float wireDis = Random.Range(m_MinWireLength, m_MaxWireLength);
+
+                Wire wire = GenerateWire(wirePos, wireDis);
+                if (wire)
+                {
+                    m_Wires.Add(wire);
+                    ++wiresGenerated;
+                }
             }
 
-            return 1;
+            return wiresGenerated;
+        }
+
+        /// <summary>
+        /// Generates a new wire by spawning one or retrieving one from the pool
+        /// </summary>
+        /// <param name="position">Starting position of the wire</param>
+        /// <param name="distance">Distane of the wire</param>
+        /// <returns>New wire</returns>
+        private Wire GenerateWire(Vector3 position, float distance)
+        {
+            // TODO: Pooling
+            GameObject gameObject = new GameObject("Wire");
+            Transform transform = gameObject.transform;
+            Wire wire = gameObject.AddComponent<Wire>();
+
+            transform.position = position;
+            wire.InitializeWire(distance, m_SparkPrefab);
+
+            return wire;
         }
 
         /// <summary>
@@ -222,6 +273,84 @@ namespace TO5.Wires
 
             float rand = Random.Range(min, max);
             return new Vector2(Mathf.Cos(rand), Mathf.Sin(rand));
+        }
+
+        /// <summary>
+        /// Generates a random direction of circle on the wire plane
+        /// </summary>
+        /// <returns>Random direction</returns>
+        private Vector3 GetRandomDirectionInCircle()
+        {
+            float rand = Random.Range(0f, Mathf.PI * 2f);
+            return new Vector2(Mathf.Cos(rand), Mathf.Sin(rand));
+        }
+
+        private bool HasSpaceAtLocation(Vector3 position)
+        {
+            Vector2 posXY = position;
+            float minDistancedSqr = m_MinWireOffset * m_MinWireOffset;
+
+            foreach (Wire wire in m_Wires)
+            {
+                bool validXY = true;
+
+                Transform transform = wire.transform;
+                Vector2 xy = transform.position;
+
+                // If position is too close on Wire Plane
+                float distance = (xy - posXY).sqrMagnitude;
+                if (distance < minDistancedSqr)
+                    validXY = false;
+
+                Vector3 end = wire.GetEnd();
+
+                // Position is within this wires range, end if we are already to close
+                if (position.z < end.z && position.z > transform.position.z)
+                    if (!validXY)
+                        return false;
+                    else
+                    if (position.z > end.z)
+                        validXY = Mathf.Abs(position.z - end.z) > m_MinWireOffset;
+                    else
+                        validXY = Mathf.Abs(position.z - transform.position.z) > m_MinWireOffset;
+
+                if (!validXY)
+                    return false;
+            }
+
+            // No wires are within range of point
+            return true;
+        }
+
+        /// <summary>
+        /// Finds the closest wire to given wire based on XY axes
+        /// </summary>
+        /// <param name="wire">Wire to search from</param>
+        /// <returns></returns>
+        private Wire FindClosestWireTo(Wire wire)
+        {
+            if (!wire)
+                return null;
+
+            Wire closest = null;
+            
+            foreach (Wire cand in m_Wires)
+            {
+                if (cand == wire)
+                    return null;
+
+
+            }
+
+            return closest;
+        }
+
+        private void NotifyActiveSparkChanged(Spark spark)
+        {
+            if (spark)
+                m_ActiveWire = spark.GetWire();
+            else
+                m_ActiveWire = null;
         }
 
         void OnDrawGizmos()

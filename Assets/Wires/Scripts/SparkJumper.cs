@@ -9,7 +9,29 @@ namespace TO5.Wires
     /// </summary>
     public class SparkJumper : MonoBehaviour
     {
-        protected Spark m_Spark;
+        /// <summary>
+        /// Delegate for when this jumper has jumped to a different spark
+        /// </summary>
+        /// <param name="spark">Spark that has been jumped to (Can be null)</param>
+        public delegate void JumpedToSpark(Spark spark);
+
+        public JumpedToSpark OnJumpToSpark;     // Event for when jumping to new spark
+        protected Spark m_Spark;                // The current spark we are on
+
+
+        public void JumpToSpark(Spark spark)
+        {
+            if (m_Spark)
+                m_Spark.SetJumper(null);
+
+            m_Spark = spark;
+
+            if (m_Spark)
+                m_Spark.SetJumper(this);
+
+            if (OnJumpToSpark != null)
+                OnJumpToSpark.Invoke(m_Spark);
+        }
 
         /// <summary>
         /// Traces the world for other sparks, jumping to them if allowed
@@ -28,18 +50,13 @@ namespace TO5.Wires
         protected void TraceSpark(Ray ray)
         {
             RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity, Physics.AllLayers, QueryTriggerInteraction.Ignore))
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity, Physics.AllLayers, QueryTriggerInteraction.Collide))
             {
                 GameObject hitObject = hit.collider.gameObject;
-                JumpToSpark(hitObject.GetComponent<Spark>());
-            }
-        }
 
-        private void JumpToSpark(Spark spark)
-        {
-            if (spark && spark != m_Spark)
-            {
-                 
+                Spark spark = hitObject.GetComponent<Spark>();
+                if (spark && spark.CanRide)
+                    JumpToSpark(spark);
             }
         }
     }
