@@ -7,7 +7,15 @@ namespace TO5.Combat
     [CreateAssetMenu]
     public class Scenario : ScriptableObject
     {
-        [SerializeField]
-        ScenarioManager m_Manager;      // Manager of the scenario
+        [SerializeField] private ScenarioManager m_Manager;      // Manager of the scenario, this is instantiated
+
+        virtual public ScenarioManager CreateInstance(Transform origin)
+        {
+            ScenarioManager manager = Instantiate(m_Manager, origin.position, origin.rotation);
+            if (manager)
+                manager.InitializeScenario(this);
+
+            return manager;
+        }
     }
 }

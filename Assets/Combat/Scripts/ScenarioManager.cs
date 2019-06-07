@@ -9,6 +9,13 @@ namespace TO5.Combat
     /// </summary>
     public class ScenarioManager : MonoBehaviour
     {
+        private Scenario m_Scenario;
+
+        public void InitializeScenario(Scenario scenario)
+        {
+
+        }
+
         public void StartScenario()
         {
 

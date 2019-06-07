@@ -38,7 +38,19 @@ namespace TO5.Combat
         /// <param name="hit">Hit result</param>
         protected virtual void HandleHit(RaycastHit hit)
         {
+            GameObject gameObject = hit.collider.gameObject;
 
+            // Handle dealing damage to obstacles
+            {
+                IObstacle obstacle = gameObject.GetComponent<IObstacle>();
+                if (obstacle != null)
+                    obstacle.TakeDamage(hit);
+            }
+
+            // Handle displaying aesthetics
+            {
+                PhysicMaterial material = hit.collider.material;             
+            }
         }
     }
 }
