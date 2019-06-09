@@ -15,10 +15,12 @@ namespace TO5.Combat
         private float m_RotationX = 0f;             // Local yaw rotation
         private float m_RotationY = 0f;             // Local pitch rotation
 
-        void Start()
+        protected override void Start()
         {
+            base.Start();
+
             Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = Input.mousePresent;
+            Cursor.visible = false;
         }
 
         void Update()
