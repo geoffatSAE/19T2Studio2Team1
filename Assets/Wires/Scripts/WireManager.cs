@@ -17,28 +17,17 @@ namespace TO5.Wires
         [SerializeField] private float m_MinWireSpawnRange = 1.5f;                  // The min time before spawning wires
         [SerializeField] private float m_MaxWireSpawnRange = 2.5f;                  // The max time before spawning wires
         [SerializeField] private float m_WireSpawnDelay = 1f;                       // Small delay before then generating more wires
+        [SerializeField] private float m_SparkSpawnDelay = 1.5f;                      // The max delay before a wire spawns its spark
         [SerializeField] private int m_WiresToSpawn = 3;                            // The amount of wires to spawn
         
         [Header("Sparks")]
         [SerializeField] private Spark m_SparkPrefab;                       // Spark prefab to spawn for wires 
 
-        private Wire m_ActiveWire;
-        private Wire m_PendingWire;
-        private Wire m_PreviousWire;
-
         private List<Wire> m_Wires = new List<Wire>();
-
-        // Maps for wires surrounding the current active wire
-        // 0 = Up - Right
-        // 1 = Bottom - Right
-        // 2 = Up - Left
-        // 3 = Bottom - Left
-        private Wire[] m_WireMap = new Wire[4];
-
+        private Wire m_ActiveWire;     
 
         [Header("Player")]
         [SerializeField] private SparkJumper m_JumperPrefab;
-
         private SparkJumper m_SparkJumper;
 
         void Awake()
@@ -49,7 +38,7 @@ namespace TO5.Wires
 
         void Start()
         {
-            m_ActiveWire = GenerateWire(transform.position, Random.Range(m_MinWireLength, m_MaxWireLength));
+            m_ActiveWire = GenerateWire(transform.position, Random.Range(m_MinWireLength, m_MaxWireLength), true);
             if (!m_ActiveWire.spark)
                 m_ActiveWire.SpawnSpark(m_SparkPrefab);
 
@@ -72,7 +61,9 @@ namespace TO5.Wires
                 {
                     if (wire == m_ActiveWire)
                     {
-
+                        Wire closestWire = FindClosestWireTo(wire);
+                        if (closestWire)
+                            m_SparkJumper.JumpToSpark(closestWire.spark);
                     }
 
                     finishedWires.Add(wire);
@@ -191,16 +182,21 @@ namespace TO5.Wires
         /// </summary>
         /// <param name="position">Starting position of the wire</param>
         /// <param name="distance">Distane of the wire</param>
+        /// <param name="ignoreDelay">If spark delay should be ignored</param>
         /// <returns>New wire</returns>
-        private Wire GenerateWire(Vector3 position, float distance)
+        private Wire GenerateWire(Vector3 position, float distance, bool ignoreDelay = false)
         {
             // TODO: Pooling
             GameObject gameObject = new GameObject("Wire");
             Transform transform = gameObject.transform;
             Wire wire = gameObject.AddComponent<Wire>();
 
+            float sparkDelay = 0f;
+            if (!ignoreDelay)
+                sparkDelay = Random.Range(0f, m_SparkSpawnDelay);
+
             transform.position = position;
-            wire.InitializeWire(distance, m_SparkPrefab);
+            wire.InitializeWire(distance, m_SparkPrefab, sparkDelay);
 
             return wire;
         }
@@ -333,13 +329,24 @@ namespace TO5.Wires
                 return null;
 
             Wire closest = null;
+            float distance = float.MaxValue;
+            Vector3 origin = wire.spark ? wire.spark.transform.position : wire.transform.position;
             
             foreach (Wire cand in m_Wires)
             {
                 if (cand == wire)
-                    return null;
+                    continue;
 
-
+                // Wire might not have a spark yet
+                if (cand.spark)
+                {
+                    float dis = (cand.spark.transform.position - m_SparkJumper.transform.position).sqrMagnitude;
+                    if (dis < distance)
+                    {
+                        closest = cand;
+                        distance = dis;
+                    }
+                }
             }
 
             return closest;

@@ -54,6 +54,14 @@ namespace TO5.Wires
 
             if (sparkDelay <= 0f)
                 SpawnSpark(prefab);
+            else
+                StartCoroutine(DelaySpawnSpark(sparkDelay, prefab));
+        }
+
+        private IEnumerator DelaySpawnSpark(float delay, Spark prefab)
+        {
+            yield return new WaitForSeconds(delay);
+            SpawnSpark(prefab);
         }
 
         public Vector3 GetEnd()
