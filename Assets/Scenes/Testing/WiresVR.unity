@@ -221,6 +221,8 @@ MonoBehaviour:
   m_WiresToSpawn: 3
   m_SparkPrefab: {fileID: 6774093441718821207, guid: e658119f2c4f14d43ad300590f0c52c3,
     type: 3}
+  m_WirePrefab: {fileID: 4206780478034446320, guid: 1b1f6ca5985f91047a347ec5ac54a8d6,
+    type: 3}
   m_JumperPrefab: {fileID: 3998989314300152823, guid: c0e6ff2737890ec4998ed832567be6b0,
     type: 3}
 --- !u!4 &1261624768

@@ -23,6 +23,8 @@ namespace TO5.Wires
         [Header("Sparks")]
         [SerializeField] private Spark m_SparkPrefab;                       // Spark prefab to spawn for wires 
 
+        [Header("Wires")]
+        [SerializeField] private Wire m_WirePrefab;
         private List<Wire> m_Wires = new List<Wire>();
         private Wire m_ActiveWire;     
 
@@ -187,15 +189,14 @@ namespace TO5.Wires
         private Wire GenerateWire(Vector3 position, float distance, bool ignoreDelay = false)
         {
             // TODO: Pooling
-            GameObject gameObject = new GameObject("Wire");
-            Transform transform = gameObject.transform;
-            Wire wire = gameObject.AddComponent<Wire>();
+            Wire wire = Instantiate(m_WirePrefab);
+            Transform transform = wire.transform;
 
             float sparkDelay = 0f;
             if (!ignoreDelay)
                 sparkDelay = Random.Range(0f, m_SparkSpawnDelay);
 
-            transform.position = position;
+            wire.SetPositionAndDistance(position, distance);
             wire.InitializeWire(distance, m_SparkPrefab, sparkDelay);
 
             return wire;

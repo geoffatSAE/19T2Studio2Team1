@@ -96,8 +96,8 @@ namespace TO5.Wires
         protected void TraceSpark(Ray ray)
         {
             // Avoid raycast if not required
-            if (m_JumpingToSpark)
-                return;
+            //if (m_JumpingToSpark)
+            //    return;
 
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit, Mathf.Infinity, Physics.AllLayers, QueryTriggerInteraction.Collide))

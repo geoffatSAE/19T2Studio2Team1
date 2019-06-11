@@ -9,6 +9,8 @@ namespace TO5.Wires
         public Spark spark { get; private set; }
 
         public float m_Distance = 15f;         // The distance of this wire
+        public Renderer m_WireMesh;
+        public Transform m_Pivot;
 
         void OnDestroy()
         {
@@ -69,11 +71,21 @@ namespace TO5.Wires
             return transform.position + (WireManager.WirePlane * m_Distance);
         }
 
-        void OnDrawGizmos()
+        public void SetPositionAndDistance(Vector3 position, float distance)
         {
-            Gizmos.color = Color.red;
-            Gizmos.DrawSphere(transform.position, 0.15f);
-            Gizmos.DrawLine(transform.position, transform.position + (WireManager.WirePlane * m_Distance));
+            transform.position = position;
+            m_Distance = distance;
+
+            if (m_WireMesh && m_Pivot)
+            {
+                // Bounds is in world space
+                Bounds meshBounds = m_WireMesh.bounds;
+                float scaler = distance / meshBounds.size.z;
+
+                Vector3 scale = m_Pivot.transform.localScale;
+                scale.y = scaler;
+                m_Pivot.transform.localScale = scale;
+            }
         }
     }
 }

@@ -22,11 +22,14 @@ namespace TO5.Wires
                 m_Camera = GetComponentInChildren<Camera>();
         }
 
-        void Update()
+        void Start()
         {
             Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = true;
+            Cursor.visible = false;
+        }
 
+        void Update()
+        {
             // The transform to rotate and base tracing with
             Transform trans = m_Camera ? m_Camera.transform : transform;
 
@@ -47,8 +50,8 @@ namespace TO5.Wires
             if (Input.GetMouseButtonDown(0))
             {
                 // Use mouse position if mouse happens to be present
-                if (Input.mousePresent && m_Camera)
-                    TraceSpark(m_Camera.ScreenPointToRay(Input.mousePosition));
+                if (m_Camera)
+                    TraceSpark(m_Camera.transform.position, m_Camera.transform.rotation);
                 else
                     TraceSpark(trans.position, trans.rotation);
             }

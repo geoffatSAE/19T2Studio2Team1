@@ -44,6 +44,10 @@ namespace TO5.Wires
 
             if (m_Jumper)
                 m_Jumper.transform.position = transform.position;
+
+            Renderer renderer = GetComponentInChildren<Renderer>();
+            if (renderer)
+                renderer.material.color = Color.red;
         }
     }
 }
