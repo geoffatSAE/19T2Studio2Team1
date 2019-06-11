@@ -1069,7 +1069,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 105b70c6a0898a940b588af5c9a20181, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_MaxHealth: 100
+  m_MaxHealth: 1000
   m_HealthText: {fileID: 460022912}
 --- !u!4 &926302422
 Transform:
@@ -1571,7 +1571,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d22a8149cb430e408ce07b61b1fc447, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Player: {fileID: 0}
+  m_Player: {fileID: 926302421}
   m_TargetPrefab: {fileID: 2813048118955200075, guid: 642ee4aee2d6b7f4fb9b02426a47b7a3,
     type: 3}
   m_Anchors:

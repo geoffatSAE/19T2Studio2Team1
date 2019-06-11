@@ -18,10 +18,10 @@ namespace TO5.Combat
             #if UNITY_EDITOR
             // Oculus Rift is used for testing in editor
             if (OVRInput.GetDown(OVRInput.Button.One))
-                Fire(OVRInput.GetLocalControllerPosition(ControllerType), OVRInput.GetLocalControllerRotation(ControllerType));
+                Fire(transform.TransformPoint(OVRInput.GetLocalControllerPosition(ControllerType)), OVRInput.GetLocalControllerRotation(ControllerType));
             #else
              if (OVRInput.GetDown(OVRInput.Button.PrimaryIndexTrigger))
-                Fire(OVRInput.GetLocalControllerPosition(ControllerType), OVRInput.GetLocalControllerRotation(ControllerType));
+                Fire(transform.TransformPoint(OVRInput.GetLocalControllerPosition(ControllerType)), OVRInput.GetLocalControllerRotation(ControllerType));
             #endif
         }
     }

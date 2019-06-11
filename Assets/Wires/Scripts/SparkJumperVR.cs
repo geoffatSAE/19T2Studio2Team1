@@ -12,6 +12,8 @@ namespace TO5.Wires
         // Right hand controller is used for testing as the Go controller shares the same type
         public static OVRInput.Controller ControllerType = OVRInput.Controller.RTrackedRemote;
 
+        public Transform m_ControllerOrigin;        // Override transform for controllers origin
+
         void Update()
         {
             // Rotation is handled for us by the OVRCameraRig
@@ -19,25 +21,20 @@ namespace TO5.Wires
             #if UNITY_EDITOR
             // Oculus Rift is used for testing in editor
             if (OVRInput.GetDown(OVRInput.Button.One))
-                TraceSpark(OVRInput.GetLocalControllerPosition(ControllerType), OVRInput.GetLocalControllerRotation(ControllerType));
+                TraceSpark(GetControllerPosition(), OVRInput.GetLocalControllerRotation(ControllerType));
             #else
             // Oculus Go is used for packaged builds
             if (OVRInput.GetDown(OVRInput.Button.PrimaryIndexTrigger))
-                TraceSpark(OVRInput.GetLocalControllerPosition(ControllerType), OVRInput.GetLocalControllerRotation(ControllerType));
+                TraceSpark(GetControllerPosition(), OVRInput.GetLocalControllerRotation(ControllerType));
             #endif
         }
 
-        void OnDrawGizmos()
+        private Vector3 GetControllerPosition()
         {
-            if (Application.isPlaying)
-            {
-                Vector3 position = OVRInput.GetLocalControllerPosition(ControllerType);
-                Quaternion rotation = OVRInput.GetLocalControllerRotation(ControllerType);
-
-                Gizmos.color = Color.magenta;
-                Gizmos.DrawWireSphere(position, 0.1f);
-                Gizmos.DrawLine(position, position + (rotation * Vector3.forward) * 1000f);
-            }
+            if (m_ControllerOrigin)
+                return m_ControllerOrigin.TransformPoint(OVRInput.GetLocalControllerPosition(ControllerType));
+            else
+                return transform.TransformPoint(OVRInput.GetLocalControllerPosition(ControllerType));
         }
     }
 }

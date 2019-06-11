@@ -55,7 +55,7 @@ namespace TO5.Combat
                     }
                 }
             
-                Debug.DrawLine(transform.position, shootAt, Color.magenta, 2f);
+                //Debug.DrawLine(transform.position, shootAt, Color.magenta, 2f);
             }
         }
 
