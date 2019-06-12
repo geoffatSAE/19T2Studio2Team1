@@ -16,6 +16,9 @@ namespace TO5.Combat
         protected Transform m_Target;                   // Target of this obstacle
         protected TargetAnchor m_Anchor;                // Anchor we are attached to
 
+        protected bool m_BehindCover = true;            // If this target is behind cover
+
+
         /// <summary>
         /// Activates this target
         /// </summary>
@@ -28,7 +31,14 @@ namespace TO5.Combat
             if (m_Anchor)
                 m_Anchor.AttachTarget(this);
 
+            m_BehindCover = true;
             gameObject.SetActive(true);
+
+            if (m_Anchor)
+            {
+                m_Anchor.OnTransitionComplete += OnOutOfCover;
+                m_Anchor.MoveToVantagePoint(0.8f);
+            }
         }
 
         /// <summary>
@@ -37,12 +47,21 @@ namespace TO5.Combat
         public virtual void DeacativateTarget()
         {
             gameObject.SetActive(false);
+            m_BehindCover = true;
 
             if (m_Anchor)
+            {
+                m_Anchor.OnTransitionComplete -= OnOutOfCover;
                 m_Anchor.DetachTarget();
+            }
 
             m_Anchor = null;
             m_Target = null;
+        }
+
+        protected virtual void OnOutOfCover()
+        {
+            m_BehindCover = false;
         }
 
         // IObstacle Interface

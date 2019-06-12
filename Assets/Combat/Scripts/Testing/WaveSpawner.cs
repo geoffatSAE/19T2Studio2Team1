@@ -188,10 +188,20 @@ namespace TO5.Combat
         {
             if (m_Anchors != null)
             {
-                Gizmos.color = Color.red;
                 foreach (TargetAnchor anchor in m_Anchors)
                     if (anchor)
+                    {
+                        Gizmos.color = Color.red;
                         Gizmos.DrawWireSphere(anchor.transform.position, 0.1f);
+
+                        if (anchor.m_VantagePoint)
+                        {
+                            Gizmos.DrawWireSphere(anchor.m_VantagePoint.position, 0.1f);
+
+                            Gizmos.color = Color.magenta;
+                            Gizmos.DrawLine(anchor.transform.position, anchor.m_VantagePoint.position);
+                        }
+                    }
             }
         }
     }

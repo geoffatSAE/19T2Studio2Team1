@@ -59,18 +59,18 @@ namespace TO5.Combat
             }
         }
 
-        // Target Interface
-        public override void ActivateTarget(Transform target, TargetAnchor anchor)
-        {
-            base.ActivateTarget(target, anchor);
-            StartCoroutine(FireRoutine());
-        }
-
         // Target interface
         public override void DeacativateTarget()
         {
             StopCoroutine(FireRoutine());
             base.DeacativateTarget();
+        }
+
+        // Target Interface
+        protected override void OnOutOfCover()
+        {
+            base.OnOutOfCover();
+            StartCoroutine(FireRoutine());
         }
     }
 }
