@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Oculus/VR/Scenes/GearVrControllerTest.unity
-    guid: d56af3aeb2176e7459f753c1c2e2dd97
+    path: Assets/Scenes/Testing/WiresVR.unity
+    guid: 7d851918aad17e04d81dc6380b4487f0
   m_configObjects: {}

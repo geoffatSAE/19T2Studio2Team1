@@ -16,6 +16,7 @@ namespace TO5.Wires
         protected Wire m_Wire;                  // The wire we belong to
         protected SparkJumper m_Jumper;         // The jumper following this spark
         private SphereCollider m_Collider;      // Collider for tracing this spark
+        [SerializeField] private Material m_OccupiedMaterial;
 
         private bool m_PreviouslyOccupied = false;
 
@@ -47,7 +48,12 @@ namespace TO5.Wires
 
             Renderer renderer = GetComponentInChildren<Renderer>();
             if (renderer)
+            {
                 renderer.material.color = Color.red;
+
+                if (m_OccupiedMaterial)
+                    renderer.material = m_OccupiedMaterial;
+            }
         }
     }
 }
