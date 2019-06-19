@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace TO5.Combat
-{
-    [CreateAssetMenu]
-    public class Scenario : ScriptableObject
+{    public class Scenario : ScriptableObject
     {
         [SerializeField] private ScenarioManager m_Manager;      // Manager of the scenario, this is instantiated
 
