@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace TO5
 {
@@ -12,11 +13,14 @@ namespace TO5
         // The amount of objects in the pool
         public int Count { get { return m_Objects.Count; } }
 
-        // If an object can be activated
-        public bool canActivateObject { get { return m_FirstPooledObject != null; } }
+        // The amount of objects active
+        public int activeCount { get { return m_ActiveCount; } }
 
-        private LinkedList<T> m_Objects = new LinkedList<T>();      // List of objects
-        private LinkedListNode<T> m_FirstPooledObject = null;       // Node of first pooled object
+        // If an object can be activated
+        public bool canActivateObject { get { return m_Objects.Count > 0 && m_ActiveCount < m_Objects.Count; } }
+
+        private List<T> m_Objects = new List<T>();      // List of objects
+        private int m_ActiveCount = 0;                  // Amount of objects active
 
         /// <summary>
         /// Adds an object to the pool
@@ -24,7 +28,7 @@ namespace TO5
         /// <param name="value">Object to add</param>
         public void Add(T value)
         {
-            m_FirstPooledObject = m_Objects.AddLast(value);
+            m_Objects.Add(value);
         }
 
         /// <summary>
@@ -33,13 +37,13 @@ namespace TO5
         /// <param name="value">Object to remove</param>
         public void Remove(T value)
         {
-            LinkedListNode<T> node = m_Objects.Find(value);
-            if (node != null)
+            int index = m_Objects.FindIndex(item => item == value);
+            if (index != -1)
             {
-                if (node == m_FirstPooledObject)
-                    m_FirstPooledObject = node.Next;
+                if (index < m_ActiveCount)
+                    --m_ActiveCount;
 
-                m_Objects.Remove(node);
+                m_Objects.RemoveAt(index);
             }
         }
 
@@ -51,8 +55,8 @@ namespace TO5
         {
             if (canActivateObject)
             {
-                T value = m_FirstPooledObject.Value;
-                m_FirstPooledObject = m_FirstPooledObject.Next;
+                T value = m_Objects[m_ActiveCount];
+                ++m_ActiveCount;
                 return value;
             }
 
@@ -65,12 +69,45 @@ namespace TO5
         /// <param name="value">Object to deactivate</param>
         public void DeactivateObject(T value)
         {
-            LinkedListNode<T> node = m_Objects.Find(value);
-            if (node != null)
+            int index = m_Objects.FindIndex(item => item == value);
+            if (index != -1)
             {
-                m_Objects.Remove(node);
-                m_Objects.AddLast(node);
+                // Object isn't active if equal or greater
+                if (index < m_ActiveCount)
+                {
+                    Assert.IsTrue(m_ActiveCount > 0);
+
+                    Swap(index, m_ActiveCount - 1);
+                    --m_ActiveCount;
+                }
             }
+        }
+
+        /// <summary>
+        /// Get object at index
+        /// </summary>
+        /// <param name="index">Index of object</param>
+        /// <returns>Object at index</returns>
+        public T GetObject(int index)
+        {
+            if (index >= 0 && index < m_Objects.Count)
+                return m_Objects[index];
+
+            return null;
+        }
+
+        /// <summary>
+        /// Swaps values at indices
+        /// </summary>
+        /// <param name="lhs">First index</param>
+        /// <param name="rhs">Second index</param>
+        private void Swap(int lhs, int rhs)
+        {
+            T l = m_Objects[lhs];
+            T r = m_Objects[rhs];
+
+            m_Objects[lhs] = r;
+            m_Objects[rhs] = l;
         }
     }
 }
