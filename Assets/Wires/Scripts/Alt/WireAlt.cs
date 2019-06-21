@@ -6,7 +6,13 @@ namespace TO5.Wires
 {
     public class WireAlt : MonoBehaviour
     {
+        // The spark on this wire
+        public SparkAlt spark { get { return m_Spark; } }
+
         private SparkAlt m_Spark;       // Spark on this wire
+
+        // The end of the wire in world space
+        public Vector3 end { get { return transform.position + WireManager.WirePlane * m_WireDistance; } }
 
         private int m_Segments;             // Amount of segments on this wire
         private float m_SegmentDistance;    // Cahced distance per segment
@@ -28,6 +34,28 @@ namespace TO5.Wires
         }
 
         /// <summary>
+        /// Deactivates this wire from use
+        /// </summary>
+        public void DeactivateWire()
+        {
+            if (m_Spark)
+                m_Spark.DeactivateSpark();
+
+            m_Spark = null;
+        }
+
+        /// <summary>
+        /// Sets and activates the spark on this wire
+        /// </summary>
+        /// <param name="spark">Spark for this wire</param>
+        /// <param name="interval">Interval for spark switching jump state</param>
+        public void ActivateSpark(SparkAlt spark, float interval)
+        {
+            m_Spark = spark;
+            m_Spark.ActivateSpark(this, interval);
+        }
+
+        /// <summary>
         /// Ticks this wire, moving the spark along
         /// </summary>
         /// <param name="step">Amount to move spark by</param>
@@ -40,7 +68,7 @@ namespace TO5.Wires
                 Transform sparkTransform = m_Spark.transform;
 
                 // Percentage of wire traversed
-                progress = Mathf.Clamp01(Mathf.Abs(sparkTransform.position.x - transform.position.x) + step);
+                progress = Mathf.Clamp01((Mathf.Abs(sparkTransform.position.z - transform.position.z) + step) / m_WireDistance);
                 sparkTransform.position = transform.position + (WireManagerAlt.WirePlane * (m_WireDistance * progress));
 
                 // Move the player with the spark if attached
@@ -57,7 +85,7 @@ namespace TO5.Wires
         /// </summary>
         public void DrawDebugGizmos()
         {
-            Gizmos.DrawLine(transform.position, transform.position + WireManager.WirePlane * m_WireDistance);
+            Gizmos.DrawLine(transform.position, end);
         }
         #endif
     }

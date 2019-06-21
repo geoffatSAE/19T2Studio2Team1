@@ -26,6 +26,12 @@ namespace TO5.Wires
         // If the player is allowed to request a jump
         public bool canJump { get { return !m_IsJumping; } }
 
+        // Spark the player is on
+        public SparkAlt spark { get { return m_Spark; } }
+
+        // Wire the player is on
+        public WireAlt wire { get { return m_Spark ? m_Spark.GetWire() : null; } }
+
         private SparkAlt m_Spark;                   // Spark we are on
         private bool m_IsJumping = false;           // If transition is in progress
 
@@ -33,9 +39,9 @@ namespace TO5.Wires
         /// Jumps to given spark
         /// </summary>
         /// <param name="spark">Spark to jump to</param>
-        public void JumpToSpark(SparkAlt spark)
+        public void JumpToSpark(SparkAlt spark, bool bForce = false)
         {
-            if (!spark.canJumpTo)
+            if (!spark.canJumpTo && !bForce)
                 return;
 
             if (m_Spark)
@@ -137,6 +143,9 @@ namespace TO5.Wires
                         break;
                     }
                 }
+
+                if (m_Spark)
+                    m_Spark.AttachJumper(this);
 
                 if (OnJumpToSpark != null)
                     OnJumpToSpark.Invoke(m_Spark, true);

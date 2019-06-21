@@ -15,15 +15,16 @@ namespace TO5.Wires
 
         public float m_SwitchInterval = 2f;         // Interval for switching between on and off
 
+        private WireAlt m_Wire;                     // Wire this spark is on
         private bool m_CanJumpTo = true;            // If player can jump to this spark
         private SparkJumperAlt m_SparkJumper;       // Player on this spark
 
         /// <summary>
         /// Activates this spark
         /// </summary>
-        /// <param name="start">Starting position of this spark</param>
+        /// <param name="wire">Wire we are attached to</param>
         /// <param name="interval">Interval for switching jump states</param>
-        public void ActivateSpark(Vector3 start, float interval)
+        public void ActivateSpark(WireAlt wire, float interval)
         {
             m_SwitchInterval = interval;
 
@@ -38,7 +39,8 @@ namespace TO5.Wires
                 m_CanJumpTo = true;
             }
 
-            transform.position = start;
+            m_Wire = wire;
+            transform.position = wire.transform.position;
         }
 
         /// <summary>
@@ -47,6 +49,7 @@ namespace TO5.Wires
         public void DeactivateSpark()
         {
             StopCoroutine(SwitchRoutine());
+            m_CanJumpTo = false;
         }
 
         /// <summary>
@@ -89,6 +92,23 @@ namespace TO5.Wires
                 yield return new WaitForSeconds(m_SwitchInterval);
                 m_CanJumpTo = !m_CanJumpTo;
             }
+        }
+
+        /// <summary>
+        /// Get the wire this spark is on
+        /// </summary>
+        /// <returns>Sparks wire</returns>
+        public WireAlt GetWire()
+        {
+            return m_Wire;
+        }
+
+        void OnDrawGizmos()
+        {
+            SphereCollider collider = GetComponent<SphereCollider>();
+
+            Gizmos.color = Color.blue;
+            Gizmos.DrawWireSphere(transform.position, collider.radius);
         }
     }
 }
