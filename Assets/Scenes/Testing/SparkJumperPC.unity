@@ -218,7 +218,7 @@ MonoBehaviour:
   m_WireSpawnInterval: 1
   m_MinWireOffset: 5
   m_MaxWireOffset: 20
-  m_MaxSegmentOffset: 5
+  m_MaxSegmentOffset: 0
   m_MaxSparkSegmentDelay: 3
   m_AutoStart: 1
   m_DisabledSpot: {fileID: 0}

@@ -91,7 +91,7 @@ namespace TO5.Wires
                 {
                     if (wire.spark && wire.spark.sparkJumper != null)
                     {
-                        // TODO:
+                        wire.spark.sparkJumper.JumpToSpark(FindClosestWireTo(wire, true).spark);
                     }
 
                     SparkAlt spark = wire.spark;
@@ -226,6 +226,40 @@ namespace TO5.Wires
             }
 
             return transform.position;
+        }
+
+        /// <summary>
+        /// Finds the closest wire to the source wire
+        /// </summary>
+        /// <param name="wire">Source wire</param>
+        /// <param name="requiresSpark">Only check wires with sparks</param>
+        /// <returns>Closest active wire or null</returns>
+        private WireAlt FindClosestWireTo(WireAlt wire, bool requiresSpark)
+        {
+            if (!wire)
+                return null;
+
+            WireAlt closestWire = null;
+            float closestDistance = float.MaxValue;
+
+            for (int i = 0; i < m_Wires.activeCount; ++i)
+            {
+                // Wire being check might be active
+                WireAlt w = m_Wires.GetObject(i);
+                if (w == wire || (requiresSpark && !w.spark))
+                    continue;
+
+                Vector2 displacement = w.transform.position - wire.transform.position;
+                float sqrDistance = displacement.sqrMagnitude;
+
+                if (sqrDistance < closestDistance)
+                {
+                    closestWire = w;
+                    closestDistance = sqrDistance;
+                }
+            }
+
+            return closestWire;
         }
 
         /// <summary>

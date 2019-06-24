@@ -153,5 +153,11 @@ namespace TO5.Wires
                 m_IsJumping = false;
             }
         }
+
+        void OnDrawGizmos()
+        {
+            Gizmos.color = Color.magenta;
+            Gizmos.DrawLine(transform.position, transform.position + Vector3.up * 100f);
+        }
     }
 }
