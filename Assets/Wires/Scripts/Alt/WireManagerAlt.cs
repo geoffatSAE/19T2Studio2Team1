@@ -9,7 +9,7 @@ namespace TO5.Wires
     /// </summary>
     public class WaitForSegment : CustomYieldInstruction
     {
-        public override bool keepWaiting { get { return m_WireManager.GetJumpersSegment() >= m_Segment; } }
+        public override bool keepWaiting { get { return m_WireManager.GetJumpersSegment() < m_Segment; } }
 
         private WireManagerAlt m_WireManager;
         private int m_Segment;
@@ -36,14 +36,15 @@ namespace TO5.Wires
         private ObjectPool<SparkAlt> m_Sparks = new ObjectPool<SparkAlt>();     // Sparks being managed
 
         [Header("Wires")]
-        [SerializeField] private int m_MinSegments = 5;         // Min amount of segments per wire
+        [SerializeField] private int m_MinSegments = 8;         // Min amount of segments per wire
         [SerializeField] private int m_MaxSegments = 15;        // Max amount of segments per wire
         [SerializeField] private int m_InitialSegments = 10;    // Segments to not start anything
         [SerializeField] WireFactory[] m_Factories;             // Factories for generating wire types
         [SerializeField] WireAnimator m_WireAnimator;           // Animator for the wire
 
         [Header("Generation")]
-        [SerializeField] private float m_WireSpawnInterval = 4f;    // Spawn interval for wires
+        [SerializeField] private int m_MinSpawnInterval = 4;        // Min segments to wait before spawning new wires
+        [SerializeField] private int m_MaxSpawnInterval = 6;        // Max segments to wait before spawning new wires
         [SerializeField] private float m_MinWireOffset = 5f;        // Min distance away to spawn wires
         [SerializeField] private float m_MaxWireOffset = 20f;       // max distance away to spawn wires
         [SerializeField] private int m_MaxSegmentOffset = 5;        // Max amount of segments before or after a wire can spawn
@@ -55,6 +56,9 @@ namespace TO5.Wires
         [Header("Manager")]
         [SerializeField] private bool m_AutoStart = true;       // If game starts automatically
         [SerializeField] private Transform m_DisabledSpot;      // Spot to hide disabled objects
+
+        // Spot for hiding inactive objects
+        private Vector3 disabledSpot { get { return m_DisabledSpot ? m_DisabledSpot.position : Vector3.zero; } }
 
         #if UNITY_EDITOR
         [Header("Debug")]
@@ -74,7 +78,7 @@ namespace TO5.Wires
                 WireAlt wire = GenerateWire(transform.position, m_InitialSegments, 0, null);
                 sparkJumper.JumpToSpark(wire.spark, true);
 
-                InvokeRepeating("GenerateRandomWire", m_WireSpawnInterval, m_WireSpawnInterval);
+                StartCoroutine(WireSpawnRoutine(m_MinSpawnInterval, m_MaxSpawnInterval + 1));
             }
         }
 
@@ -89,17 +93,7 @@ namespace TO5.Wires
                 float progress = wire.TickWire(step);
                 if (progress >= 1f)
                 {
-                    if (wire.spark && wire.spark.sparkJumper != null)
-                    {
-                        wire.spark.sparkJumper.JumpToSpark(FindClosestWireTo(wire, true).spark);
-                    }
-
-                    SparkAlt spark = wire.spark;
-
-                    wire.DeactivateWire();
-
-                    m_Sparks.DeactivateObject(spark);
-                    m_Wires.DeactivateObject(wire);
+                    DeactivateWire(wire);
 
                     // Object pool swaps when deactivating objects, we need
                     // to update the swapped object since it is still active
@@ -151,13 +145,13 @@ namespace TO5.Wires
                 start.z += segmentOffset * m_CachedSegmentDistance;
 
                 success = HasSpaceAtLocation(start);
-                if (!success)
+                if (success)
                     break;
             }
 
             if (!success)
             {
-                Debug.LogWarning(string.Format("Failed to generate wire after {0} attempts", attempts), this);
+                Debug.LogWarning(string.Format("Failed to generate wire after {0} attempts", maxAttempts), this);
                 return null;
             }
 
@@ -191,9 +185,45 @@ namespace TO5.Wires
             if (sparkDelay > 0)
                 StartCoroutine(DelaySparkActivation(sparkDelay, wire));
             else
-                wire.ActivateSpark(GetSpark(), m_SparkSwitchInterval);
+                GenerateSpark(wire);
 
             return wire;
+        }
+
+        private SparkAlt GenerateSpark(WireAlt wire)
+        {
+            SparkAlt spark = GetSpark();
+            if (!spark)
+                return null;
+
+            wire.ActivateSpark(spark, m_SparkSwitchInterval);
+
+            Vector3 position = m_SparkJumper.GetPosition();
+            float distance = Mathf.Abs(position.z - transform.position.z);
+            float offset = distance - (m_CachedSegmentDistance * Mathf.FloorToInt(distance / m_CachedSegmentDistance));
+
+            spark.transform.position += WirePlane * offset;
+
+            if (!m_SparkJumper.spark)
+                m_SparkJumper.JumpToSpark(spark, true);
+
+            return spark;
+        }
+
+        private void DeactivateWire(WireAlt wire)
+        {
+            // Resetting wire will have it drop its spark reference
+            SparkAlt spark = wire.spark;
+
+            if (spark && spark.sparkJumper != null)
+                MoveJumperToClosestWire(wire);
+
+            wire.DeactivateWire();
+            wire.transform.position = disabledSpot;
+            spark.transform.position = disabledSpot;
+
+            m_Sparks.DeactivateObject(spark);
+            m_Wires.DeactivateObject(wire);
         }
 
         /// <summary>
@@ -338,7 +368,7 @@ namespace TO5.Wires
                     return wireMesh.bounds.size.z;
             }
 
-            return 0f;
+            return 1f;
         }
 
         /// <summary>
@@ -352,6 +382,22 @@ namespace TO5.Wires
             int segment = Mathf.FloorToInt(distance / m_CachedSegmentDistance);
 
             return Mathf.Max(segment, 0);
+        }
+
+        private void MoveJumperToClosestWire(WireAlt origin)
+        {
+            if (m_SparkJumper)
+            {
+                WireAlt closest = FindClosestWireTo(origin, true);
+                if (closest)
+                {
+                    m_SparkJumper.JumpToSpark(closest.spark, true);
+                }
+                else
+                {
+                    Debug.LogWarning("Failed to move spark jumper as no wires either exist or have sparks on them");
+                }
+            }
         }
 
         /// <summary>
@@ -386,6 +432,17 @@ namespace TO5.Wires
             return true;
         }
 
+        private IEnumerator WireSpawnRoutine(int minDelay, int maxDelay)
+        {
+            while (enabled)
+            {
+                int delay = Random.Range(minDelay, maxDelay);
+                yield return new WaitForSegment(this, GetJumpersSegment() + delay);
+
+                GenerateRandomWire();
+            }
+        }
+
         /// <summary>
         /// Delays the spark activation for a wire
         /// </summary>
@@ -394,7 +451,7 @@ namespace TO5.Wires
         private IEnumerator DelaySparkActivation(int delay, WireAlt wire)
         {
             yield return new WaitForSegment(this, GetJumpersSegment() + delay);
-            wire.ActivateSpark(GetSpark(), m_SparkSwitchInterval);
+            GenerateSpark(wire);
         }
 
         void OnDrawGizmos()
@@ -402,11 +459,11 @@ namespace TO5.Wires
             #if UNITY_EDITOR
             if (m_Debug)
             {
+                Vector3 center = GetSpawnCircleCenter();
+
                 // Draw spawn radius
                 {
-                    Gizmos.color = Color.green;
-
-                    Vector3 center = GetSpawnCircleCenter();
+                    Gizmos.color = Color.green;     
 
                     const int segments = 16;
                     const float step = Mathf.PI * 2f / segments;
@@ -440,6 +497,23 @@ namespace TO5.Wires
                 {
                     WireAlt wire = m_Wires.GetObject(i);
                     wire.DrawDebugGizmos();
+                }
+    
+                if (Application.isPlaying)
+                {
+                    // Draw sync
+                    if (m_SparkJumper)
+                    {
+                        Color color = Color.cyan;
+                        color.a = 0.5f;
+
+                        Gizmos.color = color;
+                        for (int i = -m_MaxSegmentOffset; i <= m_MaxSegmentOffset; ++i)
+                        {
+                            Vector3 offset = new Vector3(0f, 0f, m_CachedSegmentDistance * i);
+                            Gizmos.DrawCube(m_SparkJumper.transform.position + offset, new Vector3(50f, 50f, 0.01f));
+                        }
+                    }
                 }
             }
             #endif

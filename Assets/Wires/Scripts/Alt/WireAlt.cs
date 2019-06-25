@@ -11,6 +11,9 @@ namespace TO5.Wires
 
         private SparkAlt m_Spark;       // Spark on this wire
 
+        // If the spark jumper is on this wires spark
+        public bool jumperAttached { get { return spark ? spark.sparkJumper != null : false; } }
+
         // The end of the wire in world space
         public Vector3 end { get { return transform.position + WireManager.WirePlane * m_WireDistance; } }
 
@@ -26,6 +29,8 @@ namespace TO5.Wires
         /// <param name="segmentDistance">Distance of a segment</param>
         public void ActivateWire(Vector3 start, int segments, float segmentDistance)
         {
+            gameObject.SetActive(true);
+
             m_Segments = segments;
             m_SegmentDistance = segmentDistance;
             m_WireDistance = segments * segmentDistance;
@@ -42,6 +47,8 @@ namespace TO5.Wires
                 m_Spark.DeactivateSpark();
 
             m_Spark = null;
+
+            gameObject.SetActive(false);
         }
 
         /// <summary>
@@ -72,7 +79,8 @@ namespace TO5.Wires
                 sparkTransform.position = transform.position + (WireManagerAlt.WirePlane * (m_WireDistance * progress));
 
                 // Move the player with the spark if attached
-                if (m_Spark.sparkJumper != null)
+                SparkJumperAlt sparkJumper = m_Spark.sparkJumper;
+                if (sparkJumper != null && !sparkJumper.isJumping)
                     m_Spark.sparkJumper.SetPosition(sparkTransform.position);
             }
 

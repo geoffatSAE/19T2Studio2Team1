@@ -26,6 +26,8 @@ namespace TO5.Wires
         /// <param name="interval">Interval for switching jump states</param>
         public void ActivateSpark(WireAlt wire, float interval)
         {
+            gameObject.SetActive(true);
+
             m_SwitchInterval = interval;
 
             // Start switch routine only if interval is set
@@ -40,7 +42,7 @@ namespace TO5.Wires
             }
 
             m_Wire = wire;
-            transform.position = wire.transform.position;
+            transform.position = wire.transform.position;      
         }
 
         /// <summary>
@@ -50,6 +52,8 @@ namespace TO5.Wires
         {
             StopCoroutine(SwitchRoutine());
             m_CanJumpTo = false;
+
+            gameObject.SetActive(false);
         }
 
         /// <summary>

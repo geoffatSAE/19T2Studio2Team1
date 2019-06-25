@@ -32,6 +32,9 @@ namespace TO5.Wires
         // Wire the player is on
         public WireAlt wire { get { return m_Spark ? m_Spark.GetWire() : null; } }
 
+        // If player is jumping
+        public bool isJumping { get { return m_IsJumping; } }
+
         private SparkAlt m_Spark;                   // Spark we are on
         private bool m_IsJumping = false;           // If transition is in progress
 
@@ -52,6 +55,7 @@ namespace TO5.Wires
             if (m_Spark)
             {
                 m_Spark.FreezeSwitching();
+                m_Spark.AttachJumper(this);
                 StartCoroutine(JumpRoutine());
 
                 if (OnJumpToSpark != null)
@@ -128,10 +132,10 @@ namespace TO5.Wires
                 while (Time.time < end)
                 {       
                     // Possibility that spark was deactivated while we were jumping to it
-                    if (m_Spark && m_Spark.canJumpTo)
+                    if (m_Spark)
                     {
-                        float alpha = Mathf.Clamp01((Time.time - end) / m_JumpTime);
-                        Vector3 position = Vector3.Lerp(from, m_Spark.transform.position, alpha);
+                        float alpha = Mathf.Clamp01((end - Time.time) / m_JumpTime);
+                        Vector3 position = Vector3.Lerp(m_Spark.transform.position, from, alpha);
 
                         SetPosition(position);
 
@@ -140,6 +144,7 @@ namespace TO5.Wires
                     else
                     {
                         // TODO:
+                        Debug.Log("Aborting jump");
                         break;
                     }
                 }
