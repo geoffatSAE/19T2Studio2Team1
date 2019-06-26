@@ -79,7 +79,7 @@ namespace TO5.Wires
         /// <param name="ray">Ray of the trace</param>
         public void TraceSpark(Ray ray)
         {
-            if (canJump)
+            if (!canJump)
                 return;
 
             RaycastHit hit;

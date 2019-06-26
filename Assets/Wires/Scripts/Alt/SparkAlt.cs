@@ -33,8 +33,9 @@ namespace TO5.Wires
             // Start switch routine only if interval is set
             if (interval > 0f)
             {
-                m_CanJumpTo = (Random.Range(0, 10) & 1) == 1;
-                StartCoroutine(SwitchRoutine());
+                //m_CanJumpTo = (Random.Range(0, 10) & 1) == 1;
+                //StartCoroutine(SwitchRoutine());
+                m_CanJumpTo = true;
             }
             else
             {
@@ -94,7 +95,7 @@ namespace TO5.Wires
             while (enabled)
             {
                 yield return new WaitForSeconds(m_SwitchInterval);
-                m_CanJumpTo = !m_CanJumpTo;
+                //m_CanJumpTo = true;// !m_CanJumpTo;
             }
         }
 
@@ -111,7 +112,7 @@ namespace TO5.Wires
         {
             SphereCollider collider = GetComponent<SphereCollider>();
 
-            Gizmos.color = Color.blue;
+            Gizmos.color = m_CanJumpTo ? Color.green : Color.red;
             Gizmos.DrawWireSphere(transform.position, collider.radius);
         }
     }

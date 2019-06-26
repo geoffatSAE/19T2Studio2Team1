@@ -22,6 +22,12 @@ namespace TO5.Wires
                 m_Camera = GetComponentInChildren<Camera>();
         }
 
+        void Start()
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+
         void Update()
         {
             // The transform to rotate and base tracing with

@@ -21,6 +21,9 @@ namespace TO5.Wires
         private float m_SegmentDistance;    // Cahced distance per segment
         private float m_WireDistance;       // Cached total distance of wire
 
+        public Transform m_Pivot;
+        public Renderer m_WireMesh;
+
         /// <summary>
         /// Activates this wire, setting it's position and segments
         /// </summary>
@@ -36,6 +39,16 @@ namespace TO5.Wires
             m_WireDistance = segments * segmentDistance;
 
             transform.position = start;
+
+            m_Pivot.transform.localScale = Vector3.one;
+
+            // Bounds is in world space
+            Bounds meshBounds = m_WireMesh.bounds;
+            float scaler = m_WireDistance / meshBounds.size.z;
+
+            Vector3 scale = m_Pivot.transform.localScale;
+            scale.y = scaler;
+            m_Pivot.transform.localScale = scale;
         }
 
         /// <summary>

@@ -26,11 +26,11 @@ namespace TO5.Wires
         public static Vector3 WirePlane = Vector3.forward;
 
         [Header("Player")]
-        public SparkJumperAlt m_JumperPrefab;                   // The spark jumper to spawn
-        private SparkJumperAlt m_SparkJumper;                   // The players spark jumper
+        [SerializeField] private SparkJumperAlt m_SparkJumper;      // The players spark jumper
 
         [Header("Sparks")]
         public SparkAlt m_SparkPrefab;                  // The sparks to use
+        public float m_SparkSpeed = 1f;                 // Shared speed of all sparks
         public float m_SparkSwitchInterval = 2f;        // Interval for sparks switching between on and off
 
         private ObjectPool<SparkAlt> m_Sparks = new ObjectPool<SparkAlt>();     // Sparks being managed
@@ -42,6 +42,8 @@ namespace TO5.Wires
         [SerializeField] WireFactory[] m_Factories;             // Factories for generating wire types
         [SerializeField] WireAnimator m_WireAnimator;           // Animator for the wire
 
+        public WireAlt m_WirePrefab;
+
         [Header("Generation")]
         [SerializeField] private int m_MinSpawnInterval = 4;        // Min segments to wait before spawning new wires
         [SerializeField] private int m_MaxSpawnInterval = 6;        // Max segments to wait before spawning new wires
@@ -51,11 +53,12 @@ namespace TO5.Wires
         [SerializeField] private int m_MaxSparkSegmentDelay = 3;    // The max amount of segments to travel before a spark will spawn on a new wire
 
         private ObjectPool<WireAlt> m_Wires = new ObjectPool<WireAlt>();            // Wires being managed
-        private float m_CachedSegmentDistance;                                      // Distance between the start and end of a segment
+        private float m_CachedSegmentDistance = 1f;                                 // Distance between the start and end of a segment
 
         [Header("Manager")]
         [SerializeField] private bool m_AutoStart = true;       // If game starts automatically
         [SerializeField] private Transform m_DisabledSpot;      // Spot to hide disabled objects
+        [SerializeField] private ScoreManager m_ScoreManager;   // Manager for scoring
 
         // Spot for hiding inactive objects
         private Vector3 disabledSpot { get { return m_DisabledSpot ? m_DisabledSpot.position : Vector3.zero; } }
@@ -63,28 +66,38 @@ namespace TO5.Wires
         #if UNITY_EDITOR
         [Header("Debug")]
         public bool m_Debug = true;                             // If debugging is enabled
+        public bool m_DrawSegmentPlanes = false;                // If segment planes should be drawn
         [SerializeField] private bool m_UseDebugMesh = false;   // If debug mesh should be used
         [SerializeField] private Mesh m_DebugMesh;              // Debug mesh drawn instead of animated mesh
         #endif
 
+        void Awake()
+        {
+            if (m_ScoreManager)
+                m_ScoreManager.Initialize(this);
+        }
+
         void Start()
         {
-            if (m_AutoStart)
+            if (m_AutoStart && m_SparkJumper)
             {
-                m_CachedSegmentDistance = 1f;
-
-                SparkJumperAlt sparkJumper = SpawnSparkJumper();
+                m_CachedSegmentDistance = CalculateSegmentDistance();
 
                 WireAlt wire = GenerateWire(transform.position, m_InitialSegments, 0, null);
-                sparkJumper.JumpToSpark(wire.spark, true);
+                m_SparkJumper.JumpToSpark(wire.spark, true);
 
                 StartCoroutine(WireSpawnRoutine(m_MinSpawnInterval, m_MaxSpawnInterval + 1));
+
+                if (m_ScoreManager)
+                    m_ScoreManager.EnableScoring();
             }
         }
 
         void Update()
         {
-            float step = Time.deltaTime;
+            // Step is influenced by multiplier
+            float gameSpeed = m_ScoreManager ? m_ScoreManager.multiplier : 1f;
+            float step = m_SparkSpeed * gameSpeed * Time.deltaTime;
 
             for (int i = 0; i < m_Wires.activeCount; ++i)
             {
@@ -100,27 +113,6 @@ namespace TO5.Wires
                     --i;
                 }
             }
-        }
-
-        /// <summary>
-        /// Spawns a new spark jumper (only if one hasn't been spawned already)
-        /// </summary>
-        /// <returns>New spark jumper or null</returns>
-        private SparkJumperAlt SpawnSparkJumper()
-        {
-            if (!m_SparkJumper)
-            {
-                if (!m_JumperPrefab)
-                {
-                    Debug.LogError("No jumper prefab has been set", this);
-                    return null;
-                }
-
-                m_SparkJumper = Instantiate(m_JumperPrefab);
-                return m_SparkJumper;
-            }
-
-            return null;
         }
 
         /// <summary>
@@ -190,6 +182,11 @@ namespace TO5.Wires
             return wire;
         }
 
+        /// <summary>
+        /// Generates a spark, will move it to keep in line with segment planes
+        /// </summary>
+        /// <param name="wire">Wire to attach spark to</param>
+        /// <returns>Spark with properties or null</returns>
         private SparkAlt GenerateSpark(WireAlt wire)
         {
             SparkAlt spark = GetSpark();
@@ -210,13 +207,22 @@ namespace TO5.Wires
             return spark;
         }
 
+        /// <summary>
+        /// Deactivates the wire, handles if player is attached to spark
+        /// </summary>
+        /// <param name="wire">Wire to deactivate</param>
         private void DeactivateWire(WireAlt wire)
         {
             // Resetting wire will have it drop its spark reference
             SparkAlt spark = wire.spark;
 
             if (spark && spark.sparkJumper != null)
-                MoveJumperToClosestWire(wire);
+            {
+                JumpToClosestWire(wire);
+
+                if (m_ScoreManager)
+                    m_ScoreManager.DecreaseMultiplier(1);
+            }
 
             wire.DeactivateWire();
             wire.transform.position = disabledSpot;
@@ -301,9 +307,18 @@ namespace TO5.Wires
             if (m_Wires.canActivateObject)
                 return m_Wires.ActivateObject();
 
+            WireAlt wire = null;
+
             // New to make a new wire object
-            GameObject gameObject = new GameObject("Wire");
-            WireAlt wire = gameObject.AddComponent<WireAlt>();
+            if (m_WirePrefab)
+            {
+                wire = Instantiate(m_WirePrefab);
+            }
+            else
+            {
+                GameObject gameObject = new GameObject("Wire");
+                wire = gameObject.AddComponent<WireAlt>();
+            }
 
             m_Wires.Add(wire);
             m_Wires.ActivateObject();
@@ -384,7 +399,11 @@ namespace TO5.Wires
             return Mathf.Max(segment, 0);
         }
 
-        private void MoveJumperToClosestWire(WireAlt origin)
+        /// <summary>
+        /// Has player jumper to wire closest to origin wire
+        /// </summary>
+        /// <param name="origin">Wire to jump from</param>
+        private void JumpToClosestWire(WireAlt origin)
         {
             if (m_SparkJumper)
             {
@@ -432,6 +451,11 @@ namespace TO5.Wires
             return true;
         }
 
+        /// <summary>
+        /// Routine for generating wires
+        /// </summary>
+        /// <param name="minDelay">Min segments between spawns</param>
+        /// <param name="maxDelay">Max segments between spawns</param>
         private IEnumerator WireSpawnRoutine(int minDelay, int maxDelay)
         {
             while (enabled)
@@ -501,8 +525,8 @@ namespace TO5.Wires
     
                 if (Application.isPlaying)
                 {
-                    // Draw sync
-                    if (m_SparkJumper)
+                    // Draw segment planes
+                    if (m_DrawSegmentPlanes && m_SparkJumper)
                     {
                         Color color = Color.cyan;
                         color.a = 0.5f;
