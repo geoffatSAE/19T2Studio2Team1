@@ -44,7 +44,7 @@ namespace TO5.Wires
         /// <param name="spark">Spark to jump to</param>
         public void JumpToSpark(SparkAlt spark, bool bForce = false)
         {
-            if (!spark.canJumpTo && !bForce)
+            if (!spark || !spark.canJumpTo && !bForce)
                 return;
 
             if (m_Spark)
@@ -131,7 +131,7 @@ namespace TO5.Wires
 
                 while (Time.time < end)
                 {       
-                    // Possibility that spark was deactivated while we were jumping to it
+                    // Possibility that spark was deactivated while jumping to it
                     if (m_Spark)
                     {
                         float alpha = Mathf.Clamp01((end - Time.time) / m_JumpTime);

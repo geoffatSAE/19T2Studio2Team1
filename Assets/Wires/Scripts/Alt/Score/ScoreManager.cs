@@ -5,42 +5,45 @@ using UnityEngine.UI;
 
 namespace TO5.Wires
 {
+    /// <summary>
+    /// Manages the score of the player and the active multiplier
+    /// </summary>
     public class ScoreManager : MonoBehaviour
     {
         [Header("Score")]
-        [SerializeField] private float m_ScorePerSecond = 10f;
-        [SerializeField] private float m_JumpScore = 100f;
+        [SerializeField] private float m_ScorePerSecond = 10f;          // Score player earns per second
+        [SerializeField] private float m_JumpScore = 100f;              // Score player earns when jumping (not when forced to jump)
 
         [Header("Multiplier")]
-        [SerializeField, Range(0, 32)] private int m_MultiplierStages = 2;
-        [SerializeField] private int m_SegmentsBeforeStageIncrease = 15;
+        [SerializeField, Range(0, 32)] private int m_MultiplierStages = 2;      // The amount of stages for the multiplier
+        [SerializeField] private int m_SegmentsBeforeStageIncrease = 15;        // Segments player must pass without fail to increase the multiplier
 
         [Header("UI")]
-        public Text m_ScoreText;
-        public Text m_MultiplierText;
+        public Text m_ScoreText;                    // Text for writing score
+        public Text m_MultiplierText;               // Text for writing multiplier
 
-        //#if UNITY_EDITOR
-        [SerializeField] private Text m_DebugText;
-       // #endif
+        #if UNITY_EDITOR
+        [SerializeField] private Text m_DebugText;      // Text for writing debug data
+        #endif
 
         // Scores current multiplier
         public float multiplier { get { return m_Multiplier; } }
 
-        private WireManagerAlt m_WireManager;
-        private float m_Score;
-        private float m_Multiplier;
-        private int m_Stage;
-        private Coroutine m_MultiplierTick;
+        private WireManagerAlt m_WireManager;           // Manager for wires
+        private float m_Score;                          // Players score
+        private float m_Multiplier;                     // Players multiplier
+        private int m_Stage;                            // Multiplier stage
+        private Coroutine m_MultiplierTick;             // Coroutine for multipliers tick
 
         void Update()
         {
             m_Score += m_ScorePerSecond * m_Multiplier * Time.deltaTime;
 
-            //#if UNITY_EDITOR
+            #if UNITY_EDITOR
             // Debug text
             if (m_DebugText)
                 m_DebugText.text = string.Format("Score: {0}\nMultiplier: {1}\nMultiplier Stage: {2}", Mathf.FloorToInt(m_Score), m_Multiplier, m_Stage);
-            //#endif
+            #endif
         }
 
         /// <summary>

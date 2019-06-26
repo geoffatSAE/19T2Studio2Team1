@@ -19,6 +19,9 @@ namespace TO5.Wires
         private bool m_CanJumpTo = true;            // If player can jump to this spark
         private SparkJumperAlt m_SparkJumper;       // Player on this spark
 
+        [SerializeField] private Material m_ActiveMaterial;
+        [SerializeField] private Material m_OccupiedMaterial;
+
         /// <summary>
         /// Activates this spark
         /// </summary>
@@ -43,7 +46,11 @@ namespace TO5.Wires
             }
 
             m_Wire = wire;
-            transform.position = wire.transform.position;      
+            transform.position = wire.transform.position;
+
+            Renderer renderer = GetComponentInChildren<Renderer>();
+            if (renderer)
+                renderer.material = m_ActiveMaterial;
         }
 
         /// <summary>
@@ -76,6 +83,10 @@ namespace TO5.Wires
             {
                 m_SparkJumper = jumper;
                 m_CanJumpTo = false;
+
+                Renderer renderer = GetComponentInChildren<Renderer>();
+                if (renderer)
+                    renderer.material = m_OccupiedMaterial;
             }
         }
 

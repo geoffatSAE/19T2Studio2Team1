@@ -9,7 +9,11 @@ namespace TO5.Wires
         // The spark on this wire
         public SparkAlt spark { get { return m_Spark; } }
 
-        private SparkAlt m_Spark;       // Spark on this wire
+        // Progress of spark on this wire
+        public float sparkProgress { get { return m_CachedProgress; } }
+
+        private SparkAlt m_Spark;           // Spark on this wire
+        private float m_CachedProgress;     // Cached progress from last tick
 
         // If the spark jumper is on this wires spark
         public bool jumperAttached { get { return spark ? spark.sparkJumper != null : false; } }
@@ -20,7 +24,7 @@ namespace TO5.Wires
         private int m_Segments;             // Amount of segments on this wire
         private float m_SegmentDistance;    // Cahced distance per segment
         private float m_WireDistance;       // Cached total distance of wire
-
+        
         public Transform m_Pivot;
         public Renderer m_WireMesh;
 
@@ -97,6 +101,7 @@ namespace TO5.Wires
                     m_Spark.sparkJumper.SetPosition(sparkTransform.position);
             }
 
+            m_CachedProgress = progress;
             return progress;
         }
 

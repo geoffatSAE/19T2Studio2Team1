@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace TO5.Wires
 {
@@ -21,6 +22,9 @@ namespace TO5.Wires
         }
     }
 
+    /// <summary>
+    /// Manager for the wires and sparks that spawn in. Offers event for listeners
+    /// </summary>
     public class WireManagerAlt : MonoBehaviour
     {
         public static Vector3 WirePlane = Vector3.forward;
@@ -48,8 +52,9 @@ namespace TO5.Wires
         [SerializeField] private int m_MinSpawnInterval = 4;        // Min segments to wait before spawning new wires
         [SerializeField] private int m_MaxSpawnInterval = 6;        // Max segments to wait before spawning new wires
         [SerializeField] private float m_MinWireOffset = 5f;        // Min distance away to spawn wires
-        [SerializeField] private float m_MaxWireOffset = 20f;       // max distance away to spawn wires
-        [SerializeField] private int m_MaxSegmentOffset = 5;        // Max amount of segments before or after a wire can spawn
+        [SerializeField] private float m_MaxWireOffset = 20f;       // Max distance away to spawn wires
+        [SerializeField] private int m_SegmentOffset = 2;           // Segments in front of current segment to spawn next wire
+        [SerializeField] private int m_MaxSegmentOffsetRange = 3;   // Range from offset segment for spawning wires
         [SerializeField] private int m_MaxSparkSegmentDelay = 3;    // The max amount of segments to travel before a spark will spawn on a new wire
 
         private ObjectPool<WireAlt> m_Wires = new ObjectPool<WireAlt>();            // Wires being managed
@@ -69,7 +74,8 @@ namespace TO5.Wires
         public bool m_DrawSegmentPlanes = false;                // If segment planes should be drawn
         [SerializeField] private bool m_UseDebugMesh = false;   // If debug mesh should be used
         [SerializeField] private Mesh m_DebugMesh;              // Debug mesh drawn instead of animated mesh
-        #endif
+        [SerializeField] private Text m_DebugText;              // Text for writing debug data
+#endif
 
         void Awake()
         {
@@ -115,6 +121,16 @@ namespace TO5.Wires
             }
         }
 
+        public void StartWires()
+        {
+
+        }
+
+        public void EndWires()
+        {
+
+        }
+
         /// <summary>
         /// Generates a random wire
         /// </summary>
@@ -131,7 +147,7 @@ namespace TO5.Wires
             while (++attempts <= maxAttempts)
             {
                 Vector2 circleOffset = Random.insideUnitCircle.normalized * Random.Range(m_MinWireOffset, m_MaxWireOffset);
-                int segmentOffset = Random.Range(-m_MaxSegmentOffset, m_MaxSegmentOffset + 1);
+                int segmentOffset = m_SegmentOffset + Random.Range(-m_MaxSegmentOffsetRange, m_MaxSegmentOffsetRange + 1);
 
                 start = GetSpawnCircleCenter() + new Vector3(circleOffset.x, circleOffset.y, 0f);
                 start.z += segmentOffset * m_CachedSegmentDistance;
@@ -255,7 +271,7 @@ namespace TO5.Wires
                 Vector3 center = m_SparkJumper.spark.transform.position;
 
                 // We would use Ceil in thise case, but this function uses floor
-                int segment = GetPositionSegment(center) + 1;
+                int segment = GetPositionSegment(center) + 1 + m_SegmentOffset;
                 center.z = m_CachedSegmentDistance * segment;
 
                 return center;
@@ -265,7 +281,7 @@ namespace TO5.Wires
         }
 
         /// <summary>
-        /// Finds the closest wire to the source wire
+        /// Finds the closest wire to the source wire that player can jump to
         /// </summary>
         /// <param name="wire">Source wire</param>
         /// <param name="requiresSpark">Only check wires with sparks</param>
@@ -280,7 +296,7 @@ namespace TO5.Wires
 
             for (int i = 0; i < m_Wires.activeCount; ++i)
             {
-                // Wire being check might be active
+                // Wire might require spark
                 WireAlt w = m_Wires.GetObject(i);
                 if (w == wire || (requiresSpark && !w.spark))
                     continue;
@@ -296,6 +312,38 @@ namespace TO5.Wires
             }
 
             return closestWire;
+        }
+
+        /// <summary>
+        /// Finds the best wire to jump the player to
+        /// </summary>
+        /// <param name="wire">Wire to jump from</param>
+        /// <returns>Best wire or null</returns>
+        private WireAlt FindBestWireToJumpTo(WireAlt wire)
+        {
+            if (!wire)
+                return null;
+
+            WireAlt bestWire = null;
+            if (m_Wires.activeCount > 0)
+            {
+                bestWire = m_Wires.GetObject(0);
+
+                // Start at one since we already 'tested' it
+                for (int i = 1; i < m_Wires.activeCount; ++i)
+                {
+                    // Wire requires spark
+                    WireAlt w = m_Wires.GetObject(i);
+                    if (w == wire || !w.spark)
+                        continue;
+
+                    // Use the wire whose spark has made less progress
+                    if (w.sparkProgress < bestWire.sparkProgress)
+                        bestWire = w;
+                }
+            }
+
+            return bestWire;
         }
 
         /// <summary>
@@ -407,7 +455,7 @@ namespace TO5.Wires
         {
             if (m_SparkJumper)
             {
-                WireAlt closest = FindClosestWireTo(origin, true);
+                WireAlt closest = FindBestWireToJumpTo(origin);//FindClosestWireTo(origin, true);
                 if (closest)
                 {
                     m_SparkJumper.JumpToSpark(closest.spark, true);
@@ -532,10 +580,10 @@ namespace TO5.Wires
                         color.a = 0.5f;
 
                         Gizmos.color = color;
-                        for (int i = -m_MaxSegmentOffset; i <= m_MaxSegmentOffset; ++i)
+                        for (int i = -m_MaxSegmentOffsetRange; i <= m_MaxSegmentOffsetRange; ++i)
                         {
                             Vector3 offset = new Vector3(0f, 0f, m_CachedSegmentDistance * i);
-                            Gizmos.DrawCube(m_SparkJumper.transform.position + offset, new Vector3(50f, 50f, 0.01f));
+                            Gizmos.DrawCube(center + offset, new Vector3(50f, 50f, 0.01f));
                         }
                     }
                 }
