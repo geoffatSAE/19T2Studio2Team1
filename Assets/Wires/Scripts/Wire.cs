@@ -5,87 +5,130 @@ using UnityEngine;
 namespace TO5.Wires
 {
     public class Wire : MonoBehaviour
-    { 
-        public Spark spark { get; private set; }
+    {
+        // The spark on this wire
+        public Spark spark { get { return m_Spark; } }
 
-        public float m_Distance = 15f;         // The distance of this wire
-        public Renderer m_WireMesh;
+        // Progress of spark on this wire
+        public float sparkProgress { get { return m_CachedProgress; } }
+
+        private Spark m_Spark;           // Spark on this wire
+        private float m_CachedProgress;     // Cached progress from last tick
+
+        // If the spark jumper is on this wires spark
+        public bool jumperAttached { get { return spark ? spark.sparkJumper != null : false; } }
+
+        // The end of the wire in world space
+        public Vector3 end { get { return transform.position + WireManager.WirePlane * m_WireDistance; } }
+
+        private int m_Segments;             // Amount of segments on this wire
+        private float m_SegmentDistance;    // Cahced distance per segment
+        private float m_WireDistance;       // Cached total distance of wire
+        
         public Transform m_Pivot;
-
-        void OnDestroy()
-        {
-            if (spark)
-                Destroy(spark.gameObject);
-        }
+        public Renderer m_WireMesh;
+        public Renderer m_BorderMesh;
 
         /// <summary>
-        /// Ticks the spark, having it travel along the wire
+        /// Activates this wire, setting it's position and segments
         /// </summary>
-        /// <param name="deltaTime"></param>
-        /// <returns></returns>
-        public float TickSpark(float deltaTime)
+        /// <param name="start">Starting position of this wire</param>
+        /// <param name="segments">Amount of segments on this wire</param>
+        /// <param name="segmentDistance">Distance of a segment</param>
+        /// <param name="factory">Factory for wire to use</param>
+        public void ActivateWire(Vector3 start, int segments, float segmentDistance, WireFactory factory)
         {
-            if (!spark)
-                return 0f;
+            gameObject.SetActive(true);
 
-            spark.transform.position += WireManager.WirePlane * spark.m_Speed * Time.deltaTime;
+            m_Segments = segments;
+            m_SegmentDistance = segmentDistance;
+            m_WireDistance = segments * segmentDistance;
 
-            Vector3 offset = spark.transform.position - transform.position;
-            float distance = offset.sqrMagnitude;
+            transform.position = start;
 
-            if (spark.Jumper)
-            {
-                Vector3 jumperPosition = spark.Jumper.transform.position;
-                jumperPosition.z = spark.transform.position.z;
-                spark.Jumper.transform.position = jumperPosition;
-            }
+            m_Pivot.transform.localScale = Vector3.one;
 
-            float alpha = distance / (GetEnd() - transform.position).sqrMagnitude;
-            return alpha;
-        }
-
-        public void SpawnSpark(Spark prefab)
-        {
-            spark = Instantiate(prefab, transform.position, Quaternion.identity);
-            spark.InitializerSpark(this);
-        }
-
-        public void InitializeWire(float distance, Spark prefab, float sparkDelay = 0f)
-        {
-            m_Distance = distance;
-
-            if (sparkDelay <= 0f)
-                SpawnSpark(prefab);
-            else
-                StartCoroutine(DelaySpawnSpark(sparkDelay, prefab));
-        }
-
-        private IEnumerator DelaySpawnSpark(float delay, Spark prefab)
-        {
-            yield return new WaitForSeconds(delay);
-            SpawnSpark(prefab);
-        }
-
-        public Vector3 GetEnd()
-        {
-            return transform.position + (WireManager.WirePlane * m_Distance);
-        }
-
-        public void SetPositionAndDistance(Vector3 position, float distance)
-        {
-            transform.position = position;
-            m_Distance = distance;
-
-            if (m_WireMesh && m_Pivot)
+            if (m_WireMesh)
             {
                 // Bounds is in world space
                 Bounds meshBounds = m_WireMesh.bounds;
-                float scaler = distance / meshBounds.size.z;
+                float scaler = m_WireDistance / meshBounds.size.z;
 
                 Vector3 scale = m_Pivot.transform.localScale;
                 scale.y = scaler;
                 m_Pivot.transform.localScale = scale;
             }
+
+            if (m_BorderMesh && factory)
+            {
+                Color color = factory.color;
+                color.a = 0.3f;
+                m_BorderMesh.material.color = color;
+
+                m_BorderMesh.gameObject.SetActive(false);
+
+                m_WireMesh.material.color = factory.color;
+            }
         }
+
+        /// <summary>
+        /// Deactivates this wire from use
+        /// </summary>
+        public void DeactivateWire()
+        {
+            if (m_Spark)
+                m_Spark.DeactivateSpark();
+
+            m_Spark = null;
+
+            gameObject.SetActive(false);
+        }
+
+        /// <summary>
+        /// Sets and activates the spark on this wire
+        /// </summary>
+        /// <param name="spark">Spark for this wire</param>
+        /// <param name="interval">Interval for spark switching jump state</param>
+        public void ActivateSpark(Spark spark, float interval)
+        {
+            m_Spark = spark;
+            m_Spark.ActivateSpark(this, interval);
+        }
+
+        /// <summary>
+        /// Ticks this wire, moving the spark along
+        /// </summary>
+        /// <param name="step">Amount to move spark by</param>
+        /// <returns>Percentage of wire that spark has completed</returns>
+        public float TickWire(float step)
+        {
+            float progress = 0f;
+            if (m_Spark && m_Spark.enabled)
+            {
+                Transform sparkTransform = m_Spark.transform;
+
+                // Percentage of wire traversed
+                progress = Mathf.Clamp01((Mathf.Abs(sparkTransform.position.z - transform.position.z) + step) / m_WireDistance);
+                sparkTransform.position = transform.position + (WireManager.WirePlane * (m_WireDistance * progress));
+
+                // Move the player with the spark if attached
+                SparkJumper sparkJumper = m_Spark.sparkJumper;
+                if (sparkJumper != null && !sparkJumper.isJumping)
+                    m_Spark.sparkJumper.SetPosition(sparkTransform.position);
+            }
+
+            m_CachedProgress = progress;
+            return progress;
+        }
+
+        #if UNITY_EDITOR
+        /// <summary>
+        /// Called by wire manager to draw debug gizmos
+        /// </summary>
+        public void DrawDebugGizmos()
+        {
+            Gizmos.DrawLine(transform.position, end);
+        }
+        #endif
     }
 }

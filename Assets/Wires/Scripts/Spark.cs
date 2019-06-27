@@ -1,59 +1,142 @@
-﻿using System;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace TO5.Wires
 {
-    /// <summary>
-    /// Sparks are attached to wires and will follow them until the end.
-    /// </summary>
     [RequireComponent(typeof(SphereCollider))]
     public class Spark : MonoBehaviour
     {
-        public float m_Speed = 2f;              // Speed of the spark
+        // If player can jump to this spark
+        public bool canJumpTo { get { return m_CanJumpTo; } }
 
-        public bool CanRide { get { return !m_PreviouslyOccupied; } }
+        // Player on this spark
+        public SparkJumper sparkJumper { get { return m_SparkJumper; } }
 
-        protected Wire m_Wire;                  // The wire we belong to
-        protected SparkJumper m_Jumper;         // The jumper following this spark
-        private SphereCollider m_Collider;      // Collider for tracing this spark
+        public float m_SwitchInterval = 2f;         // Interval for switching between on and off
+
+        private Wire m_Wire;                     // Wire this spark is on
+        private bool m_CanJumpTo = true;            // If player can jump to this spark
+        private SparkJumper m_SparkJumper;       // Player on this spark
+
+        [SerializeField] private Material m_ActiveMaterial;
         [SerializeField] private Material m_OccupiedMaterial;
 
-        private bool m_PreviouslyOccupied = false;
-
-        public SparkJumper Jumper { get { return m_Jumper; } }
-
-        void Awake()
+        /// <summary>
+        /// Activates this spark
+        /// </summary>
+        /// <param name="wire">Wire we are attached to</param>
+        /// <param name="interval">Interval for switching jump states</param>
+        public void ActivateSpark(Wire wire, float interval)
         {
-            m_Collider = GetComponent<SphereCollider>();
-        }
+            gameObject.SetActive(true);
 
-        public void InitializerSpark(Wire wire)
-        {
+            m_SwitchInterval = interval;
+
+            // Start switch routine only if interval is set
+            if (interval > 0f)
+            {
+                //m_CanJumpTo = (Random.Range(0, 10) & 1) == 1;
+                //StartCoroutine(SwitchRoutine());
+                m_CanJumpTo = true;
+            }
+            else
+            {
+                m_CanJumpTo = true;
+            }
+
             m_Wire = wire;
-            m_PreviouslyOccupied = false;
+            transform.position = wire.transform.position;
+
+            Renderer renderer = GetComponentInChildren<Renderer>();
+            if (renderer)
+                renderer.material = m_ActiveMaterial;
+
+            SphereCollider collider = GetComponent<SphereCollider>();
+            if (collider)
+                collider.enabled = true;
         }
 
+        /// <summary>
+        /// Deactivates this spark
+        /// </summary>
+        public void DeactivateSpark()
+        {
+            StopCoroutine(SwitchRoutine());
+            m_CanJumpTo = false;
+
+            gameObject.SetActive(false);
+        }
+
+        /// <summary>
+        /// Freezes the sparks jump state to true
+        /// </summary>
+        public void FreezeSwitching()
+        {
+            StopCoroutine(SwitchRoutine());
+            m_CanJumpTo = true;       
+        }
+
+        /// <summary>
+        /// Attaches the jumper to this spark
+        /// </summary>
+        /// <param name="jumper">Jumper to attach</param>
+        public void AttachJumper(SparkJumper jumper)
+        {
+            if (canJumpTo)
+            {
+                m_SparkJumper = jumper;
+                m_CanJumpTo = false;
+
+                Renderer renderer = GetComponentInChildren<Renderer>();
+                if (renderer)
+                    renderer.material = m_OccupiedMaterial;
+
+                m_Wire.m_BorderMesh.gameObject.SetActive(true);
+
+                SphereCollider collider = GetComponent<SphereCollider>();
+                if (collider)
+                    collider.enabled = false;
+            }
+        }
+
+        /// <summary>
+        /// Detaches the jumper attached to this spark
+        /// </summary>
+        public void DetachJumper()
+        {
+            m_SparkJumper = null;
+
+            m_Wire.m_BorderMesh.gameObject.SetActive(false);
+        }
+
+        /// <summary>
+        /// Switch routine for enabled/disabling jumping
+        /// </summary>
+        private IEnumerator SwitchRoutine()
+        {
+            while (enabled)
+            {
+                yield return new WaitForSeconds(m_SwitchInterval);
+                //m_CanJumpTo = true;// !m_CanJumpTo;
+            }
+        }
+
+        /// <summary>
+        /// Get the wire this spark is on
+        /// </summary>
+        /// <returns>Sparks wire</returns>
         public Wire GetWire()
         {
             return m_Wire;
         }
 
-        public void SetJumper(SparkJumper jumper)
+        void OnDrawGizmos()
         {
-            m_Jumper = jumper;
-            m_PreviouslyOccupied = true;
+            SphereCollider collider = GetComponent<SphereCollider>();
 
-            if (m_Jumper)
-                m_Jumper.transform.position = transform.position;
-
-            Renderer renderer = GetComponentInChildren<Renderer>();
-            if (renderer)
-            {
-                renderer.material.color = Color.red;
-
-                if (m_OccupiedMaterial)
-                    renderer.material = m_OccupiedMaterial;
-            }
+            Gizmos.color = m_CanJumpTo ? Color.green : Color.red;
+            Gizmos.DrawWireSphere(transform.position, collider.radius);
         }
     }
 }

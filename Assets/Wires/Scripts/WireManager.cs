@@ -1,398 +1,594 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace TO5.Wires
 {
+    /// <summary>
+    /// Yield instruction for waiting until player reaches desired segment
+    /// </summary>
+    public class WaitForSegment : CustomYieldInstruction
+    {
+        public override bool keepWaiting { get { return m_WireManager.GetJumpersSegment() < m_Segment; } }
+
+        private WireManager m_WireManager;
+        private int m_Segment;
+
+        public WaitForSegment(WireManager wireManager, int segment)
+        {
+            m_WireManager = wireManager;
+            m_Segment = segment;
+        }
+    }
+
+    /// <summary>
+    /// Manager for the wires and sparks that spawn in. Offers event for listeners
+    /// </summary>
     public class WireManager : MonoBehaviour
     {
         public static Vector3 WirePlane = Vector3.forward;
 
-        public Spark ActiveSpark { get { return m_ActiveWire ? m_ActiveWire.spark : null; } }
+        [Header("Player")]
+        [SerializeField] private SparkJumper m_SparkJumper;      // The players spark jumper
 
-        [SerializeField] private float m_MinWireOffset = 5f;                        // The min amount of space between 2 wires
-        [SerializeField] private float m_MaxWireOffset = 15f;                       // The max space between spawning a new wire from active wire
-        [SerializeField] private float m_MinWireLength = 10f;                       // The min length of a wire
-        [SerializeField] private float m_MaxWireLength = 30f;                       // The max length of a wire
-        [SerializeField] private float m_MinWireSpawnRange = 1.5f;                  // The min time before spawning wires
-        [SerializeField] private float m_MaxWireSpawnRange = 2.5f;                  // The max time before spawning wires
-        [SerializeField] private float m_WireSpawnDelay = 1f;                       // Small delay before then generating more wires
-        [SerializeField] private float m_SparkSpawnDelay = 1.5f;                      // The max delay before a wire spawns its spark
-        [SerializeField] private int m_WiresToSpawn = 3;                            // The amount of wires to spawn
-        
         [Header("Sparks")]
-        [SerializeField] private Spark m_SparkPrefab;                       // Spark prefab to spawn for wires 
+        public Spark m_SparkPrefab;                     // The sparks to use
+        public float m_SparkSpeed = 1f;                 // Shared speed of all sparks
+        public float m_SparkSwitchInterval = 2f;        // Interval for sparks switching between on and off
+
+        private ObjectPool<Spark> m_Sparks = new ObjectPool<Spark>();       // Sparks being managed
 
         [Header("Wires")]
-        [SerializeField] private Wire m_WirePrefab;
-        private List<Wire> m_Wires = new List<Wire>();
-        private Wire m_ActiveWire;     
+        [SerializeField] private int m_MinSegments = 8;         // Min amount of segments per wire
+        [SerializeField] private int m_MaxSegments = 15;        // Max amount of segments per wire
+        [SerializeField] private int m_InitialSegments = 10;    // Segments to not start anything
+        [SerializeField] WireFactory[] m_Factories;             // Factories for generating wire types
+        [SerializeField] WireAnimator m_WireAnimator;           // Animator for the wire
 
-        [Header("Player")]
-        [SerializeField] private SparkJumper m_JumperPrefab;
-        private SparkJumper m_SparkJumper;
+        public Wire m_WirePrefab;
+
+        [Header("Generation")]
+        [SerializeField] private int m_MinSpawnInterval = 4;        // Min segments to wait before spawning new wires
+        [SerializeField] private int m_MaxSpawnInterval = 6;        // Max segments to wait before spawning new wires
+        [SerializeField] private float m_MinWireOffset = 5f;        // Min distance away to spawn wires
+        [SerializeField] private float m_MaxWireOffset = 20f;       // Max distance away to spawn wires
+        [SerializeField] private int m_SegmentOffset = 2;           // Segments in front of current segment to spawn next wire
+        [SerializeField] private int m_MaxSegmentOffsetRange = 3;   // Range from offset segment for spawning wires
+        [SerializeField] private int m_MaxSparkSegmentDelay = 3;    // The max amount of segments to travel before a spark will spawn on a new wire
+
+        private ObjectPool<Wire> m_Wires = new ObjectPool<Wire>();              // Wires being managed
+        private float m_CachedSegmentDistance = 1f;                             // Distance between the start and end of a segment
+
+        [Header("Manager")]
+        [SerializeField] private bool m_AutoStart = true;       // If game starts automatically
+        [SerializeField] private Transform m_DisabledSpot;      // Spot to hide disabled objects
+        [SerializeField] private ScoreManager m_ScoreManager;   // Manager for scoring
+
+        // Spot for hiding inactive objects
+        private Vector3 disabledSpot { get { return m_DisabledSpot ? m_DisabledSpot.position : Vector3.zero; } }
+
+        #if UNITY_EDITOR
+        [Header("Debug")]
+        public bool m_Debug = true;                             // If debugging is enabled
+        public bool m_DrawSegmentPlanes = false;                // If segment planes should be drawn
+        [SerializeField] private bool m_UseDebugMesh = false;   // If debug mesh should be used
+        [SerializeField] private Mesh m_DebugMesh;              // Debug mesh drawn instead of animated mesh
+        [SerializeField] private Text m_DebugText;              // Text for writing debug data
+#endif
 
         void Awake()
         {
-            m_SparkJumper = Instantiate(m_JumperPrefab);
-            m_SparkJumper.OnJumpToSpark += NotifyActiveSparkChanged;
+            if (m_ScoreManager)
+                m_ScoreManager.Initialize(this);
         }
 
         void Start()
         {
-            m_ActiveWire = GenerateWire(transform.position, Random.Range(m_MinWireLength, m_MaxWireLength), true);
-            if (!m_ActiveWire.spark)
-                m_ActiveWire.SpawnSpark(m_SparkPrefab);
+            if (m_AutoStart && m_SparkJumper)
+            {
+                m_CachedSegmentDistance = CalculateSegmentDistance();
 
-            m_Wires.Add(m_ActiveWire);
+                Wire wire = GenerateWire(transform.position, m_InitialSegments, 0, null);
+                m_SparkJumper.JumpToSpark(wire.spark, true);
 
-            m_SparkJumper.JumpToSpark(m_ActiveWire.spark);
-            m_SparkJumper.enabled = true;
-            
-            StartCoroutine(LatentGenerateWires());
+                StartCoroutine(WireSpawnRoutine(m_MinSpawnInterval, m_MaxSpawnInterval + 1));
+
+                if (m_ScoreManager)
+                    m_ScoreManager.EnableScoring();
+            }
         }
 
         void Update()
         {
-            List<Wire> finishedWires = new List<Wire>();
+            // Step is influenced by multiplier
+            float gameSpeed = m_ScoreManager ? m_ScoreManager.multiplier : 1f;
+            float step = m_SparkSpeed * gameSpeed * Time.deltaTime;
 
-            foreach (Wire wire in m_Wires)
+            for (int i = 0; i < m_Wires.activeCount; ++i)
             {
-                float progress = wire.TickSpark(Time.deltaTime);
+                Wire wire = m_Wires.GetObject(i);
+
+                float progress = wire.TickWire(step);
                 if (progress >= 1f)
                 {
-                    if (wire == m_ActiveWire)
-                    {
-                        Wire closestWire = FindClosestWireTo(wire);
-                        if (closestWire)
-                            m_SparkJumper.JumpToSpark(closestWire.spark);
-                    }
+                    DeactivateWire(wire);
 
-                    finishedWires.Add(wire);
+                    // Object pool swaps when deactivating objects, we need
+                    // to update the swapped object since it is still active
+                    --i;
                 }
-            }
-
-            foreach (Wire wire in finishedWires)
-            {
-                m_Wires.Remove(wire);
-                Destroy(wire.gameObject);
             }
         }
 
+        public void StartWires()
+        {
+
+        }
+
+        public void EndWires()
+        {
+
+        }
+
         /// <summary>
-        /// Generates a wire that is randomly offset from the active wire
+        /// Generates a random wire
         /// </summary>
-        /// <returns>New wire if successfull</returns>
+        /// <returns>Randomly generated wire or null</returns>
         private Wire GenerateRandomWire()
         {
-            float rand = Random.Range(0f, Mathf.PI * 2f);
-
-            Vector2 direction = new Vector2(Mathf.Cos(rand), Mathf.Sin(rand));
-            float distance = Random.Range(m_MinWireOffset, m_MaxWireOffset);
-
-            return GenerateWire(direction * distance);
-        }
-
-        /// <summary>
-        /// Latent action to spawn new wires, this is called when the match starts
-        /// </summary>
-        /// <returns></returns>
-        IEnumerator LatentGenerateWires()
-        {
-            while (true)
-            {
-                float rand = Random.Range(m_MinWireSpawnRange, m_MaxWireSpawnRange);
-                yield return new WaitForSeconds(rand);
-
-                GenerateWires(m_WiresToSpawn);
-
-                yield return new WaitForSeconds(m_WireSpawnDelay);
-            }
-        }
-
-        /// <summary>
-        /// Generates a wire that is offset from active wire
-        /// </summary>
-        /// <param name="offset">Offset from active wire</param>
-        /// <returns>New wire if successfull</returns>
-        private Wire GenerateWire(Vector2 offset)
-        {
-            Vector3 position = transform.position;
-            if (ActiveSpark)
-                position = ActiveSpark.transform.position;
-
-            position += (Vector3)offset;
-
-            GameObject gameObject = new GameObject("Wire");
-            Wire wire = gameObject.AddComponent<Wire>();
-            wire.transform.position = position;
-            wire.m_Distance = Random.Range(m_MinWireLength, m_MaxWireLength);
-
-            wire.SpawnSpark(m_SparkPrefab);
-
-            return wire;
-        }
-
-        private int GenerateWires(int amount)
-        {
-            // Max attempts for generating wires
             const int maxAttempts = 5;
 
-            int wiresGenerated = 0;
-            Vector3 origin = ActiveSpark ? ActiveSpark.transform.position : transform.position;
+            Vector3 start = transform.position;
+            bool success = true;
 
-            for (int i = 0; i < amount; ++i)
+            // We don't want to loop too many times
+            int attempts = 0;
+            while (++attempts <= maxAttempts)
             {
-                bool validPos = false;
-                Vector3 wirePos = origin;
+                Vector2 circleOffset = Random.insideUnitCircle.normalized * Random.Range(m_MinWireOffset, m_MaxWireOffset);
+                int segmentOffset = m_SegmentOffset + Random.Range(-m_MaxSegmentOffsetRange, m_MaxSegmentOffsetRange + 1);
 
-                // Try to find a valid position to spawn this wire
-                for (int j = 0; j < maxAttempts; ++j)
-                {
-                    Vector2 direction = GetRandomDirectionInCircle();
-                    float distance = Random.Range(m_MinWireOffset, m_MaxWireOffset);
+                start = GetSpawnCircleCenter() + new Vector3(circleOffset.x, circleOffset.y, 0f);
+                start.z += segmentOffset * m_CachedSegmentDistance;
 
-                    wirePos += (Vector3)(direction * distance);
-                    if (HasSpaceAtLocation(wirePos))
-                    {
-                        validPos = true;
-                        break;
-                    }
-                }
-
-                if (!validPos)
-                {
-                    Debug.Log(string.Format("Tried {0} times to generate wire but failed", maxAttempts));
-                    continue;
-                }
-
-                float wireDis = Random.Range(m_MinWireLength, m_MaxWireLength);
-
-                Wire wire = GenerateWire(wirePos, wireDis);
-                if (wire)
-                {
-                    m_Wires.Add(wire);
-                    ++wiresGenerated;
-                }
+                success = HasSpaceAtLocation(start);
+                if (success)
+                    break;
             }
 
-            return wiresGenerated;
+            if (!success)
+            {
+                Debug.LogWarning(string.Format("Failed to generate wire after {0} attempts", maxAttempts), this);
+                return null;
+            }
+
+            int segments = Random.Range(m_MinSegments, m_MaxSegments + 1);
+            int sparkDelay = Random.Range(0, m_MaxSparkSegmentDelay + 1);
+
+            // Random factory (themes)
+            WireFactory factory = null;
+            if (m_Factories.Length > 0)
+                factory = m_Factories[Random.Range(0, m_Factories.Length)];
+
+            return GenerateWire(start, segments, sparkDelay, factory);
         }
 
         /// <summary>
-        /// Generates a new wire by spawning one or retrieving one from the pool
+        /// Generates and activates a wire with given attributes
         /// </summary>
-        /// <param name="position">Starting position of the wire</param>
-        /// <param name="distance">Distane of the wire</param>
-        /// <param name="ignoreDelay">If spark delay should be ignored</param>
-        /// <returns>New wire</returns>
-        private Wire GenerateWire(Vector3 position, float distance, bool ignoreDelay = false)
+        /// <param name="start">Start position of the wire</param>
+        /// <param name="segments">Segments of the wire</param>
+        /// <param name="sparkDelay">Delay before spawning spark</param>
+        /// <param name="factory">Factory for wires aesthetics</param>
+        /// <returns>Wire with properties or null</returns>
+        private Wire GenerateWire(Vector3 start, int segments, int sparkDelay, WireFactory factory)
         {
-            // TODO: Pooling
-            Wire wire = Instantiate(m_WirePrefab);
-            Transform transform = wire.transform;
+            Wire wire = GetWire();
+            if (!wire)
+                return null;
 
-            float sparkDelay = 0f;
-            if (!ignoreDelay)
-                sparkDelay = Random.Range(0f, m_SparkSpawnDelay);
+            wire.ActivateWire(start, segments, m_CachedSegmentDistance, factory);
 
-            wire.SetPositionAndDistance(position, distance);
-            wire.InitializeWire(distance, m_SparkPrefab, sparkDelay);
+            if (sparkDelay > 0)
+                StartCoroutine(DelaySparkActivation(sparkDelay, wire));
+            else
+                GenerateSpark(wire);
 
             return wire;
         }
 
         /// <summary>
-        /// Determines what quadrant a position is in based on an origin
+        /// Generates a spark, will move it to keep in line with segment planes
         /// </summary>
-        /// <param name="origin">Origin of the circle</param>
-        /// <param name="position">Position relative to origin</param>
-        /// <returns>Quadrant of the position</returns>
-        private int GetCircleQuadrant(Vector2 origin, Vector2 position)
+        /// <param name="wire">Wire to attach spark to</param>
+        /// <returns>Spark with properties or null</returns>
+        private Spark GenerateSpark(Wire wire)
         {
-            if (position != Vector2.zero)
-            {
-                Vector2 direction = (position - origin).normalized;
+            Spark spark = GetSpark();
+            if (!spark)
+                return null;
 
-                int mask = 0;
+            wire.ActivateSpark(spark, m_SparkSwitchInterval);
 
-                // Check if above or below
-                if (Vector2.Dot(direction, Vector2.up) < 0)
-                    mask |= 1;
+            Vector3 position = m_SparkJumper.GetPosition();
+            float distance = Mathf.Abs(position.z - transform.position.z);
+            float offset = distance - (m_CachedSegmentDistance * Mathf.FloorToInt(distance / m_CachedSegmentDistance));
 
-                // Check if left or right
-                if (Vector2.Dot(direction, Vector2.right) < 0)
-                    mask |= 2;
+            spark.transform.position += WirePlane * offset;
 
-                return mask;
-            }
+            if (!m_SparkJumper.spark)
+                m_SparkJumper.JumpToSpark(spark, true);
 
-            return -1;
+            return spark;
         }
 
         /// <summary>
-        /// Generates a random direction that points towards given quadrant
+        /// Deactivates the wire, handles if player is attached to spark
         /// </summary>
-        /// <param name="quadrant">Quadrant to point to</param>
-        /// <returns>Direction to quandrant</returns>
-        private Vector2 GetRandomDirectionInQuadrant(int quadrant)
+        /// <param name="wire">Wire to deactivate</param>
+        private void DeactivateWire(Wire wire)
         {
-            float min = 0f;
-            float max = Mathf.PI * 2f;
+            // Resetting wire will have it drop its spark reference
+            Spark spark = wire.spark;
 
-            switch (quadrant)
+            if (spark && spark.sparkJumper != null)
             {
-                case 0:
-                {
-                    min = 0f;
-                    max = Mathf.PI * 0.5f;
-                    break;
-                }
-                case 1:
-                {
-                    min = Mathf.PI * 1.5f;
-                    max = Mathf.PI * 2f;
-                    break;
-                }
-                case 2:
-                {
-                    min = Mathf.PI * 0.5f;
-                    max = Mathf.PI;
-                    break;
-                }
-                case 3:
-                {
-                    min = Mathf.PI;
-                    max = Mathf.PI * 1.5f;
-                    break;
-                }
+                JumpToClosestWire(wire);
+
+                if (m_ScoreManager)
+                    m_ScoreManager.DecreaseMultiplier(1);
             }
 
-            float rand = Random.Range(min, max);
-            return new Vector2(Mathf.Cos(rand), Mathf.Sin(rand));
+            wire.DeactivateWire();
+            wire.transform.position = disabledSpot;
+            spark.transform.position = disabledSpot;
+
+            m_Sparks.DeactivateObject(spark);
+            m_Wires.DeactivateObject(wire);
         }
 
         /// <summary>
-        /// Generates a random direction of circle on the wire plane
+        /// Get the segment the player is up to
         /// </summary>
-        /// <returns>Random direction</returns>
-        private Vector3 GetRandomDirectionInCircle()
+        /// <returns>Segment of player</returns>
+        public int GetJumpersSegment()
         {
-            float rand = Random.Range(0f, Mathf.PI * 2f);
-            return new Vector2(Mathf.Cos(rand), Mathf.Sin(rand));
-        }
+            if (m_SparkJumper && m_SparkJumper.spark)
+                return GetPositionSegment(m_SparkJumper.spark.transform.position);
 
-        private bool HasSpaceAtLocation(Vector3 position)
-        {
-            Vector2 posXY = position;
-            float minDistancedSqr = m_MinWireOffset * m_MinWireOffset;
-
-            foreach (Wire wire in m_Wires)
-            {
-                bool validXY = true;
-
-                Transform transform = wire.transform;
-                Vector2 xy = transform.position;
-
-                // If position is too close on Wire Plane
-                float distance = (xy - posXY).sqrMagnitude;
-                if (distance < minDistancedSqr)
-                    validXY = false;
-
-                Vector3 end = wire.GetEnd();
-
-                // Position is within this wires range, end if we are already to close
-                if (position.z < end.z && position.z > transform.position.z)
-                    if (!validXY)
-                        return false;
-                    else
-                    if (position.z > end.z)
-                        validXY = Mathf.Abs(position.z - end.z) > m_MinWireOffset;
-                    else
-                        validXY = Mathf.Abs(position.z - transform.position.z) > m_MinWireOffset;
-
-                if (!validXY)
-                    return false;
-            }
-
-            // No wires are within range of point
-            return true;
+            return 0;
         }
 
         /// <summary>
-        /// Finds the closest wire to given wire based on XY axes
+        /// Get the origin of the wire spawn circle
         /// </summary>
-        /// <param name="wire">Wire to search from</param>
-        /// <returns></returns>
-        private Wire FindClosestWireTo(Wire wire)
+        /// <returns>Position in world space</returns>
+        private Vector3 GetSpawnCircleCenter()
+        {
+            if (m_SparkJumper && m_SparkJumper.spark)
+            {
+                Vector3 center = m_SparkJumper.spark.transform.position;
+
+                // We would use Ceil in thise case, but this function uses floor
+                int segment = GetPositionSegment(center) + 1 + m_SegmentOffset;
+                center.z = m_CachedSegmentDistance * segment;
+
+                return center;
+            }
+
+            return transform.position;
+        }
+
+        /// <summary>
+        /// Finds the closest wire to the source wire that player can jump to
+        /// </summary>
+        /// <param name="wire">Source wire</param>
+        /// <param name="requiresSpark">Only check wires with sparks</param>
+        /// <returns>Closest active wire or null</returns>
+        private Wire FindClosestWireTo(Wire wire, bool requiresSpark)
         {
             if (!wire)
                 return null;
 
-            Wire closest = null;
-            float distance = float.MaxValue;
-            Vector3 origin = wire.spark ? wire.spark.transform.position : wire.transform.position;
-            
-            foreach (Wire cand in m_Wires)
+            Wire closestWire = null;
+            float closestDistance = float.MaxValue;
+
+            for (int i = 0; i < m_Wires.activeCount; ++i)
             {
-                if (cand == wire)
+                // Wire might require spark
+                Wire w = m_Wires.GetObject(i);
+                if (w == wire || (requiresSpark && !w.spark))
                     continue;
 
-                // Wire might not have a spark yet
-                if (cand.spark)
+                Vector2 displacement = w.transform.position - wire.transform.position;
+                float sqrDistance = displacement.sqrMagnitude;
+
+                if (sqrDistance < closestDistance)
                 {
-                    float dis = (cand.spark.transform.position - m_SparkJumper.transform.position).sqrMagnitude;
-                    if (dis < distance)
-                    {
-                        closest = cand;
-                        distance = dis;
-                    }
+                    closestWire = w;
+                    closestDistance = sqrDistance;
                 }
             }
 
-            return closest;
+            return closestWire;
         }
 
-        private void NotifyActiveSparkChanged(Spark spark)
+        /// <summary>
+        /// Finds the best wire to jump the player to
+        /// </summary>
+        /// <param name="wire">Wire to jump from</param>
+        /// <returns>Best wire or null</returns>
+        private Wire FindBestWireToJumpTo(Wire wire)
         {
-            if (spark)
-                m_ActiveWire = spark.GetWire();
+            if (!wire)
+                return null;
+
+            Wire bestWire = null;
+            if (m_Wires.activeCount > 0)
+            {
+                bestWire = m_Wires.GetObject(0);
+
+                // Start at one since we already 'tested' it
+                for (int i = 1; i < m_Wires.activeCount; ++i)
+                {
+                    // Wire requires spark
+                    Wire w = m_Wires.GetObject(i);
+                    if (w == wire || !w.spark)
+                        continue;
+
+                    // Use the wire whose spark has made less progress
+                    if (w.sparkProgress < bestWire.sparkProgress)
+                        bestWire = w;
+                }
+            }
+
+            return bestWire;
+        }
+
+        /// <summary>
+        /// Helper for getting a wire from the pool (spawns one if needed)
+        /// </summary>
+        /// <returns>Wire</returns>
+        private Wire GetWire()
+        {
+            if (m_Wires.canActivateObject)
+                return m_Wires.ActivateObject();
+
+            Wire wire = null;
+
+            // New to make a new wire object
+            if (m_WirePrefab)
+            {
+                wire = Instantiate(m_WirePrefab);
+            }
             else
-                m_ActiveWire = null;
+            {
+                GameObject gameObject = new GameObject("Wire");
+                wire = gameObject.AddComponent<Wire>();
+            }
+
+            m_Wires.Add(wire);
+            m_Wires.ActivateObject();
+
+            return wire;
+        }
+
+        /// <summary>
+        /// Get a random wire factory from array of factories
+        /// </summary>
+        /// <returns>Random factory or null if empty</returns>
+        private WireFactory GetRandomWireFactory()
+        {
+            if (m_Factories != null && m_Factories.Length > 0)
+            {
+                int index = Random.Range(0, m_Factories.Length);
+                return m_Factories[index];
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Helper for getting a spark from the pool (spawns one if needed)
+        /// </summary>
+        /// <returns>Spark or null</returns>
+        private Spark GetSpark()
+        {
+            if (m_Sparks.canActivateObject)
+                return m_Sparks.ActivateObject();   
+
+            if (!m_SparkPrefab)
+            {
+                Debug.LogError("Unable to spawn spark as prefab is invalid", this);
+                return null;
+            }
+
+            Vector3 position = m_DisabledSpot ? m_DisabledSpot.position : Vector3.zero;
+            Spark spark = Instantiate(m_SparkPrefab, position, Quaternion.identity);
+
+            m_Sparks.Add(spark);
+            m_Sparks.ActivateObject();
+
+            return spark;
+        }
+
+        /// <summary>
+        /// Calculates the distance for a segment
+        /// </summary>
+        /// <returns>Distance between segments</returns>
+        private float CalculateSegmentDistance()
+        {
+            #if UNITY_EDITOR
+            if (m_Debug && m_UseDebugMesh && m_DebugMesh)
+                return m_DebugMesh.bounds.size.z;
+            #endif
+
+            if (m_WireAnimator)
+            {
+                Mesh wireMesh = m_WireAnimator.wireMesh;
+                if (wireMesh)
+                    return wireMesh.bounds.size.z;
+            }
+
+            return 1f;
+        }
+
+        /// <summary>
+        /// Get the segment the position is based in with origin being the start
+        /// </summary>
+        /// <param name="position">Position to check</param>
+        /// <returns>Positions segment (clamped to zero)</returns>
+        public int GetPositionSegment(Vector3 position)
+        {
+            float distance = Mathf.Abs(position.z - transform.position.z);
+            int segment = Mathf.FloorToInt(distance / m_CachedSegmentDistance);
+
+            return Mathf.Max(segment, 0);
+        }
+
+        /// <summary>
+        /// Has player jumper to wire closest to origin wire
+        /// </summary>
+        /// <param name="origin">Wire to jump from</param>
+        private void JumpToClosestWire(Wire origin)
+        {
+            if (m_SparkJumper)
+            {
+                Wire closest = FindBestWireToJumpTo(origin);//FindClosestWireTo(origin, true);
+                if (closest)
+                {
+                    m_SparkJumper.JumpToSpark(closest.spark, true);
+                }
+                else
+                {
+                    Debug.LogWarning("Failed to move spark jumper as no wires either exist or have sparks on them");
+                }
+            }
+        }
+
+        /// <summary>
+        /// If a wire has space to spawn at location, assumes position will be in front of active wires
+        /// </summary>
+        /// <param name="position">Position of wire</param>
+        /// <returns>If wire has space</returns>
+        bool HasSpaceAtLocation(Vector3 position)
+        {
+            float sqrMinDistance = m_MinWireOffset * m_MinWireOffset;
+
+            // Chance we might need this
+            int start = GetPositionSegment(position);
+
+            // We only consider active wires
+            for (int i = 0; i < m_Wires.activeCount; ++i)
+            {
+                Wire wire = m_Wires.GetObject(i);
+
+                Vector2 offset = position - wire.transform.position;
+                float distance = offset.sqrMagnitude;
+
+                // Might be in within min offset required, but not in in terms of the z axis
+                if (distance < sqrMinDistance)
+                {
+                    int wireEnd = GetPositionSegment(wire.end);
+                    if (start <= wireEnd)
+                        return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Routine for generating wires
+        /// </summary>
+        /// <param name="minDelay">Min segments between spawns</param>
+        /// <param name="maxDelay">Max segments between spawns</param>
+        private IEnumerator WireSpawnRoutine(int minDelay, int maxDelay)
+        {
+            while (enabled)
+            {
+                int delay = Random.Range(minDelay, maxDelay);
+                yield return new WaitForSegment(this, GetJumpersSegment() + delay);
+
+                GenerateRandomWire();
+            }
+        }
+
+        /// <summary>
+        /// Delays the spark activation for a wire
+        /// </summary>
+        /// <param name="delay">Segments to pass before activating</param>
+        /// <param name="wire">Wire to activate</param>
+        private IEnumerator DelaySparkActivation(int delay, Wire wire)
+        {
+            yield return new WaitForSegment(this, GetJumpersSegment() + delay);
+            GenerateSpark(wire);
         }
 
         void OnDrawGizmos()
         {
-            Vector3 center = transform.position;
-            if (ActiveSpark)
-                center = ActiveSpark.transform.position;
-
-            Gizmos.color = Color.green;
-
-            const int segments = 16;
-            const float step = Mathf.PI * 2f / segments;
-            for (int i = 0; i < segments; ++i)
+            #if UNITY_EDITOR
+            if (m_Debug)
             {
-                float crad = step * i;
-                float nrad = step * ((i + 1) % segments);
+                Vector3 center = GetSpawnCircleCenter();
 
-                Vector3 cdir = new Vector3(Mathf.Cos(crad), Mathf.Sin(crad), 0f);
-                Vector3 ndir = new Vector3(Mathf.Cos(nrad), Mathf.Sin(nrad), 0f);
-
-                // Inner border
+                // Draw spawn radius
                 {
-                    Vector3 start = center + cdir * m_MinWireOffset;
-                    Vector3 end = center + ndir * m_MinWireOffset;
-                    Gizmos.DrawLine(start, end);
+                    Gizmos.color = Color.green;     
+
+                    const int segments = 16;
+                    const float step = Mathf.PI * 2f / segments;
+                    for (int i = 0; i < segments; ++i)
+                    {
+                        float crad = step * i;
+                        float nrad = step * ((i + 1) % segments);
+
+                        Vector3 cdir = new Vector3(Mathf.Cos(crad), Mathf.Sin(crad), 0f);
+                        Vector3 ndir = new Vector3(Mathf.Cos(nrad), Mathf.Sin(nrad), 0f);
+
+                        // Inner border
+                        {
+                            Vector3 start = center + cdir * m_MinWireOffset;
+                            Vector3 end = center + ndir * m_MinWireOffset;
+                            Gizmos.DrawLine(start, end);
+                        }
+
+                        // Outer border
+                        {
+                            Vector3 start = center + cdir * m_MaxWireOffset;
+                            Vector3 end = center + ndir * m_MaxWireOffset;
+                            Gizmos.DrawLine(start, end);
+                        }
+                    }
                 }
 
-                // Outer border
+                // Draw Wires
+                Gizmos.color = Color.red;
+                for (int i = 0; i < m_Wires.activeCount; ++i)
                 {
-                    Vector3 start = center + cdir * m_MaxWireOffset;
-                    Vector3 end = center + ndir * m_MaxWireOffset;
-                    Gizmos.DrawLine(start, end);
+                    Wire wire = m_Wires.GetObject(i);
+                    wire.DrawDebugGizmos();
+                }
+    
+                if (Application.isPlaying)
+                {
+                    // Draw segment planes
+                    if (m_DrawSegmentPlanes && m_SparkJumper)
+                    {
+                        Color color = Color.cyan;
+                        color.a = 0.5f;
+
+                        Gizmos.color = color;
+                        for (int i = -m_MaxSegmentOffsetRange; i <= m_MaxSegmentOffsetRange; ++i)
+                        {
+                            Vector3 offset = new Vector3(0f, 0f, m_CachedSegmentDistance * i);
+                            Gizmos.DrawCube(center + offset, new Vector3(50f, 50f, 0.01f));
+                        }
+                    }
                 }
             }
+            #endif
         }
     }
 }
