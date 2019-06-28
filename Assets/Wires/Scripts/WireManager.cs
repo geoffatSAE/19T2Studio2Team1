@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.UI;
 
 namespace TO5.Wires
@@ -28,6 +29,8 @@ namespace TO5.Wires
     public class WireManager : MonoBehaviour
     {
         public static Vector3 WirePlane = Vector3.forward;
+
+        private bool m_Running = false;
 
         [Header("Player")]
         [SerializeField] private SparkJumper m_SparkJumper;      // The players spark jumper
@@ -75,7 +78,7 @@ namespace TO5.Wires
         [SerializeField] private bool m_UseDebugMesh = false;   // If debug mesh should be used
         [SerializeField] private Mesh m_DebugMesh;              // Debug mesh drawn instead of animated mesh
         [SerializeField] private Text m_DebugText;              // Text for writing debug data
-#endif
+        #endif
 
         void Awake()
         {
@@ -85,18 +88,8 @@ namespace TO5.Wires
 
         void Start()
         {
-            if (m_AutoStart && m_SparkJumper)
-            {
-                m_CachedSegmentDistance = CalculateSegmentDistance();
-
-                Wire wire = GenerateWire(transform.position, m_InitialSegments, 0, null);
-                m_SparkJumper.JumpToSpark(wire.spark, true);
-
-                StartCoroutine(WireSpawnRoutine(m_MinSpawnInterval, m_MaxSpawnInterval + 1));
-
-                if (m_ScoreManager)
-                    m_ScoreManager.EnableScoring();
-            }
+            if (m_AutoStart)
+                StartWires();
         }
 
         void Update()
@@ -119,16 +112,71 @@ namespace TO5.Wires
                     --i;
                 }
             }
+
+            #if UNITY_EDITOR
+            // Debug text
+            if (m_DebugText)
+                m_DebugText.text = string.Format("Step: {0}\nCached Segment Distance: {1}\n" +
+                    "Wires Pool Size: {2}\nWires Active: {3}\nSparks Pool Size: {4}\nSparks Active: {5}",
+                    step, m_CachedSegmentDistance, m_Wires.Count, m_Wires.activeCount, m_Sparks.Count, m_Sparks.activeCount);
+            #endif
         }
 
+        /// <summary>
+        /// Starts spawning wires, setting player to be on initial spark
+        /// </summary>
         public void StartWires()
         {
+            if (!m_Running)
+            {
+                if (!m_SparkJumper)
+                {
+                    Debug.LogError("Unable to start wires as no spark jumper has been assigned");
+                    return;
+                }
 
+                m_CachedSegmentDistance = CalculateSegmentDistance();
+
+                // Attach player to initial wire
+                {
+                    WireFactory factory = GetRandomWireFactory();
+                    Wire spawnWire = GenerateWire(transform.position, m_InitialSegments, 0, factory);
+
+                    Assert.IsNotNull(spawnWire.spark);
+
+                    m_SparkJumper.InstantJumpToSpark(spawnWire.spark);
+                }
+
+                // Start spawning wires
+                StartCoroutine(WireSpawnRoutine(m_MinSpawnInterval, m_MaxSpawnInterval + 1));
+
+                if (m_ScoreManager)
+                    m_ScoreManager.EnableScoring(true);
+
+                enabled = true;
+                m_Running = true;
+            }
         }
 
-        public void EndWires()
+        /// <summary>
+        /// Stops spawning wires and updating sparks
+        /// </summary>
+        public void StopWires()
         {
+            if (m_Running)
+            {
+                if (m_ScoreManager)
+                    m_ScoreManager.DisableScoring();
 
+                StopCoroutine("WireSpawnRoutine");
+
+                // Destroy all spawned objects
+                //m_Sparks.Clear(true);
+                //m_Wires.Clear(true);
+
+                enabled = false;
+                m_Running = false;
+            }
         }
 
         /// <summary>
@@ -217,8 +265,8 @@ namespace TO5.Wires
 
             spark.transform.position += WirePlane * offset;
 
-            if (!m_SparkJumper.spark)
-                m_SparkJumper.JumpToSpark(spark, true);
+            //if (!m_SparkJumper.spark)
+            //    m_SparkJumper.JumpToSpark(spark, true);
 
             return spark;
         }
@@ -254,8 +302,8 @@ namespace TO5.Wires
         /// <returns>Segment of player</returns>
         public int GetJumpersSegment()
         {
-            if (m_SparkJumper && m_SparkJumper.spark)
-                return GetPositionSegment(m_SparkJumper.spark.transform.position);
+            if (m_SparkJumper)
+                return GetPositionSegment(m_SparkJumper.GetPosition());
 
             return 0;
         }

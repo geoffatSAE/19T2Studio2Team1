@@ -84,6 +84,20 @@ namespace TO5
         }
 
         /// <summary>
+        /// Clears the pool
+        /// </summary>
+        /// <param name="destroyObjects">If all objects in pool should be destroyed</param>
+        public void Clear(bool destroyObjects)
+        {
+            if (destroyObjects)
+                foreach (T value in m_Objects)
+                    Object.Destroy(value);
+
+            m_Objects.Clear();
+            m_ActiveCount = 0;
+        }
+
+        /// <summary>
         /// Get object at index
         /// </summary>
         /// <param name="index">Index of object</param>

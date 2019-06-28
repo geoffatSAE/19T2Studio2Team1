@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace TO5.Wires
 {
@@ -14,16 +15,59 @@ namespace TO5.Wires
         [SerializeField] private float m_MaxGameTime = 600f;            // Max amount of game time required in seconds
         [SerializeField] private int m_MinSegmentsTravelled = 300;      // The minimum amount of segments that must pass before finishing
 
-        private bool m_GameCanFinish;
-        private bool m_GameFinished;
+        private bool m_GameCanFinish;           // If the game can finish
+        private bool m_GameFinished;            // If the game has finished
 
+        float m_GameStart = -1f;
+        [SerializeField] private Text m_DebugText;
+
+        void Update()
+        {
+            if (m_GameStart != -1f)
+            {
+                if (m_DebugText)
+                {
+                    m_DebugText.text = string.Format("Game Time: {0}\nSegments Travelled: {1}\nGame Can Finish: {2}\nGame Finished: {3}",
+                        Mathf.FloorToInt(Time.time - m_GameStart), m_WireManager.GetJumpersSegment(), m_GameCanFinish, m_GameFinished);                  
+                }
+            }
+        }
+
+        // WireGameMode interface
+        protected override void StartGame()
+        {
+            base.StartGame();
+
+            StartCoroutine(GameTimerRoutine());
+            StartCoroutine(SegmentCheckRoutine());
+
+            m_GameStart = Time.time;
+
+            m_GameCanFinish = false;
+            m_GameFinished = false;
+        }
+
+        // WireGameMode interface
+        protected override void EndGame()
+        {
+            base.EndGame();
+
+            StopCoroutine("GameTimerRoutine");
+            StopCoroutine("SegmentCheckRoutine");
+
+            m_GameFinished = true;
+        }
+
+        /// <summary>
+        /// Routine for handling the games timer
+        /// </summary>
         private IEnumerator GameTimerRoutine()
         {
             yield return new WaitForSeconds(m_MinGameTime);
 
             if (m_GameCanFinish)
             {
-                // TODO: Finish game
+                EndGame();
             }
             else
             {
@@ -32,9 +76,12 @@ namespace TO5.Wires
 
             yield return new WaitForSeconds(m_MaxGameTime - m_MinGameTime);
 
-            // TODO: Finish game
+            EndGame();
         }
 
+        /// <summary>
+        /// Routine for handling when player has passed required segments
+        /// </summary>
         private IEnumerator SegmentCheckRoutine()
         {
             if (m_WireManager)
@@ -43,7 +90,7 @@ namespace TO5.Wires
 
                 if (m_GameCanFinish)
                 {
-                    // TODO: Finish game
+                    EndGame();
                 }
                 else
                 {

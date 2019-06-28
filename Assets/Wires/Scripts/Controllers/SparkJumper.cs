@@ -52,15 +52,30 @@ namespace TO5.Wires
 
             m_Spark = spark;
 
-            if (m_Spark)
-            {
-                m_Spark.FreezeSwitching();
-                m_Spark.AttachJumper(this);
-                StartCoroutine(JumpRoutine());
+            m_Spark.FreezeSwitching();
+            m_Spark.AttachJumper(this);
+            StartCoroutine(JumpRoutine());
 
-                if (OnJumpToSpark != null)
-                    OnJumpToSpark(m_Spark, false);
-            }
+            if (OnJumpToSpark != null)
+                OnJumpToSpark(m_Spark, false);
+        }
+
+        /// <summary>
+        /// Instantly jumps to spark (even if spark.canJumpTo is false). This does not call OnJumpToSpark
+        /// </summary>
+        /// <param name="spark">Spark to jump to</param>
+        public void InstantJumpToSpark(Spark spark)
+        {
+            if (!spark)
+                return;
+
+            if (m_Spark)
+                m_Spark.DetachJumper();
+
+            m_Spark = spark;
+
+            m_Spark.FreezeSwitching();
+            m_Spark.AttachJumper(this);
         }
 
         /// <summary>

@@ -22,9 +22,9 @@ namespace TO5.Wires
         public Text m_ScoreText;                    // Text for writing score
         public Text m_MultiplierText;               // Text for writing multiplier
 
-       // #if UNITY_EDITOR
+        #if UNITY_EDITOR
         [SerializeField] private Text m_DebugText;      // Text for writing debug data
-       // #endif
+        #endif
 
         // Scores current multiplier
         public float multiplier { get { return m_Multiplier; } }
@@ -39,11 +39,11 @@ namespace TO5.Wires
         {
             m_Score += m_ScorePerSecond * m_Multiplier * Time.deltaTime;
 
-          //  #if UNITY_EDITOR
+            #if UNITY_EDITOR
             // Debug text
             if (m_DebugText)
                 m_DebugText.text = string.Format("Score: {0}\nMultiplier: {1}\nMultiplier Stage: {2}", Mathf.FloorToInt(m_Score), m_Multiplier, m_Stage);
-          //  #endif
+            #endif
         }
 
         /// <summary>
@@ -62,9 +62,17 @@ namespace TO5.Wires
         /// <summary>
         /// Enables scoring functionality
         /// </summary>
-        public void EnableScoring()
+        /// <param name="reset">If properties should reset</param>
+        public void EnableScoring(bool reset)
         {
             enabled = true;
+
+            if (reset)
+            {
+                m_Score = 0f;
+                m_Multiplier = 1f;
+                m_Score = 0;
+            }
 
             m_MultiplierTick = StartCoroutine(MultiplierTickRoutine());
         }
