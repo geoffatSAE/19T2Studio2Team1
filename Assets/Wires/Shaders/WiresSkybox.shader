@@ -1,56 +1,71 @@
-﻿Shader "Unlit/WiresSkybox"
+﻿Shader "Wires/Skybox"
 {
     Properties
     {
-        _MainTex ("Texture", 2D) = "white" {}
+        _Color("Color", Color) = (1, 0, 0, 0)
+		_Intensity("Intensity", Float) = 1
+		_Reach("Reach", Float) = 0.5
+		_DropScale("Drop Scale", Float) = 0.5
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
-        LOD 100
-
+        Tags { "RenderType"="Background" "Queue"="Background" }
         Pass
         {
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            // make fog work
-            #pragma multi_compile_fog
 
             #include "UnityCG.cginc"
 
             struct appdata
             {
                 float4 vertex : POSITION;
-                float2 uv : TEXCOORD0;
+                float3 uv : TEXCOORD0;
             };
 
             struct v2f
             {
-                float2 uv : TEXCOORD0;
-                UNITY_FOG_COORDS(1)
+                float3 uv : TEXCOORD0;
                 float4 vertex : SV_POSITION;
             };
 
-            sampler2D _MainTex;
-            float4 _MainTex_ST;
+			half4 _Color;
+			half _Intensity;
+			half _Reach;
+			half _DropScale;
+
+			half ease(half t)
+			{
+				// OutCubic easing function
+				// See https://easings.net/en
+				return (--t) * t * t + 1;
+			}
 
             v2f vert (appdata v)
             {
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
-                o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-                UNITY_TRANSFER_FOG(o,o.vertex);
+				o.uv = v.uv;
                 return o;
             }
 
             fixed4 frag (v2f i) : SV_Target
             {
-                // sample the texture
-                fixed4 col = tex2D(_MainTex, i.uv);
-                // apply fog
-                UNITY_APPLY_FOG(i.fogCoord, col);
-                return col;
+				// If uv is for upper area of skybox
+				half d = dot(normalize(i.uv), float3(0, 1, 0));
+
+				// Half of sphere will be under 0, this will help the fade reach higher
+				d += _Reach;
+
+				// Scale the by amount (this could incease/decrease fade)
+				d *= _DropScale;
+
+				// Ease out alpha smoothly
+				half a = ease(d);
+
+				// Calculate color with additional intensity
+				return (a * _Color) * _Intensity;
             }
             ENDCG
         }
