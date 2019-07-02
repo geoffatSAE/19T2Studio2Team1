@@ -35,8 +35,12 @@ namespace TO5.Wires
         // If player is jumping
         public bool isJumping { get { return m_IsJumping; } }
 
-        private Spark m_Spark;                   // Spark we are on
+        // Progress of jump
+        public float jumpProgress { get { return m_IsJumping ? m_CachedJumpProgress : 0f; } }
+
+        private Spark m_Spark;                      // Spark we are on
         private bool m_IsJumping = false;           // If transition is in progress
+        private float m_CachedJumpProgress = -1f;   // Cached progress of jump
 
         /// <summary>
         /// Jumps to given spark
@@ -54,10 +58,11 @@ namespace TO5.Wires
 
             m_Spark.FreezeSwitching();
             m_Spark.AttachJumper(this);
+
             StartCoroutine(JumpRoutine());
 
             if (OnJumpToSpark != null)
-                OnJumpToSpark(m_Spark, false);
+                OnJumpToSpark(m_Spark, false);           
         }
 
         /// <summary>
@@ -149,10 +154,12 @@ namespace TO5.Wires
                     // Possibility that spark was deactivated while jumping to it
                     if (m_Spark)
                     {
-                        float alpha = Mathf.Clamp01((end - Time.time) / m_JumpTime);
-                        Vector3 position = Vector3.Lerp(m_Spark.transform.position, from, alpha);
+                        float alpha = 1f - Mathf.Clamp01((end - Time.time) / m_JumpTime);
+                        Vector3 position = Vector3.Lerp(from, m_Spark.transform.position, alpha);
 
                         SetPosition(position);
+
+                        m_CachedJumpProgress = alpha;
 
                         yield return null;
                     }

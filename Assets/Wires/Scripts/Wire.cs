@@ -12,18 +12,22 @@ namespace TO5.Wires
         // Progress of spark on this wire
         public float sparkProgress { get { return m_CachedProgress; } }
 
-        private Spark m_Spark;           // Spark on this wire
-        private float m_CachedProgress;     // Cached progress from last tick
-
         // If the spark jumper is on this wires spark
         public bool jumperAttached { get { return spark ? spark.sparkJumper != null : false; } }
+
+        private Spark m_Spark;              // Spark on this wire
+        private float m_CachedProgress;     // Cached progress from last tick
 
         // The end of the wire in world space
         public Vector3 end { get { return transform.position + WireManager.WirePlane * m_WireDistance; } }
 
+        // Factory associated with this wire
+        public WireFactory factory { get { return m_Factory; } }
+
         private int m_Segments;             // Amount of segments on this wire
         private float m_SegmentDistance;    // Cahced distance per segment
         private float m_WireDistance;       // Cached total distance of wire
+        private WireFactory m_Factory;      // Factory for this wires aesthetics
         
         public Transform m_Pivot;
         public Renderer m_WireMesh;
@@ -43,6 +47,7 @@ namespace TO5.Wires
             m_Segments = segments;
             m_SegmentDistance = segmentDistance;
             m_WireDistance = segments * segmentDistance;
+            m_Factory = factory;
 
             transform.position = start;
 

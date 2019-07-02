@@ -15,9 +15,9 @@ namespace TO5.Wires
 
         public float m_SwitchInterval = 2f;         // Interval for switching between on and off
 
-        private Wire m_Wire;                     // Wire this spark is on
+        private Wire m_Wire;                        // Wire this spark is on
         private bool m_CanJumpTo = true;            // If player can jump to this spark
-        private SparkJumper m_SparkJumper;       // Player on this spark
+        private SparkJumper m_SparkJumper;          // Player on this spark
 
         [SerializeField] private Material m_ActiveMaterial;
         [SerializeField] private Material m_OccupiedMaterial;

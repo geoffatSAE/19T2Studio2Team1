@@ -26,6 +26,7 @@ namespace TO5.Wires
     /// <summary>
     /// Manager for the wires and sparks that spawn in. Offers event for listeners
     /// </summary>
+    // TODO: Move score manager from here to WiresGameMode
     public class WireManager : MonoBehaviour
     {
         public static Vector3 WirePlane = Vector3.forward;
@@ -34,6 +35,9 @@ namespace TO5.Wires
 
         [Header("Player")]
         [SerializeField] private SparkJumper m_SparkJumper;      // The players spark jumper
+
+        // Players spark jumper
+        public SparkJumper sparkJumper { get { return m_SparkJumper; } }
 
         [Header("Sparks")]
         public Spark m_SparkPrefab;                     // The sparks to use
@@ -64,7 +68,6 @@ namespace TO5.Wires
         private float m_CachedSegmentDistance = 1f;                             // Distance between the start and end of a segment
 
         [Header("Manager")]
-        [SerializeField] private bool m_AutoStart = true;       // If game starts automatically
         [SerializeField] private Transform m_DisabledSpot;      // Spot to hide disabled objects
         [SerializeField] private ScoreManager m_ScoreManager;   // Manager for scoring
 
@@ -84,12 +87,6 @@ namespace TO5.Wires
         {
             if (m_ScoreManager)
                 m_ScoreManager.Initialize(this);
-        }
-
-        void Start()
-        {
-            if (m_AutoStart)
-                StartWires();
         }
 
         void Update()
@@ -144,7 +141,7 @@ namespace TO5.Wires
 
                     Assert.IsNotNull(spawnWire.spark);
 
-                    m_SparkJumper.InstantJumpToSpark(spawnWire.spark);
+                    //m_SparkJumper.InstantJumpToSpark(spawnWire.spark);
                 }
 
                 // Start spawning wires
@@ -265,8 +262,8 @@ namespace TO5.Wires
 
             spark.transform.position += WirePlane * offset;
 
-            //if (!m_SparkJumper.spark)
-            //    m_SparkJumper.JumpToSpark(spark, true);
+            if (!m_SparkJumper.spark)
+                m_SparkJumper.InstantJumpToSpark(spark);
 
             return spark;
         }

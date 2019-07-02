@@ -13,3 +13,5 @@ MonoBehaviour:
   m_Name: YellowWire
   m_EditorClassIdentifier: 
   m_Color: {r: 1, g: 1, b: 0, a: 0}
+  m_SkyboxColor: {r: 0, g: 0, b: 0, a: 0}
+  m_Music: {fileID: 8300000, guid: 82f51ac12204e3c4bad077a1c07e4e2e, type: 3}

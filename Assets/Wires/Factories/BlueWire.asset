@@ -13,3 +13,5 @@ MonoBehaviour:
   m_Name: BlueWire
   m_EditorClassIdentifier: 
   m_Color: {r: 0, g: 0, b: 1, a: 0}
+  m_SkyboxColor: {r: 0, g: 0, b: 0, a: 0}
+  m_Music: {fileID: 8300000, guid: 2400764a13f052d4e9bbd015f258c63f, type: 3}

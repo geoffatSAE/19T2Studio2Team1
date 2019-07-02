@@ -13,7 +13,15 @@ namespace TO5.Wires
         // The color for this factory
         public Color color { get { return m_Color; } }
 
-        [SerializeField] private Color m_Color;     // Wires color
+        // The color for for the skybox
+        public Color skyboxColor { get { return m_Color; } }
+
+        // The music for this factory
+        public AudioClip music { get { return m_Music; } }
+
+        [SerializeField] private Color m_Color;         // Wires color
+        [SerializeField] private Color m_SkyboxColor;   // Skyboxes color
+        [SerializeField] private AudioClip m_Music;     // Wires music
 
         private MaterialPropertyBlock m_WireMaterialProperties;
     }

@@ -18,9 +18,12 @@ namespace TO5.Wires
         private bool m_GameCanFinish;           // If the game can finish
         private bool m_GameFinished;            // If the game has finished
 
-        float m_GameStart = -1f;
-        [SerializeField] private Text m_DebugText;
+        #if UNITY_EDITOR
+        [Header("Debug")]
+        [SerializeField] private Text m_DebugText;      // Text for writing debug data
+        #endif
 
+        #if UNITY_EDITOR
         void Update()
         {
             if (m_GameStart != -1f)
@@ -32,6 +35,7 @@ namespace TO5.Wires
                 }
             }
         }
+        #endif
 
         // WireGameMode interface
         protected override void StartGame()
@@ -40,8 +44,6 @@ namespace TO5.Wires
 
             StartCoroutine(GameTimerRoutine());
             StartCoroutine(SegmentCheckRoutine());
-
-            m_GameStart = Time.time;
 
             m_GameCanFinish = false;
             m_GameFinished = false;
@@ -68,6 +70,7 @@ namespace TO5.Wires
             if (m_GameCanFinish)
             {
                 EndGame();
+                yield break;
             }
             else
             {
@@ -91,6 +94,7 @@ namespace TO5.Wires
                 if (m_GameCanFinish)
                 {
                     EndGame();
+                    yield break;
                 }
                 else
                 {

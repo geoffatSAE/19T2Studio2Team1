@@ -13,3 +13,5 @@ MonoBehaviour:
   m_Name: GreenWire
   m_EditorClassIdentifier: 
   m_Color: {r: 0, g: 1, b: 0, a: 0}
+  m_SkyboxColor: {r: 0, g: 0, b: 0, a: 0}
+  m_Music: {fileID: 8300000, guid: 91908fd35e5f61141996f160e469917d, type: 3}
