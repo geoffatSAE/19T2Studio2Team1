@@ -13,8 +13,6 @@ namespace TO5.Wires
         private WireManager m_WireManager;      // Wire manager we associate with
         private WorldMusic m_WorldMusic;        // Handler for games music
         private WorldColor m_WorldColor;        // Handler for games color
-        private Wire m_From;                    // Wire we are travelling from
-        private Wire m_To;                      // Wire we are travelling to
 
         void Awake()
         {
@@ -50,8 +48,6 @@ namespace TO5.Wires
                             // Instant blend
                             BlendThemes(1f);
                         }
-
-                        m_To = wire;
                     }
                 }
             }
@@ -69,10 +65,8 @@ namespace TO5.Wires
             }
             else
             {
-                m_From = m_To;
-                m_To = spark.GetWire();
-
-                WireFactory factory = m_To.factory;
+                Wire wire = spark.GetWire();
+                WireFactory factory = wire.factory;
                 if (factory)
                 {
                     m_WorldMusic.SetActiveMusic(factory.music);

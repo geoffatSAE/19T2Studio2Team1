@@ -121,6 +121,14 @@ namespace TO5.Wires
         }
 
         /// <summary>
+        /// Adds jump points to players score
+        /// </summary>
+        public void AwardJumpPoints()
+        {
+            m_Score += m_JumpScore;
+        }
+
+        /// <summary>
         /// Tick routine for increasing multiplier
         /// </summary>
         /// <returns></returns>

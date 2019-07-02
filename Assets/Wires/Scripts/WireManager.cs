@@ -36,6 +36,8 @@ namespace TO5.Wires
         [Header("Player")]
         [SerializeField] private SparkJumper m_SparkJumper;      // The players spark jumper
 
+        private bool m_JumpPenalty = false;         // If player has jump penalty applied (didn't jump in time)
+
         // Players spark jumper
         public SparkJumper sparkJumper { get { return m_SparkJumper; } }
 
@@ -130,6 +132,11 @@ namespace TO5.Wires
                 {
                     Debug.LogError("Unable to start wires as no spark jumper has been assigned");
                     return;
+                }
+
+                // Hook events
+                {
+                    m_SparkJumper.OnJumpToSpark += JumpToSpark;
                 }
 
                 m_CachedSegmentDistance = CalculateSegmentDistance();
@@ -503,6 +510,7 @@ namespace TO5.Wires
                 Wire closest = FindBestWireToJumpTo(origin);//FindClosestWireTo(origin, true);
                 if (closest)
                 {
+                    m_JumpPenalty = true;
                     m_SparkJumper.JumpToSpark(closest.spark, true);
                 }
                 else
@@ -569,6 +577,22 @@ namespace TO5.Wires
         {
             yield return new WaitForSegment(this, GetJumpersSegment() + delay);
             GenerateSpark(wire);
+        }
+
+        /// <summary>
+        /// Notify that player has jumped to another spark
+        /// </summary>
+        /// <param name="spark"></param>
+        /// <param name="finished"></param>
+        private void JumpToSpark(Spark spark, bool finished)
+        {
+            if (finished)
+            {
+                if (!m_JumpPenalty)
+                    m_ScoreManager.AwardJumpPoints();
+
+                m_JumpPenalty = false;
+            }
         }
 
         void OnDrawGizmos()
