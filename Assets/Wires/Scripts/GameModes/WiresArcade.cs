@@ -30,8 +30,10 @@ namespace TO5.Wires
             {
                 if (m_DebugText)
                 {
-                    m_DebugText.text = string.Format("Game Time: {0}\nSegments Travelled: {1}\nGame Can Finish: {2}\nGame Finished: {3}",
-                        Mathf.FloorToInt(Time.time - m_GameStart), m_WireManager.GetJumpersSegment(), m_GameCanFinish, m_GameFinished);                  
+                    int playersSegment = m_WireManager.GetPositionSegment(WireManager.WirePlane * m_WireManager.sparkJumper.wireDistanceTravelled);
+
+                    m_DebugText.text = string.Format("Game Time: {0}\nSegments Travelled: {1}\nPlayer SegmentsTravelled: {2}\nGame Can Finish: {3}\nGame Finished: {4}",
+                        Mathf.FloorToInt(Time.time - m_GameStart), m_WireManager.GetJumpersSegment(), playersSegment, m_GameCanFinish, m_GameFinished);                  
                 }
             }
         }

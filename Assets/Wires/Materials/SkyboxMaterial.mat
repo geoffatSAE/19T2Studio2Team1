@@ -83,7 +83,7 @@ Material:
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
-    - _DropScale: 1
+    - _DropScale: 0.5
     - _DstBlend: 0
     - _Exposure: 1
     - _GlossMapScale: 1

@@ -119,7 +119,10 @@ namespace TO5.Wires
                 // Move the player with the spark if attached
                 SparkJumper sparkJumper = m_Spark.sparkJumper;
                 if (sparkJumper != null && !sparkJumper.isJumping)
+                {
                     m_Spark.sparkJumper.SetPosition(sparkTransform.position);
+                    m_Spark.sparkJumper.wireDistanceTravelled += step;
+                }       
             }
 
             m_CachedProgress = progress;

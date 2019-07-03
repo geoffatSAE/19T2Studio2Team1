@@ -38,9 +38,13 @@ namespace TO5.Wires
         // Progress of jump
         public float jumpProgress { get { return m_IsJumping ? m_CachedJumpProgress : 0f; } }
 
-        private Spark m_Spark;                      // Spark we are on
-        private bool m_IsJumping = false;           // If transition is in progress
-        private float m_CachedJumpProgress = -1f;   // Cached progress of jump
+        // Distance travelled on wires
+        public float wireDistanceTravelled { get { return m_WireDistanceTravelled; } set { m_WireDistanceTravelled = value; } }
+
+        private Spark m_Spark;                          // Spark we are on
+        private bool m_IsJumping = false;               // If transition is in progress
+        private float m_CachedJumpProgress = -1f;       // Cached progress of jump
+        private float m_WireDistanceTravelled = 0f;     // Distance jumper has travelled while on wires
 
         /// <summary>
         /// Jumps to given spark

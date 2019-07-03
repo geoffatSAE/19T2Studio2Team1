@@ -13,15 +13,37 @@ namespace TO5.Wires
     {
         public override bool keepWaiting { get { return m_WireManager.GetJumpersSegment() < m_Segment; } }
 
-        private WireManager m_WireManager;
-        private int m_Segment;
+        private WireManager m_WireManager;      // Wire manager to listen to
+        private int m_Segment;                  // Segment to reach
 
         public WaitForSegment(WireManager wireManager, int segment)
         {
+            Assert.IsNotNull(wireManager, "WaitForSegment expects valid wire manager");
+
             m_WireManager = wireManager;
             m_Segment = segment;
         }
     }
+
+    /// <summary>
+    /// Yield instruction for waiting until player travels desired segments (on a wire)
+    /// </summary>
+    public class WaitForSegmentsTravelled : CustomYieldInstruction
+    {
+        public override bool keepWaiting { get { return m_WireManager.sparkJumper.wireDistanceTravelled < m_End; } }
+
+        private WireManager m_WireManager;      // Wire manager to listen to
+        private float m_End;                    // Distance player must reach
+
+        public WaitForSegmentsTravelled(WireManager wireManager, int segments)
+        {
+            Assert.IsNotNull(wireManager, "WaitForSegmentsTravelled expects valid wire manager");
+
+            m_WireManager = wireManager;
+            m_End = m_WireManager.sparkJumper.wireDistanceTravelled + (m_WireManager.segmentLength * segments);
+        }
+    }
+
 
     /// <summary>
     /// Manager for the wires and sparks that spawn in. Offers event for listeners
@@ -40,6 +62,9 @@ namespace TO5.Wires
 
         // Players spark jumper
         public SparkJumper sparkJumper { get { return m_SparkJumper; } }
+
+        // Length of a segment
+        public float segmentLength { get { return m_CachedSegmentDistance; } }
 
         [Header("Sparks")]
         public Spark m_SparkPrefab;                     // The sparks to use
@@ -70,8 +95,10 @@ namespace TO5.Wires
         private float m_CachedSegmentDistance = 1f;                             // Distance between the start and end of a segment
 
         [Header("Manager")]
-        [SerializeField] private Transform m_DisabledSpot;      // Spot to hide disabled objects
-        [SerializeField] private ScoreManager m_ScoreManager;   // Manager for scoring
+        [SerializeField] private Transform m_DisabledSpot;          // Spot to hide disabled objects
+        [SerializeField] private ScoreManager m_ScoreManager;       // Manager for scoring
+        [SerializeField] private bool m_TickWhenJumping = true;     // If wires/sparks should tick while player is jumping
+        [SerializeField] private bool m_WireDistanceOnly = false;   // If we should ignore distance gained via jumping for spawning wires
 
         // Spot for hiding inactive objects
         private Vector3 disabledSpot { get { return m_DisabledSpot ? m_DisabledSpot.position : Vector3.zero; } }
@@ -93,22 +120,28 @@ namespace TO5.Wires
 
         void Update()
         {
-            // Step is influenced by multiplier
-            float gameSpeed = m_ScoreManager ? m_ScoreManager.multiplier : 1f;
-            float step = m_SparkSpeed * gameSpeed * Time.deltaTime;
+            float step = 0f;
 
-            for (int i = 0; i < m_Wires.activeCount; ++i)
+            // Don't tick when player is jumping
+            if (m_TickWhenJumping || !sparkJumper.isJumping)         
             {
-                Wire wire = m_Wires.GetObject(i);
+                // Step is influenced by multiplier
+                float gameSpeed = m_ScoreManager ? m_ScoreManager.multiplier : 1f;
+                step = m_SparkSpeed * gameSpeed * Time.deltaTime;
 
-                float progress = wire.TickWire(step);
-                if (progress >= 1f)
+                for (int i = 0; i < m_Wires.activeCount; ++i)
                 {
-                    DeactivateWire(wire);
+                    Wire wire = m_Wires.GetObject(i);
 
-                    // Object pool swaps when deactivating objects, we need
-                    // to update the swapped object since it is still active
-                    --i;
+                    float progress = wire.TickWire(step);
+                    if (progress >= 1f)
+                    {
+                        DeactivateWire(wire);
+
+                        // Object pool swaps when deactivating objects, we need
+                        // to update the swapped object since it is still active
+                        --i;
+                    }
                 }
             }
 
@@ -562,7 +595,11 @@ namespace TO5.Wires
             while (enabled)
             {
                 int delay = Random.Range(minDelay, maxDelay);
-                yield return new WaitForSegment(this, GetJumpersSegment() + delay);
+
+                if (m_WireDistanceOnly)
+                    yield return new WaitForSegmentsTravelled(this, delay);
+                else
+                    yield return new WaitForSegment(this, GetJumpersSegment() + delay);
 
                 GenerateRandomWire();
             }

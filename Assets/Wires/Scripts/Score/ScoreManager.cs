@@ -136,7 +136,7 @@ namespace TO5.Wires
         {
             while (enabled)
             {
-                yield return new WaitForSegment(m_WireManager, m_WireManager.GetJumpersSegment() + m_SegmentsBeforeStageIncrease);
+                yield return new WaitForSegmentsTravelled(m_WireManager, m_SegmentsBeforeStageIncrease);
                 IncreaseMultiplier(1);
 
                 // No point in looping if at max stage

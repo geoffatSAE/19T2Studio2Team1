@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37170032, g: 0.000980495, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.30895665, g: 0.0010213279, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -518,6 +518,8 @@ MonoBehaviour:
   m_MaxSparkSegmentDelay: 1
   m_DisabledSpot: {fileID: 1969091892}
   m_ScoreManager: {fileID: 1261624769}
+  m_TickWhenJumping: 0
+  m_WireDistanceOnly: 1
   m_Debug: 1
   m_DrawSegmentPlanes: 0
   m_UseDebugMesh: 0
@@ -1044,6 +1046,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: SparkJumperPC
+      objectReference: {fileID: 0}
+    - target: {fileID: 8646348428308405757, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
+        type: 3}
+      propertyPath: m_Sensitivity
+      value: 6.63
       objectReference: {fileID: 0}
     - target: {fileID: 8646348427193185105, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
         type: 3}
