@@ -11,12 +11,21 @@ namespace TO5.Wires
     public class ScoreManager : MonoBehaviour
     {
         [Header("Score")]
-        [SerializeField] private float m_ScorePerSecond = 10f;          // Score player earns per second
+        [SerializeField] private float m_ScorePerSecond = 1f;           // Score player earns per second
         [SerializeField] private float m_JumpScore = 100f;              // Score player earns when jumping (not when forced to jump)
+        [SerializeField] private float m_PacketScore = 250f;            // Score player earns when collecting a data packet
 
         [Header("Multiplier")]
         [SerializeField, Range(0, 32)] private int m_MultiplierStages = 2;      // The amount of stages for the multiplier
         [SerializeField] private int m_SegmentsBeforeStageIncrease = 15;        // Segments player must pass without fail to increase the multiplier
+
+        [Header("Packets")]
+        [SerializeField] private DataPacket m_PacketPrefab;             // Prefab for data packets
+        [SerializeField] private int m_MinPacketSpawnInterval = 10;     // Min interval between spawning packets
+        [SerializeField] private int m_MaxPacketSpawnInterval = 20;     // Max interval between spawning packets
+        [SerializeField] private float m_PacketLifetime = 30f;          // How long data packets last for before expiring
+
+        private ObjectPool<DataPacket> m_DataPackets = new ObjectPool<DataPacket>();    // Packets being managed
 
         [Header("UI")]
         public Text m_ScoreText;                    // Text for writing score
@@ -155,6 +164,82 @@ namespace TO5.Wires
                 if (m_Stage == m_MultiplierStages)
                     break;
             }
+        }
+
+        /// <summary>
+        /// Generates a data packet randomly located in the world
+        /// </summary>
+        /// <returns>Packet or null</returns>
+        private DataPacket GenerateRandomPacket()
+        {
+            Vector3 position = Vector3.zero;
+            return GeneratePacket(position, m_PacketLifetime);
+        }
+
+        /// <summary>
+        /// Generates a data packet, immediately activating it
+        /// </summary>
+        /// <param name="position">Position of the packet</param>
+        /// <param name="lifetime">Lifetime of the packet</param>
+        /// <returns>Packet or null</returns>
+        private DataPacket GeneratePacket(Vector3 position, float lifetime)
+        {
+            DataPacket packet = GetPacket();
+            if (!packet)
+                return null;
+
+            packet.Activate(position, lifetime);
+
+            return packet;
+        }
+
+        /// <summary>
+        /// Helper for getting a packet from the pool (spawns one if needed)
+        /// </summary>
+        /// <returns>Packet or null</returns>
+        private DataPacket GetPacket()
+        {
+            if (m_DataPackets.canActivateObject)
+                return m_DataPackets.ActivateObject();
+
+            if (!m_PacketPrefab)
+            {
+                Debug.LogError("Unable to spawn data prefab as prefab is invalid", this);
+                return null;
+            }
+
+            Vector3 position = m_WireManager ? m_WireManager.disabledSpot : Vector3.zero;
+            DataPacket packet = Instantiate(m_PacketPrefab, position, Quaternion.identity);
+
+            // Hook events
+            {
+                packet.OnCollected += PacketCollected;
+                packet.OnExpired += PacketExpired;
+            }
+
+            m_DataPackets.Add(packet);
+            m_DataPackets.ActivateObject();
+
+            return packet;
+        }
+
+        /// <summary>
+        /// Notify that player has collected given packet
+        /// </summary>
+        private void PacketCollected(DataPacket packet)
+        {
+            m_Score += (m_PacketScore * m_Multiplier);
+            PacketExpired(packet);
+        }
+
+        /// <summary>
+        /// Notify that given packet has expired
+        /// </summary>
+        /// <param name="packet"></param>
+        private void PacketExpired(DataPacket packet)
+        {
+            packet.Deactivate();
+            m_DataPackets.DeactivateObject(packet);
         }
     }
 }

@@ -103,7 +103,7 @@ namespace TO5.Wires
         [SerializeField] private bool m_FailJumpResetsMultiplier = false;       // If multiplier completely resets upon reaching end of a wire
 
         // Spot for hiding inactive objects
-        private Vector3 disabledSpot { get { return m_DisabledSpot ? m_DisabledSpot.position : Vector3.zero; } }
+        public Vector3 disabledSpot { get { return m_DisabledSpot ? m_DisabledSpot.position : Vector3.zero; } }
 
         #if UNITY_EDITOR
         [Header("Debug")]
@@ -460,7 +460,7 @@ namespace TO5.Wires
 
             Wire wire = null;
 
-            // New to make a new wire object
+            // Need to make a new wire object
             if (m_WirePrefab)
             {
                 wire = Instantiate(m_WirePrefab);
@@ -576,7 +576,7 @@ namespace TO5.Wires
         /// </summary>
         /// <param name="position">Position of wire</param>
         /// <returns>If wire has space</returns>
-        bool HasSpaceAtLocation(Vector3 position)
+        public bool HasSpaceAtLocation(Vector3 position)
         {
             float sqrMinDistance = m_MinWireOffset * m_MinWireOffset;
 
@@ -636,8 +636,6 @@ namespace TO5.Wires
         /// <summary>
         /// Notify that player has jumped to another spark
         /// </summary>
-        /// <param name="spark"></param>
-        /// <param name="finished"></param>
         private void JumpToSpark(Spark spark, bool finished)
         {
             if (finished)

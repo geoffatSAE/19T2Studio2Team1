@@ -8,7 +8,7 @@ namespace TO5.Wires
     /// Sparks travel along wires and can be used as a host for the player
     /// </summary>
     [RequireComponent(typeof(SphereCollider))]
-    public class Spark : MonoBehaviour
+    public class Spark : MonoBehaviour, IInteractive
     {
         // If player can jump to this spark
         public bool canJumpTo { get { return m_CanJumpTo; } }
@@ -167,6 +167,18 @@ namespace TO5.Wires
         public Wire GetWire()
         {
             return m_Wire;
+        }
+
+        // IInteractive Interface
+        public bool CanInteract(SparkJumper jumper)
+        {
+            return m_CanJumpTo;
+        }
+
+        // IInteractive Interface
+        public void OnInteract(SparkJumper jumper)
+        {
+            jumper.JumpToSpark(this);
         }
     }
 }

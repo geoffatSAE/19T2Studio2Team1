@@ -14,14 +14,14 @@ namespace TO5.Wires
         /// Delegate for when jumper is jumping to new spark (both starting and ending)
         /// </summary>
         /// <param name="spark">Spark that has been jumped to (Can be null)</param>
-        /// /// <param name="spark">If call is when jump has finished</param>
+        /// <param name="finished">If call is when jump has finished</param>
         public delegate void JumpedToSpark(Spark spark, bool finished);
 
         public JumpedToSpark OnJumpToSpark;     // Event for when jumping to new spark
 
-        public Transform m_Anchor;                                                  // Anchor to move instead of gameObject
-        [SerializeField, Min(0.1f)] private float m_JumpTime = 0.75f;               // Transition time between sparks
-        [SerializeField] private LayerMask m_SparkLayer = Physics.AllLayers;        // Layer for sparks
+        public Transform m_Anchor;                                                          // Anchor to move instead of gameObject
+        [SerializeField, Min(0.1f)] private float m_JumpTime = 0.75f;                       // Transition time between sparks
+        [SerializeField] private LayerMask m_InteractiveLayer = Physics.AllLayers;           // Layer for interactives
 
         // If the player is allowed to request a jump
         public bool canJump { get { return !m_IsJumping; } }
@@ -107,13 +107,14 @@ namespace TO5.Wires
                 return;
 
             RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity, m_SparkLayer))
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity, m_InteractiveLayer))
             {
                 GameObject hitObject = hit.collider.gameObject;
 
-                Spark spark = hitObject.GetComponent<Spark>();
-                if (spark)
-                    JumpToSpark(spark);      
+                // We only check for interactives
+                IInteractive interactive = hitObject.GetComponent<IInteractive>();
+                if (interactive != null && interactive.CanInteract(this))
+                    interactive.OnInteract(this);      
             }
         }
 
