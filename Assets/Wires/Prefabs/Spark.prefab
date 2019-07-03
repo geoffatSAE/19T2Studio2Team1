@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7764608039323799728}
   - component: {fileID: 7764608039323799731}
   m_Layer: 0
-  m_Name: SparkAlt
+  m_Name: Spark
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -59,8 +59,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_SwitchInterval: 2
-  m_ActiveMaterial: {fileID: 2100000, guid: a1c44975929f6194fa5b13c9b5d9474c, type: 2}
-  m_OccupiedMaterial: {fileID: 2100000, guid: fd2639e333725044e9887ed5b7fb1cfd, type: 2}
+  m_SwitchBlendDuration: 0.5
+  m_OnColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  m_OffColor: {r: 1, g: 0, b: 0, a: 1}
+  m_OnScale: {x: 1, y: 1, z: 1}
+  m_OffScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_Renderer: {fileID: 7764608041119393576}
 --- !u!1 &7764608041119393581
 GameObject:
   m_ObjectHideFlags: 0

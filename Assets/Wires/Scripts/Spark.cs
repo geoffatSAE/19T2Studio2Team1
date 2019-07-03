@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace TO5.Wires
 {
+    /// <summary>
+    /// Sparks travel along wires and can be used as a host for the player
+    /// </summary>
     [RequireComponent(typeof(SphereCollider))]
     public class Spark : MonoBehaviour
     {
@@ -13,14 +16,27 @@ namespace TO5.Wires
         // Player on this spark
         public SparkJumper sparkJumper { get { return m_SparkJumper; } }
 
-        public float m_SwitchInterval = 2f;         // Interval for switching between on and off
+        public float m_SwitchInterval = 2f;                                 // Interval for switching between on and off
+        [Min(0.1f)] public float m_SwitchBlendDuration = 0.5f;              // Time for blending between on and off (visually)
+        public Color m_OnColor = Color.yellow;                              // Color to use when on
+        public Color m_OffColor = Color.red;                                // Color to use when off
+        public Vector3 m_OnScale = Vector3.one;                             // Scale to use when on
+        public Vector3 m_OffScale = new Vector3(0.5f, 0.5f, 0.5f);          // Scale to use when off
+        [SerializeField] private Renderer m_Renderer;                       // Sparks renderer
 
         private Wire m_Wire;                        // Wire this spark is on
         private bool m_CanJumpTo = true;            // If player can jump to this spark
         private SparkJumper m_SparkJumper;          // Player on this spark
+        private SphereCollider m_Collider;          // Collider for this spark
+        private Coroutine m_SwitchRoutine;          // Switch coroutine that is running
 
-        [SerializeField] private Material m_ActiveMaterial;
-        [SerializeField] private Material m_OccupiedMaterial;
+        void Awake()
+        {
+            if (!m_Renderer)
+                m_Renderer = GetComponentInChildren<Renderer>();
+
+            m_Collider = GetComponent<SphereCollider>();
+        }
 
         /// <summary>
         /// Activates this spark
@@ -36,25 +52,24 @@ namespace TO5.Wires
             // Start switch routine only if interval is set
             if (interval > 0f)
             {
-                //m_CanJumpTo = (Random.Range(0, 10) & 1) == 1;
-                //StartCoroutine(SwitchRoutine());
-                m_CanJumpTo = true;
+                m_CanJumpTo = (Random.Range(0, 10) & 1) == 1;
+
+                // Initially blend based on current status
+                BlendSwitchStatus(m_CanJumpTo ? 1f : 0f);
+
+                m_SwitchRoutine = StartCoroutine(SwitchRoutine());
             }
             else
             {
                 m_CanJumpTo = true;
+                BlendSwitchStatus(1f);
+
+                m_SwitchRoutine = null;
             }
 
             m_Wire = wire;
             transform.position = wire.transform.position;
-
-            Renderer renderer = GetComponentInChildren<Renderer>();
-            if (renderer)
-                renderer.material = m_ActiveMaterial;
-
-            SphereCollider collider = GetComponent<SphereCollider>();
-            if (collider)
-                collider.enabled = true;
+            m_Collider.enabled = m_CanJumpTo;
         }
 
         /// <summary>
@@ -62,9 +77,10 @@ namespace TO5.Wires
         /// </summary>
         public void DeactivateSpark()
         {
-            StopCoroutine(SwitchRoutine());
-            m_CanJumpTo = false;
+            if (m_SwitchRoutine != null)
+                StopCoroutine(m_SwitchRoutine);
 
+            m_CanJumpTo = false;
             gameObject.SetActive(false);
         }
 
@@ -73,8 +89,11 @@ namespace TO5.Wires
         /// </summary>
         public void FreezeSwitching()
         {
-            StopCoroutine(SwitchRoutine());
-            m_CanJumpTo = true;       
+            if (m_SwitchRoutine != null)
+                StopCoroutine(m_SwitchRoutine);
+
+            m_CanJumpTo = true;
+            BlendSwitchStatus(1f);
         }
 
         /// <summary>
@@ -87,16 +106,9 @@ namespace TO5.Wires
             {
                 m_SparkJumper = jumper;
                 m_CanJumpTo = false;
-
-                Renderer renderer = GetComponentInChildren<Renderer>();
-                if (renderer)
-                    renderer.material = m_OccupiedMaterial;
+                m_Collider.enabled = false;
 
                 m_Wire.m_BorderMesh.gameObject.SetActive(true);
-
-                SphereCollider collider = GetComponent<SphereCollider>();
-                if (collider)
-                    collider.enabled = false;
             }
         }
 
@@ -106,6 +118,7 @@ namespace TO5.Wires
         public void DetachJumper()
         {
             m_SparkJumper = null;
+            BlendSwitchStatus(0f);
 
             m_Wire.m_BorderMesh.gameObject.SetActive(false);
         }
@@ -115,11 +128,36 @@ namespace TO5.Wires
         /// </summary>
         private IEnumerator SwitchRoutine()
         {
-            while (enabled)
+            while (!m_SparkJumper)
             {
                 yield return new WaitForSeconds(m_SwitchInterval);
-                //m_CanJumpTo = true;// !m_CanJumpTo;
+                m_CanJumpTo = !m_CanJumpTo;
+                m_Collider.enabled = m_CanJumpTo;
+
+                // Blend between on and off
+                {
+                    float end = Time.time + m_SwitchBlendDuration;
+                    while (Time.time < end)
+                    {
+                        float alpha = Mathf.Clamp01((end - Time.time) / m_SwitchBlendDuration);
+
+                        // We negate to blend in opposite direction
+                        if (m_CanJumpTo)
+                            alpha = 1f - alpha;
+
+                        BlendSwitchStatus(alpha);
+                        yield return null;
+                    }
+                }
             }
+        }
+
+        private void BlendSwitchStatus(float progress)
+        {
+            if (m_Renderer)
+                m_Renderer.material.color = Color.Lerp(m_OffColor, m_OnColor, progress);
+
+            transform.localScale = Vector3.Lerp(m_OffScale, m_OnScale, progress);
         }
 
         /// <summary>
@@ -129,14 +167,6 @@ namespace TO5.Wires
         public Wire GetWire()
         {
             return m_Wire;
-        }
-
-        void OnDrawGizmos()
-        {
-            SphereCollider collider = GetComponent<SphereCollider>();
-
-            Gizmos.color = m_CanJumpTo ? Color.green : Color.red;
-            Gizmos.DrawWireSphere(transform.position, collider.radius);
         }
     }
 }

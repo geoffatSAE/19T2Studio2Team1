@@ -137,7 +137,7 @@ namespace TO5.Wires
         /// </summary>
         public void AwardJumpPoints()
         {
-            m_Score += m_JumpScore;
+            m_Score += (m_JumpScore * m_Multiplier);
         }
 
         /// <summary>

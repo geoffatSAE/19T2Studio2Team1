@@ -127,8 +127,8 @@ namespace TO5.Wires
             // Don't tick when player is jumping
             if (m_TickWhenJumping || !sparkJumper.isJumping)         
             {
-                // Step is influenced by multiplier
-                float gameSpeed = m_ScoreManager ? m_ScoreManager.multiplier : 1f;
+                // Step is influenced by multiplier stage
+                float gameSpeed = m_ScoreManager ? m_ScoreManager.multiplierStage + 1 : 1f;
                 step = m_SparkSpeed * gameSpeed * Time.deltaTime;
 
                 for (int i = 0; i < m_Wires.activeCount; ++i)
@@ -187,7 +187,7 @@ namespace TO5.Wires
                 }
 
                 // Start spawning wires
-                StartCoroutine(WireSpawnRoutine(m_MinSpawnInterval, m_MaxSpawnInterval + 1));
+                StartCoroutine(WireSpawnRoutine());
 
                 if (m_ScoreManager)
                     m_ScoreManager.EnableScoring(true);
@@ -288,9 +288,9 @@ namespace TO5.Wires
             wire.ActivateWire(start, segments, m_CachedSegmentDistance, factory);
 
             if (sparkDelay > 0)
-                StartCoroutine(DelaySparkActivation(sparkDelay, wire));
+                StartCoroutine(DelaySparkActivation(sparkDelay, wire, defective));
             else
-                GenerateSpark(wire);
+                GenerateSpark(wire, defective ? m_SparkSwitchInterval : 0f);
 
             return wire;
         }
@@ -299,14 +299,15 @@ namespace TO5.Wires
         /// Generates a spark, will move it to keep in line with segment planes
         /// </summary>
         /// <param name="wire">Wire to attach spark to</param>
+        /// <param name="interval">Interval for wire switching between on and off</param>
         /// <returns>Spark with properties or null</returns>
-        private Spark GenerateSpark(Wire wire)
+        private Spark GenerateSpark(Wire wire, float interval)
         {
             Spark spark = GetSpark();
             if (!spark)
                 return null;
 
-            wire.ActivateSpark(spark, m_SparkSwitchInterval);
+            wire.ActivateSpark(spark, interval);
 
             Vector3 position = m_SparkJumper.GetPosition();
             float distance = Mathf.Abs(position.z - transform.position.z);
@@ -605,13 +606,11 @@ namespace TO5.Wires
         /// <summary>
         /// Routine for generating wires
         /// </summary>
-        /// <param name="minDelay">Min segments between spawns</param>
-        /// <param name="maxDelay">Max segments between spawns</param>
-        private IEnumerator WireSpawnRoutine(int minDelay, int maxDelay)
+        private IEnumerator WireSpawnRoutine()
         {
             while (enabled)
             {
-                int delay = Random.Range(minDelay, maxDelay);
+                int delay = Random.Range(m_MinSpawnInterval, m_MaxSpawnInterval + 1);
 
                 if (m_WireDistanceOnly)
                     yield return new WaitForSegmentsTravelled(this, delay);
@@ -627,10 +626,11 @@ namespace TO5.Wires
         /// </summary>
         /// <param name="delay">Segments to pass before activating</param>
         /// <param name="wire">Wire to activate</param>
-        private IEnumerator DelaySparkActivation(int delay, Wire wire)
+        /// <param name="defective">If wire is defective</param>
+        private IEnumerator DelaySparkActivation(int delay, Wire wire, bool defective)
         {
             yield return new WaitForSegment(this, GetJumpersSegment() + delay);
-            GenerateSpark(wire);
+            GenerateSpark(wire, defective ? m_SparkSwitchInterval : 0f);
         }
 
         /// <summary>

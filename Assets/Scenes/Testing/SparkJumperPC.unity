@@ -517,7 +517,7 @@ MonoBehaviour:
   m_MaxSegmentOffsetRange: 3
   m_MaxSparkSegmentDelay: 1
   m_DefectiveWireRates:
-  - 0.1
+  - 1
   - 0.15
   - 0.2
   m_DisabledSpot: {fileID: 1969091892}
