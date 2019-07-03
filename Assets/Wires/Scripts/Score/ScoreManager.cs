@@ -29,6 +29,9 @@ namespace TO5.Wires
         // Scores current multiplier
         public float multiplier { get { return m_Multiplier; } }
 
+        // Multipliers current stage
+        public int multiplierStage { get { return m_Stage; } }
+
         private WireManager m_WireManager;              // Manager for wires
         private float m_Score;                          // Players score
         private float m_Multiplier;                     // Players multiplier
@@ -58,7 +61,7 @@ namespace TO5.Wires
 
             m_WireManager = wireManager;
         }
-        
+
         /// <summary>
         /// Enables scoring functionality
         /// </summary>
@@ -118,6 +121,15 @@ namespace TO5.Wires
         {
             m_Stage = Mathf.Clamp(stage, 0, m_MultiplierStages);
             m_Multiplier = (1 << m_Stage);
+        }
+
+        /// <summary>
+        /// Resets the multiplier stage
+        /// </summary>
+        public void ResetMultiplier()
+        {
+            m_Multiplier = 1f;
+            m_Stage = 0;
         }
 
         /// <summary>

@@ -516,10 +516,15 @@ MonoBehaviour:
   m_SegmentOffset: 5
   m_MaxSegmentOffsetRange: 3
   m_MaxSparkSegmentDelay: 1
+  m_DefectiveWireRates:
+  - 0.1
+  - 0.15
+  - 0.2
   m_DisabledSpot: {fileID: 1969091892}
   m_ScoreManager: {fileID: 1261624769}
   m_TickWhenJumping: 0
   m_WireDistanceOnly: 1
+  m_FailJumpResetsMultiplier: 0
   m_Debug: 1
   m_DrawSegmentPlanes: 0
   m_UseDebugMesh: 0

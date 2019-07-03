@@ -83,22 +83,24 @@ namespace TO5.Wires
         public Wire m_WirePrefab;
 
         [Header("Generation")]
-        [SerializeField] private int m_MinSpawnInterval = 4;        // Min segments to wait before spawning new wires
-        [SerializeField] private int m_MaxSpawnInterval = 6;        // Max segments to wait before spawning new wires
-        [SerializeField] private float m_MinWireOffset = 5f;        // Min distance away to spawn wires
-        [SerializeField] private float m_MaxWireOffset = 20f;       // Max distance away to spawn wires
-        [SerializeField] private int m_SegmentOffset = 2;           // Segments in front of current segment to spawn next wire
-        [SerializeField] private int m_MaxSegmentOffsetRange = 3;   // Range from offset segment for spawning wires
-        [SerializeField] private int m_MaxSparkSegmentDelay = 3;    // The max amount of segments to travel before a spark will spawn on a new wire
+        [SerializeField] private int m_MinSpawnInterval = 4;                    // Min segments to wait before spawning new wires
+        [SerializeField] private int m_MaxSpawnInterval = 6;                    // Max segments to wait before spawning new wires
+        [SerializeField] private float m_MinWireOffset = 5f;                    // Min distance away to spawn wires
+        [SerializeField] private float m_MaxWireOffset = 20f;                   // Max distance away to spawn wires
+        [SerializeField] private int m_SegmentOffset = 2;                       // Segments in front of current segment to spawn next wire
+        [SerializeField] private int m_MaxSegmentOffsetRange = 3;               // Range from offset segment for spawning wires
+        [SerializeField] private int m_MaxSparkSegmentDelay = 3;                // The max amount of segments to travel before a spark will spawn on a new wire
+        [SerializeField] private float[] m_DefectiveWireRates;                  // Rates for defective wires to spawn during each stage (default is 0)
 
         private ObjectPool<Wire> m_Wires = new ObjectPool<Wire>();              // Wires being managed
         private float m_CachedSegmentDistance = 1f;                             // Distance between the start and end of a segment
 
         [Header("Manager")]
-        [SerializeField] private Transform m_DisabledSpot;          // Spot to hide disabled objects
-        [SerializeField] private ScoreManager m_ScoreManager;       // Manager for scoring
-        [SerializeField] private bool m_TickWhenJumping = true;     // If wires/sparks should tick while player is jumping
-        [SerializeField] private bool m_WireDistanceOnly = false;   // If we should ignore distance gained via jumping for spawning wires
+        [SerializeField] private Transform m_DisabledSpot;                      // Spot to hide disabled objects
+        [SerializeField] private ScoreManager m_ScoreManager;                   // Manager for scoring
+        [SerializeField] private bool m_TickWhenJumping = true;                 // If wires/sparks should tick while player is jumping
+        [SerializeField] private bool m_WireDistanceOnly = false;               // If we should ignore distance gained via jumping for spawning wires
+        [SerializeField] private bool m_FailJumpResetsMultiplier = false;       // If multiplier completely resets upon reaching end of a wire
 
         // Spot for hiding inactive objects
         private Vector3 disabledSpot { get { return m_DisabledSpot ? m_DisabledSpot.position : Vector3.zero; } }
@@ -177,7 +179,7 @@ namespace TO5.Wires
                 // Attach player to initial wire
                 {
                     WireFactory factory = GetRandomWireFactory();
-                    Wire spawnWire = GenerateWire(transform.position, m_InitialSegments, 0, factory);
+                    Wire spawnWire = GenerateWire(transform.position, m_InitialSegments, 0, false, factory);
 
                     Assert.IsNotNull(spawnWire.spark);
 
@@ -251,12 +253,21 @@ namespace TO5.Wires
             int segments = Random.Range(m_MinSegments, m_MaxSegments + 1);
             int sparkDelay = Random.Range(0, m_MaxSparkSegmentDelay + 1);
 
+            // If wire is defective
+            float defectiveChance = 0f;
+            if (m_DefectiveWireRates != null && m_ScoreManager != null)
+                if (m_ScoreManager.multiplierStage < m_DefectiveWireRates.Length)
+                    defectiveChance = m_DefectiveWireRates[m_ScoreManager.multiplierStage];
+
+            // Wire is defective if scaled chance is less than random number
+            bool defective = defectiveChance > 0f ? Random.Range(0f, 100f) < (defectiveChance * 100f) : false;
+
             // Random factory (themes)
             WireFactory factory = null;
             if (m_Factories.Length > 0)
                 factory = m_Factories[Random.Range(0, m_Factories.Length)];
 
-            return GenerateWire(start, segments, sparkDelay, factory);
+            return GenerateWire(start, segments, sparkDelay, defective, factory);
         }
 
         /// <summary>
@@ -265,9 +276,10 @@ namespace TO5.Wires
         /// <param name="start">Start position of the wire</param>
         /// <param name="segments">Segments of the wire</param>
         /// <param name="sparkDelay">Delay before spawning spark</param>
+        /// <param name="defective">If wire is defective</param>
         /// <param name="factory">Factory for wires aesthetics</param>
         /// <returns>Wire with properties or null</returns>
-        private Wire GenerateWire(Vector3 start, int segments, int sparkDelay, WireFactory factory)
+        private Wire GenerateWire(Vector3 start, int segments, int sparkDelay, bool defective, WireFactory factory)
         {
             Wire wire = GetWire();
             if (!wire)
@@ -322,7 +334,12 @@ namespace TO5.Wires
                 JumpToClosestWire(wire);
 
                 if (m_ScoreManager)
-                    m_ScoreManager.DecreaseMultiplier(1);
+                {
+                    if (m_FailJumpResetsMultiplier)
+                        m_ScoreManager.ResetMultiplier();
+                    else
+                        m_ScoreManager.DecreaseMultiplier(1);
+                }
             }
 
             wire.DeactivateWire();
