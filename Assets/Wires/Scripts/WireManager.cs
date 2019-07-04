@@ -225,6 +225,7 @@ namespace TO5.Wires
         private Wire GenerateRandomWire()
         {
             const int maxAttempts = 5;
+            Vector3 spawnCenter = GetSpawnCircleCenter();
 
             Vector3 start = transform.position;
             bool success = true;
@@ -233,10 +234,10 @@ namespace TO5.Wires
             int attempts = 0;
             while (++attempts <= maxAttempts)
             {
-                Vector2 circleOffset = Random.insideUnitCircle.normalized * Random.Range(m_MinWireOffset, m_MaxWireOffset);
+                Vector2 circleOffset = GetRandomSpawnCircleOffset();
                 int segmentOffset = m_SegmentOffset + Random.Range(-m_MaxSegmentOffsetRange, m_MaxSegmentOffsetRange + 1);
 
-                start = GetSpawnCircleCenter() + new Vector3(circleOffset.x, circleOffset.y, 0f);
+                start = spawnCenter + new Vector3(circleOffset.x, circleOffset.y, 0f);
                 start.z += segmentOffset * m_CachedSegmentDistance;
 
                 success = HasSpaceAtLocation(start);
@@ -367,7 +368,7 @@ namespace TO5.Wires
         /// Get the origin of the wire spawn circle
         /// </summary>
         /// <returns>Position in world space</returns>
-        private Vector3 GetSpawnCircleCenter()
+        public Vector3 GetSpawnCircleCenter()
         {
             if (m_SparkJumper && m_SparkJumper.spark)
             {
@@ -381,6 +382,15 @@ namespace TO5.Wires
             }
 
             return transform.position;
+        }
+
+        /// <summary>
+        /// Generates a random offset within bounds of spawn parameters
+        /// </summary>
+        /// <returns>Random offset</returns>
+        public Vector2 GetRandomSpawnCircleOffset()
+        {
+            return Random.insideUnitCircle.normalized * Random.Range(m_MinWireOffset, m_MaxWireOffset);
         }
 
         /// <summary>
@@ -587,6 +597,7 @@ namespace TO5.Wires
             for (int i = 0; i < m_Wires.activeCount; ++i)
             {
                 Wire wire = m_Wires.GetObject(i);
+                Assert.IsNotNull(wire);
 
                 Vector2 offset = position - wire.transform.position;
                 float distance = offset.sqrMagnitude;
@@ -596,6 +607,24 @@ namespace TO5.Wires
                 {
                     int wireEnd = GetPositionSegment(wire.end);
                     if (start <= wireEnd)
+                        return false;
+                }
+            }
+
+            // We only consider active packets
+            if (m_ScoreManager)
+            {
+                sqrMinDistance = m_ScoreManager.packetSpace * m_ScoreManager.packetSpace;
+
+                for (int i = 0; i < m_ScoreManager.activePackets; ++i)
+                {
+                    DataPacket packet = m_ScoreManager.GetActivePacket(i);
+                    Assert.IsNotNull(packet);
+
+                    Vector2 offset = position - packet.transform.position;
+                    float distance = offset.sqrMagnitude;
+
+                    if (distance < sqrMinDistance)
                         return false;
                 }
             }

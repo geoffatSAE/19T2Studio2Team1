@@ -23,7 +23,15 @@ namespace TO5.Wires
         [SerializeField] private DataPacket m_PacketPrefab;             // Prefab for data packets
         [SerializeField] private int m_MinPacketSpawnInterval = 10;     // Min interval between spawning packets
         [SerializeField] private int m_MaxPacketSpawnInterval = 20;     // Max interval between spawning packets
+        [SerializeField] private int m_MinPacketSpawnOffset = 20;       // Min segments in front of player to spawn
+        [SerializeField] private float m_PacketSpace = 2f;              // The space packet should have (avoid overlap)
         [SerializeField] private float m_PacketLifetime = 30f;          // How long data packets last for before expiring
+
+        // Space required for packets
+        public float packetSpace { get { return m_PacketSpace; } }
+
+        // Amount of packets active
+        public int activePackets { get { return m_DataPackets.activeCount; } }
 
         private ObjectPool<DataPacket> m_DataPackets = new ObjectPool<DataPacket>();    // Packets being managed
 
@@ -46,6 +54,7 @@ namespace TO5.Wires
         private float m_Multiplier;                     // Players multiplier
         private int m_Stage;                            // Multiplier stage
         private Coroutine m_MultiplierTick;             // Coroutine for multipliers tick
+        private Coroutine m_PacketSpawn;                // Coroutine for spawning packets
 
         void Update()
         {
@@ -54,7 +63,8 @@ namespace TO5.Wires
             #if UNITY_EDITOR
             // Debug text
             if (m_DebugText)
-                m_DebugText.text = string.Format("Score: {0}\nMultiplier: {1}\nMultiplier Stage: {2}", Mathf.FloorToInt(m_Score), m_Multiplier, m_Stage);
+                m_DebugText.text = string.Format("Score: {0}\nMultiplier: {1}\nMultiplier Stage: {2}\nPackets Pool Size: {3}\nPackets Active: {4}", 
+                    Mathf.FloorToInt(m_Score), m_Multiplier, m_Stage, m_DataPackets.Count, m_DataPackets.activeCount);
             #endif
         }
 
@@ -87,6 +97,7 @@ namespace TO5.Wires
             }
 
             m_MultiplierTick = StartCoroutine(MultiplierTickRoutine());
+            m_PacketSpawn = StartCoroutine(PacketSpawnRoutine());
         }
 
         /// <summary>
@@ -95,7 +106,9 @@ namespace TO5.Wires
         public void DisableScoring()
         {
             StopCoroutine(m_MultiplierTick);
+            StopCoroutine(m_PacketSpawn);
             m_MultiplierTick = null;
+            m_PacketSpawn = null;
 
             enabled = false;
         }
@@ -172,7 +185,30 @@ namespace TO5.Wires
         /// <returns>Packet or null</returns>
         private DataPacket GenerateRandomPacket()
         {
+            const int maxAttempts = 5;
+            Vector3 spawnCenter = m_WireManager.GetSpawnCircleCenter() + WireManager.WirePlane * (m_WireManager.segmentLength * m_MinPacketSpawnOffset);
+
             Vector3 position = Vector3.zero;
+            bool success = false;
+
+            // We don't want to loop to many times
+            int attempts = 0;
+            while (++attempts <= maxAttempts)
+            {
+                Vector2 circleOffset = m_WireManager.GetRandomSpawnCircleOffset();
+                position = spawnCenter + new Vector3(circleOffset.x, circleOffset.y, 0f);
+
+                success = m_WireManager.HasSpaceAtLocation(position);
+                if (success)
+                    break;
+            }
+
+            if (!success)
+            {
+                Debug.LogWarning(string.Format("Failed to generate packet after {0} attempts", maxAttempts), this);
+                return null;
+            }
+
             return GeneratePacket(position, m_PacketLifetime);
         }
 
@@ -235,11 +271,38 @@ namespace TO5.Wires
         /// <summary>
         /// Notify that given packet has expired
         /// </summary>
-        /// <param name="packet"></param>
         private void PacketExpired(DataPacket packet)
         {
             packet.Deactivate();
             m_DataPackets.DeactivateObject(packet);
+        }
+
+        /// <summary>
+        /// Routine for spawning packets
+        /// </summary>
+        private IEnumerator PacketSpawnRoutine()
+        {
+            while (enabled)
+            {
+                int delay = Random.Range(m_MinPacketSpawnInterval, m_MaxPacketSpawnInterval + 1);
+                yield return new WaitForSegment(m_WireManager, m_WireManager.GetJumpersSegment() + delay);
+
+                GenerateRandomPacket();
+            }
+        }
+
+        /// <summary>
+        /// Gets active packet at index
+        /// </summary>
+        /// <param name="index">Index of packet</param>
+        /// <returns>Active packet or null</returns>
+        // TODO: This function only exists for HasSpaceAtLocation in WireManager
+        public DataPacket GetActivePacket(int index)
+        {
+            if (index < m_DataPackets.activeCount)
+                return m_DataPackets.GetObject(index);
+
+            return null;
         }
     }
 }

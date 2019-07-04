@@ -500,7 +500,7 @@ MonoBehaviour:
   m_SparkSwitchInterval: 2
   m_MinSegments: 8
   m_MaxSegments: 12
-  m_InitialSegments: 10
+  m_InitialSegments: 1000
   m_Factories:
   - {fileID: 11400000, guid: 7503fa6e476d74148be8d6db326b6477, type: 2}
   - {fileID: 11400000, guid: c2de25d8b4bac2d40a177e6c8be5a710, type: 2}
@@ -517,7 +517,7 @@ MonoBehaviour:
   m_MaxSegmentOffsetRange: 3
   m_MaxSparkSegmentDelay: 1
   m_DefectiveWireRates:
-  - 1
+  - 0.1
   - 0.15
   - 0.2
   m_DisabledSpot: {fileID: 1969091892}
@@ -558,8 +558,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_ScorePerSecond: 10
   m_JumpScore: 100
+  m_PacketScore: 250
   m_MultiplierStages: 2
   m_SegmentsBeforeStageIncrease: 15
+  m_PacketPrefab: {fileID: 3577826277647408733, guid: 9d6ee2c3a0b241145bd4019fd34cfc5c,
+    type: 3}
+  m_MinPacketSpawnInterval: 10
+  m_MaxPacketSpawnInterval: 20
+  m_MinPacketSpawnOffset: 20
+  m_PacketSpace: 2
+  m_PacketLifetime: 30
   m_ScoreText: {fileID: 0}
   m_MultiplierText: {fileID: 0}
   m_DebugText: {fileID: 1384009259}
@@ -683,7 +691,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 10, y: -210}
-  m_SizeDelta: {x: 400, y: 60}
+  m_SizeDelta: {x: 400, y: 100}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1384009259
 MonoBehaviour:
@@ -722,7 +730,11 @@ MonoBehaviour:
 
     Multiplier: 99999
 
-    Stage: 999999'
+    Stage: 999999
+
+    Packets Pool Size: 999
+
+    Packets Active: 999'
 --- !u!222 &1384009260
 CanvasRenderer:
   m_ObjectHideFlags: 0
