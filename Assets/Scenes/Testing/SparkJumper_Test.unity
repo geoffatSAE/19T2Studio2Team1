@@ -557,8 +557,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_ScorePerSecond: 10
   m_JumpScore: 100
+  m_PacketScore: 250
   m_MultiplierStages: 2
   m_SegmentsBeforeStageIncrease: 10
+  m_PacketPrefab: {fileID: 0}
+  m_MinPacketSpawnInterval: 10
+  m_MaxPacketSpawnInterval: 20
+  m_MinPacketSpawnOffset: 20
+  m_PacketSpace: 2
+  m_PacketLifetime: 30
   m_ScoreText: {fileID: 0}
   m_MultiplierText: {fileID: 0}
   m_DebugText: {fileID: 1384009259}
