@@ -10,6 +10,15 @@ namespace TO5.Wires
     /// </summary>
     public class ScoreManager : MonoBehaviour
     {
+        /// <summary>
+        /// Delegate to notify the players multiplier has changed
+        /// </summary>
+        /// <param name="multiplier">New multiplier</param>
+        /// <param name="stage">New stage</param>
+        public delegate void MultiplierStageUpdated(float multiplier, int stage);
+
+        public MultiplierStageUpdated OnMultiplierUpdated;      // Event for when multiplier has changed
+
         [Header("Score")]
         [SerializeField] private float m_ScorePerSecond = 1f;           // Score player earns per second
         [SerializeField] private float m_JumpScore = 100f;              // Score player earns when jumping (not when forced to jump)
@@ -141,8 +150,14 @@ namespace TO5.Wires
         /// <param name="stage">Stage to set</param>
         private void SetMultiplierStage(int stage)
         {
-            m_Stage = Mathf.Clamp(stage, 0, m_MultiplierStages);
-            m_Multiplier = (1 << m_Stage);
+            if (stage != m_Stage)
+            {
+                m_Stage = Mathf.Clamp(stage, 0, m_MultiplierStages);
+                m_Multiplier = (1 << m_Stage);
+
+                if (OnMultiplierUpdated != null)
+                    OnMultiplierUpdated.Invoke(m_Multiplier, m_Stage);
+            }
         }
 
         /// <summary>

@@ -13,6 +13,9 @@ namespace TO5.Wires
         private WireManager m_WireManager;      // Wire manager we associate with
         private WorldMusic m_WorldMusic;        // Handler for games music
         private WorldColor m_WorldColor;        // Handler for games color
+        private Wire m_CurrentWire;             // Current wire player is on
+
+        private int m_MultiplierStage;          // Stage of multiplier
 
         void Awake()
         {
@@ -27,9 +30,18 @@ namespace TO5.Wires
         public void Initialize(WireManager wireManager)
         {
             m_WireManager = wireManager;
+            m_MultiplierStage = 0;
 
             if (m_WireManager)
             {
+                // We listen for when multipler has changed
+                ScoreManager scoreManager = m_WireManager.scoreManager;
+                if (scoreManager)
+                {
+                    scoreManager.OnMultiplierUpdated += MultiplierUpdated;
+                    m_MultiplierStage = scoreManager.multiplierStage;
+                }
+
                 // We listen for when the player jumps to handle aesthetic changes
                 SparkJumper jumper = m_WireManager.sparkJumper;
                 if (jumper != null)
@@ -38,11 +50,12 @@ namespace TO5.Wires
 
                     if (jumper.spark)
                     {
-                        Wire wire = jumper.spark.GetWire();
-                        WireFactory factory = wire.factory;
+                        m_CurrentWire = jumper.spark.GetWire();
+
+                        WireFactory factory = m_CurrentWire.factory;
                         if (factory)
                         {
-                            m_WorldMusic.SetActiveMusic(factory.music);
+                            m_WorldMusic.SetPendingMusic(factory.GetMusic(m_MultiplierStage));
                             m_WorldColor.SetActiveColor(factory.skyboxColor);
 
                             // Instant blend
@@ -65,11 +78,12 @@ namespace TO5.Wires
             }
             else
             {
-                Wire wire = spark.GetWire();
-                WireFactory factory = wire.factory;
+                m_CurrentWire = spark.GetWire();
+
+                WireFactory factory = m_CurrentWire.factory;
                 if (factory)
                 {
-                    m_WorldMusic.SetActiveMusic(factory.music);
+                    m_WorldMusic.SetPendingMusic(factory.GetMusic(m_MultiplierStage));
                     m_WorldColor.SetActiveColor(factory.skyboxColor);
 
                     StartCoroutine(BlendThemesRoutine(m_WireManager.sparkJumper));
@@ -78,6 +92,23 @@ namespace TO5.Wires
                 if (m_WireManager)
                     StartCoroutine(BlendThemesRoutine(m_WireManager.sparkJumper));
             }
+        }
+        
+        /// <summary>
+        /// Notify from score manager that players multiplier has changed
+        /// </summary>
+        /// <param name="multiplier"></param>
+        /// <param name="stage"></param>
+        private void MultiplierUpdated(float multiplier, int stage)
+        {
+            m_MultiplierStage = stage;
+
+            if (m_CurrentWire)
+            {
+                WireFactory factory = m_CurrentWire.factory;
+                if (factory)
+                    m_WorldMusic.SetActiveMusic(factory.GetMusic(m_MultiplierStage));
+            } 
         }
 
         /// <summary>

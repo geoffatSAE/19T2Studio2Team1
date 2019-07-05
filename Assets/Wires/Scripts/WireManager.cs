@@ -95,6 +95,9 @@ namespace TO5.Wires
         private ObjectPool<Wire> m_Wires = new ObjectPool<Wire>();              // Wires being managed
         private float m_CachedSegmentDistance = 1f;                             // Distance between the start and end of a segment
 
+        // Score manager to track multiplier
+        public ScoreManager scoreManager { get { return m_ScoreManager; } }
+
         [Header("Manager")]
         [SerializeField] private Transform m_DisabledSpot;                      // Spot to hide disabled objects
         [SerializeField] private ScoreManager m_ScoreManager;                   // Manager for scoring
@@ -331,10 +334,9 @@ namespace TO5.Wires
             // Resetting wire will have it drop its spark reference
             Spark spark = wire.spark;
 
+            // Penalties for not jumping before reaching the end of a wire
             if (spark && spark.sparkJumper != null)
             {
-                JumpToClosestWire(wire);
-
                 if (m_ScoreManager)
                 {
                     if (m_FailJumpResetsMultiplier)
@@ -342,6 +344,8 @@ namespace TO5.Wires
                     else
                         m_ScoreManager.DecreaseMultiplier(1);
                 }
+
+                JumpToClosestWire(wire);    
             }
 
             wire.DeactivateWire();

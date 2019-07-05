@@ -30,11 +30,41 @@ namespace TO5.Wires
         }
 
         /// <summary>
-        /// Sets active music to be played, allowing BlendMusic to be called
+        /// Sets active music, instantly overriding whats actively playing (can be used during Blending)
         /// </summary>
-        /// <param name="audioClip">Music to fade to</param>
+        /// <param name="audioClip">Music to play</param>
         public void SetActiveMusic(AudioClip audioClip)
         {
+            if (!audioClip)
+            {
+                Debug.LogWarning("Audio clip is invalid. Unable to play music", this);
+                return;
+            }
+
+            AudioSource activeSource = m_Source1Active ? m_MusicSource1 : m_MusicSource2;
+            activeSource.enabled = true;
+
+            float time = activeSource.time;
+
+            activeSource.clip = audioClip;
+            activeSource.volume = 1f;
+
+            activeSource.Play();
+            activeSource.time = time;
+        }
+
+        /// <summary>
+        /// Sets active music pending to be blended, allowing BlendMusic to be called
+        /// </summary>
+        /// <param name="audioClip">Music to fade to</param>
+        public void SetPendingMusic(AudioClip audioClip)
+        {
+            if (!audioClip)
+            {
+                Debug.LogWarning("Audio clip is invalid. Unable to play music", this);
+                return;
+            }
+
             AudioSource activeSource = m_Source1Active ? m_MusicSource2 : m_MusicSource1;
             AudioSource fadingSource = m_Source1Active ? m_MusicSource1 : m_MusicSource2;
 
