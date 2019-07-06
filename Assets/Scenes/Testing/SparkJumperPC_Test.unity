@@ -496,24 +496,25 @@ MonoBehaviour:
   m_SparkJumper: {fileID: 2134640129}
   m_SparkPrefab: {fileID: 7764608039323799731, guid: 630a43b9f7b365f4db327f062cc13540,
     type: 3}
-  m_SparkSpeed: 0.65
-  m_SparkSwitchInterval: 2
-  m_MinSegments: 8
-  m_MaxSegments: 13
-  m_InitialSegments: 8
+  m_SparkSpeed: 2.3
+  m_SparkSwitchInterval: 1.5
+  m_MinSegments: 30
+  m_MaxSegments: 55
+  m_InitialSegments: 40
   m_Factories:
   - {fileID: 11400000, guid: 7503fa6e476d74148be8d6db326b6477, type: 2}
   - {fileID: 11400000, guid: c2de25d8b4bac2d40a177e6c8be5a710, type: 2}
   - {fileID: 11400000, guid: 83edc1a72b7667e4ab8d4cc017ef1b60, type: 2}
+  - {fileID: 11400000, guid: 7bee21f78d023f1408627f6cfe3092f5, type: 2}
   m_WireAnimator: {fileID: 0}
   m_WirePrefab: {fileID: 4698685643518956546, guid: 1f8155c3339076843a6198e146cab368,
     type: 3}
-  m_MinSpawnInterval: 2
-  m_MaxSpawnInterval: 3
-  m_MinWireOffset: 6
-  m_MaxWireOffset: 17
-  m_SegmentOffset: 2
-  m_MaxSegmentOffsetRange: 7
+  m_MinSpawnInterval: 5
+  m_MaxSpawnInterval: 15
+  m_MinWireOffset: 8
+  m_MaxWireOffset: 20
+  m_SegmentOffset: 5
+  m_MaxSegmentOffsetRange: 30
   m_MaxSparkSegmentDelay: 1
   m_DefectiveWireRates:
   - 0.1
@@ -521,7 +522,7 @@ MonoBehaviour:
   - 0.2
   m_DisabledSpot: {fileID: 1969091892}
   m_ScoreManager: {fileID: 1261624769}
-  m_TickWhenJumping: 1
+  m_TickWhenJumping: 0
   m_WireDistanceOnly: 1
   m_FailJumpResetsMultiplier: 0
   m_Debug: 1
@@ -555,17 +556,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd306b1731ff7d0478430374b888a9e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_ScorePerSecond: 10
+  m_ScorePerSecond: 15
   m_JumpScore: 100
   m_PacketScore: 250
   m_MultiplierStages: 2
-  m_SegmentsBeforeStageIncrease: 10
-  m_PacketPrefab: {fileID: 0}
+  m_SegmentsBeforeStageIncrease: 40
+  m_PacketPrefab: {fileID: 3577826277647408733, guid: 9d6ee2c3a0b241145bd4019fd34cfc5c,
+    type: 3}
   m_MinPacketSpawnInterval: 10
-  m_MaxPacketSpawnInterval: 20
-  m_MinPacketSpawnOffset: 20
+  m_MaxPacketSpawnInterval: 17
+  m_MinPacketSpawnOffset: 40
   m_PacketSpace: 2
-  m_PacketLifetime: 30
+  m_PacketLifetime: 12
   m_ScoreText: {fileID: 0}
   m_MultiplierText: {fileID: 0}
   m_DebugText: {fileID: 1384009259}
@@ -689,7 +691,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 10, y: -210}
-  m_SizeDelta: {x: 400, y: 60}
+  m_SizeDelta: {x: 400, y: 100}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1384009259
 MonoBehaviour:
@@ -728,7 +730,11 @@ MonoBehaviour:
 
     Multiplier: 99999
 
-    Stage: 999999'
+    Stage: 999999
+
+    Packets Pool Size: 999
+
+    Packets Active: 999'
 --- !u!222 &1384009260
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1061,7 +1067,7 @@ PrefabInstance:
     - target: {fileID: 8646348428308405757, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
         type: 3}
       propertyPath: m_Sensitivity
-      value: 1.25
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 8646348427193185105, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
         type: 3}
@@ -1120,13 +1126,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8646348428308405756, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
         type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8646348428308405756, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
+        type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.03
+      value: 1.33
       objectReference: {fileID: 0}
     - target: {fileID: 8646348428308405756, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -1.71
+      value: -1.66
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb, type: 3}
