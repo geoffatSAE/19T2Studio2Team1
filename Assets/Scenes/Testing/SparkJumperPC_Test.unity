@@ -498,9 +498,9 @@ MonoBehaviour:
     type: 3}
   m_SparkSpeed: 2.3
   m_SparkSwitchInterval: 1.5
-  m_MinSegments: 30
-  m_MaxSegments: 55
-  m_InitialSegments: 40
+  m_MinSegments: 23
+  m_MaxSegments: 50
+  m_InitialSegments: 30
   m_Factories:
   - {fileID: 11400000, guid: 7503fa6e476d74148be8d6db326b6477, type: 2}
   - {fileID: 11400000, guid: c2de25d8b4bac2d40a177e6c8be5a710, type: 2}
@@ -510,7 +510,7 @@ MonoBehaviour:
   m_WirePrefab: {fileID: 4698685643518956546, guid: 1f8155c3339076843a6198e146cab368,
     type: 3}
   m_MinSpawnInterval: 5
-  m_MaxSpawnInterval: 15
+  m_MaxSpawnInterval: 10
   m_MinWireOffset: 8
   m_MaxWireOffset: 20
   m_SegmentOffset: 5
@@ -560,14 +560,16 @@ MonoBehaviour:
   m_JumpScore: 100
   m_PacketScore: 250
   m_MultiplierStages: 2
-  m_SegmentsBeforeStageIncrease: 40
+  m_MultiplierIncreaseInterval: 9
   m_PacketPrefab: {fileID: 3577826277647408733, guid: 9d6ee2c3a0b241145bd4019fd34cfc5c,
     type: 3}
-  m_MinPacketSpawnInterval: 10
+  m_MinPacketSpawnInterval: 8
   m_MaxPacketSpawnInterval: 17
   m_MinPacketSpawnOffset: 40
   m_PacketSpace: 2
-  m_PacketLifetime: 12
+  m_MinPacketSpeed: 6
+  m_MaxPacketSpeed: 15
+  m_PacketLifetime: 7
   m_ScoreText: {fileID: 0}
   m_MultiplierText: {fileID: 0}
   m_DebugText: {fileID: 1384009259}
