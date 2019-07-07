@@ -17,17 +17,21 @@ namespace TO5.Wires
         public PacketCollected OnExpired;       // Event for when this packet expires
 
         [SerializeField] private AudioSource m_Ambience;
+
+        private float m_Speed;          // The speed of this packet
         
         /// <summary>
         /// Activates this data packet
         /// </summary>
         /// <param name="position">Position of packet</param>
+        /// <param name="speed">Speed of packet</param>
         /// <param name="lifetime">Lifetime before expiration</param>
-        public void Activate(Vector3 position, float lifetime)
+        public void Activate(Vector3 position, float speed, float lifetime)
         {
             gameObject.SetActive(true);
 
             transform.position = position;
+            m_Speed = speed;
 
             if (m_Ambience)
                 m_Ambience.Play();
@@ -46,6 +50,17 @@ namespace TO5.Wires
                 m_Ambience.Stop();
 
             gameObject.SetActive(false);
+        }
+
+        /// <summary>
+        /// Ticks this packet, moving the packet backwards
+        /// </summary>
+        /// <param name="step">Amount to move packet by (scaled by speed)</param>
+        public void TickPacket(float step)
+        {
+            // We move in the opposite direction of sparks (so we subtract)
+            step *= m_Speed;
+            transform.position -= WireManager.WirePlane * step;
         }
 
         /// <summary>

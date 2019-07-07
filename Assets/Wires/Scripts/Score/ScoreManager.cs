@@ -26,7 +26,7 @@ namespace TO5.Wires
 
         [Header("Multiplier")]
         [SerializeField, Range(0, 32)] private int m_MultiplierStages = 2;      // The amount of stages for the multiplier
-        [SerializeField] private int m_SegmentsBeforeStageIncrease = 15;        // Segments player must pass without fail to increase the multiplier
+        [SerializeField] private float m_MultiplierIncreaseInterval = 15f;      // Seconds before players multiplier increased
 
         [Header("Packets")]
         [SerializeField] private DataPacket m_PacketPrefab;             // Prefab for data packets
@@ -34,6 +34,8 @@ namespace TO5.Wires
         [SerializeField] private int m_MaxPacketSpawnInterval = 20;     // Max interval between spawning packets
         [SerializeField] private int m_MinPacketSpawnOffset = 20;       // Min segments in front of player to spawn
         [SerializeField] private float m_PacketSpace = 2f;              // The space packet should have (avoid overlap)
+        [SerializeField] private float m_MinPacketSpeed = 1f;           // Min speed of a packet
+        [SerializeField] private float m_MaxPacketSpeed = 2.5f;         // Max speed of a packet
         [SerializeField] private float m_PacketLifetime = 30f;          // How long data packets last for before expiring
 
         // Space required for packets
@@ -69,9 +71,20 @@ namespace TO5.Wires
         {
             m_Score += m_ScorePerSecond * m_Multiplier * Time.deltaTime;
 
+            // Tick packets
+            {
+                float step = Time.deltaTime;// * m_Multiplier;
+
+                for (int i = 0; i < m_DataPackets.activeCount; ++i)
+                {
+                    DataPacket packet = m_DataPackets.GetObject(i);
+                    packet.TickPacket(step);
+                }
+            }
+
             #if UNITY_EDITOR
-            // Debug text
-            if (m_DebugText)
+                // Debug text
+                if (m_DebugText)
                 m_DebugText.text = string.Format("Score: {0}\nMultiplier: {1}\nMultiplier Stage: {2}\nPackets Pool Size: {3}\nPackets Active: {4}", 
                     Mathf.FloorToInt(m_Score), m_Multiplier, m_Stage, m_DataPackets.Count, m_DataPackets.activeCount);
             #endif
@@ -185,7 +198,7 @@ namespace TO5.Wires
         {
             while (enabled)
             {
-                yield return new WaitForSegmentsTravelled(m_WireManager, m_SegmentsBeforeStageIncrease);
+                yield return new WaitForSeconds(m_MultiplierIncreaseInterval);
                 IncreaseMultiplier(1);
 
                 // No point in looping if at max stage
@@ -224,22 +237,25 @@ namespace TO5.Wires
                 return null;
             }
 
-            return GeneratePacket(position, m_PacketLifetime);
+            float speed = Random.Range(m_MinPacketSpeed, m_MaxPacketSpeed);
+
+            return GeneratePacket(position, speed, m_PacketLifetime);
         }
 
         /// <summary>
         /// Generates a data packet, immediately activating it
         /// </summary>
         /// <param name="position">Position of the packet</param>
+        /// <param name="speed">Speed of the packet</param>
         /// <param name="lifetime">Lifetime of the packet</param>
         /// <returns>Packet or null</returns>
-        private DataPacket GeneratePacket(Vector3 position, float lifetime)
+        private DataPacket GeneratePacket(Vector3 position, float speed, float lifetime)
         {
             DataPacket packet = GetPacket();
             if (!packet)
                 return null;
 
-            packet.Activate(position, lifetime);
+            packet.Activate(position, speed, lifetime);
 
             return packet;
         }

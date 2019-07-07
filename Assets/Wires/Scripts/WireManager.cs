@@ -337,6 +337,8 @@ namespace TO5.Wires
             // Penalties for not jumping before reaching the end of a wire
             if (spark && spark.sparkJumper != null)
             {
+                JumpToClosestWire(wire);
+
                 if (m_ScoreManager)
                 {
                     if (m_FailJumpResetsMultiplier)
@@ -344,8 +346,6 @@ namespace TO5.Wires
                     else
                         m_ScoreManager.DecreaseMultiplier(1);
                 }
-
-                JumpToClosestWire(wire);    
             }
 
             wire.DeactivateWire();
