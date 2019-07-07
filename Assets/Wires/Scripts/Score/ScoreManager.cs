@@ -26,12 +26,12 @@ namespace TO5.Wires
 
         [Header("Multiplier")]
         [SerializeField, Range(0, 32)] private int m_MultiplierStages = 2;      // The amount of stages for the multiplier
-        [SerializeField] private float m_MultiplierIncreaseInterval = 15f;      // Seconds before players multiplier increased (time based)
+        [SerializeField] private float m_MultiplierIncreaseInterval = 15f;      // Seconds before players multiplier increased
 
         [Header("Packets")]
         [SerializeField] private DataPacket m_PacketPrefab;             // Prefab for data packets
-        [SerializeField] private int m_MinPacketSpawnInterval = 10;     // Min interval between spawning packets (segments based)
-        [SerializeField] private int m_MaxPacketSpawnInterval = 20;     // Max interval between spawning packets (segments based)
+        [SerializeField] private int m_MinPacketSpawnInterval = 10;     // Min interval between spawning packets
+        [SerializeField] private int m_MaxPacketSpawnInterval = 20;     // Max interval between spawning packets
         [SerializeField] private int m_MinPacketSpawnOffset = 20;       // Min segments in front of player to spawn
         [SerializeField] private float m_PacketSpace = 2f;              // The space packet should have (avoid overlap)
         [SerializeField] private float m_MinPacketSpeed = 1f;           // Min speed of a packet

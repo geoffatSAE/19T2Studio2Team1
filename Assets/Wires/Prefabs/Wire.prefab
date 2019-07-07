@@ -121,7 +121,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f229ed4bdb3262d4d80242d0fb95c502, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Renderer: {fileID: 4698685642924955087}
   m_Pivot: {fileID: 4698685643792317338}
   m_WireMesh: {fileID: 4698685642924955087}
   m_BorderMesh: {fileID: 4698685644428104707}

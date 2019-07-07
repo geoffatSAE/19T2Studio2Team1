@@ -24,12 +24,11 @@ namespace TO5.Wires
         // Factory associated with this wire
         public WireFactory factory { get { return m_Factory; } }
 
-        private int m_Segments;                             // Amount of segments on this wire
-        private float m_SegmentDistance;                    // Cahced distance per segment
-        private float m_WireDistance;                       // Cached total distance of wire
-        private WireFactory m_Factory;                      // Factory for this wires aesthetics
-        [SerializeField] private Renderer m_Renderer;       // Wires renderer
-
+        private int m_Segments;             // Amount of segments on this wire
+        private float m_SegmentDistance;    // Cahced distance per segment
+        private float m_WireDistance;       // Cached total distance of wire
+        private WireFactory m_Factory;      // Factory for this wires aesthetics
+        
         public Transform m_Pivot;
         public Renderer m_WireMesh;
         public Renderer m_BorderMesh;
@@ -75,8 +74,6 @@ namespace TO5.Wires
 
                 m_WireMesh.material.color = factory.color;
             }
-
-            StartCoroutine("FadeIn");
         }
 
         /// <summary>
@@ -89,7 +86,6 @@ namespace TO5.Wires
 
             m_Spark = null;
 
-            StopCoroutine("FadeIn");
             gameObject.SetActive(false);
         }
 
@@ -131,37 +127,6 @@ namespace TO5.Wires
 
             m_CachedProgress = progress;
             return progress;
-        }
-
-        private IEnumerator FadeIn()
-        {
-            const float duration = 2f;
-            float end = Time.time + duration;
-            float progress = 0f;
-
-            while (progress < 1f)
-            {
-                progress = 1f - Mathf.Clamp01((end - Time.time) / duration);
-
-                if (m_Renderer)
-                {
-                    Color color = m_Renderer.material.color;
-                    color.a = progress;
-                    m_Renderer.material.color = color;
-                }
-
-                if (m_Spark && m_Spark.sparkRenderer)
-                {
-                    Color color = m_Spark.sparkRenderer.material.color;
-                    color.a = progress;
-                    m_Spark.sparkRenderer.material.color = color;
-                }
-
-                if (progress == 1f)
-                    break;
-
-                yield return null;
-            }
         }
 
         #if UNITY_EDITOR
