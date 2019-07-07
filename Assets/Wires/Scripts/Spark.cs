@@ -16,6 +16,9 @@ namespace TO5.Wires
         // Player on this spark
         public SparkJumper sparkJumper { get { return m_SparkJumper; } }
 
+        // Sparks renderer
+        public Renderer sparkRenderer { get { return m_Renderer; } }
+
         public float m_SwitchInterval = 2f;                                 // Interval for switching between on and off
         [Min(0.1f)] public float m_SwitchBlendDuration = 0.5f;              // Time for blending between on and off (visually)
         public Color m_OnColor = Color.yellow;                              // Color to use when on

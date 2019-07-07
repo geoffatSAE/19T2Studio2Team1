@@ -111,6 +111,7 @@ namespace TO5.Wires
         #if UNITY_EDITOR
         [Header("Debug")]
         public bool m_Debug = true;                             // If debugging is enabled
+        public bool m_DrawWires = false;                        // If wire gizmos should be drawn
         public bool m_DrawSegmentPlanes = false;                // If segment planes should be drawn
         [SerializeField] private bool m_UseDebugMesh = false;   // If debug mesh should be used
         [SerializeField] private Mesh m_DebugMesh;              // Debug mesh drawn instead of animated mesh
@@ -717,14 +718,17 @@ namespace TO5.Wires
                     }
                 }
 
-                // Draw Wires
-                Gizmos.color = Color.red;
-                for (int i = 0; i < m_Wires.activeCount; ++i)
+                // Draw Wire
+                if (m_DrawWires)
                 {
-                    Wire wire = m_Wires.GetObject(i);
-                    wire.DrawDebugGizmos();
+                    Gizmos.color = Color.red;
+                    for (int i = 0; i < m_Wires.activeCount; ++i)
+                    {
+                        Wire wire = m_Wires.GetObject(i);
+                        wire.DrawDebugGizmos();
+                    }
                 }
-    
+
                 if (Application.isPlaying)
                 {
                     // Draw segment planes
