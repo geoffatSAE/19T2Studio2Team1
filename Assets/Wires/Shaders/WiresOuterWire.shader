@@ -39,7 +39,7 @@ Shader "Wires/OuterWire"
 
 			fixed4 c = _Color * (x * normal.x + y * normal.y + z * normal.z);
 			o.Albedo = c.rgb;
-			o.Alpha = 0.1;
+			o.Alpha = c.a;
 		}
 		ENDCG
 	}
