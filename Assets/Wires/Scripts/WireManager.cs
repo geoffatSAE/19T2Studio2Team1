@@ -456,6 +456,10 @@ namespace TO5.Wires
                     Wire w = m_Wires.GetObject(i);
                     if (w == wire || !w.spark)
                         continue;
+                    
+                    // In-case we reset back to null
+                    if (bestWire == null)
+                        bestWire = w;
 
                     // Use the wire whose spark has made less progress
                     if (w.sparkProgress < bestWire.sparkProgress)
