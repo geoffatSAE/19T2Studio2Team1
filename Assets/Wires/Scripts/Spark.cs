@@ -107,8 +107,6 @@ namespace TO5.Wires
                 m_SparkJumper = jumper;
                 m_CanJumpTo = false;
                 m_Collider.enabled = false;
-
-                m_Wire.m_BorderMesh.gameObject.SetActive(true);
             }
         }
 
@@ -119,8 +117,6 @@ namespace TO5.Wires
         {
             m_SparkJumper = null;
             BlendSwitchStatus(0f);
-
-            m_Wire.m_BorderMesh.gameObject.SetActive(false);
         }
 
         /// <summary>

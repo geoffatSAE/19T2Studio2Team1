@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed1e754feeb549940b82a0b845f23072, type: 3}
   m_Name: YellowWire
   m_EditorClassIdentifier: 
-  m_Color: {r: 1, g: 1, b: 0, a: 0}
-  m_SkyboxColor: {r: 0.9245283, g: 0.92106354, b: 0.43173724, a: 0}
+  m_Color: {r: 1, g: 1, b: 0, a: 1}
+  m_SkyboxColor: {r: 0.9245283, g: 0.92106354, b: 0.43173724, a: 1}
+  m_BorderTexture: {fileID: 2800000, guid: deff90eebe787eb4baf1deb26e423804, type: 3}
   m_Music:
   - {fileID: 8300000, guid: 2400764a13f052d4e9bbd015f258c63f, type: 3}
   - {fileID: 8300000, guid: 2eb6bcf229744184496fdee91f23fae5, type: 3}

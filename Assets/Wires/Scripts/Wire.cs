@@ -18,6 +18,9 @@ namespace TO5.Wires
         private Spark m_Spark;              // Spark on this wire
         private float m_CachedProgress;     // Cached progress from last tick
 
+        // Total length of the wire
+        public float length { get { return m_WireDistance; } }
+
         // The end of the wire in world space
         public Vector3 end { get { return transform.position + WireManager.WirePlane * m_WireDistance; } }
 
@@ -31,7 +34,6 @@ namespace TO5.Wires
         
         public Transform m_Pivot;
         public Renderer m_WireMesh;
-        public Renderer m_BorderMesh;
 
         /// <summary>
         /// Activates this wire, setting it's position and segments
@@ -64,16 +66,8 @@ namespace TO5.Wires
                 m_Pivot.transform.localScale = scale;
             }
 
-            if (m_BorderMesh && factory)
-            {
-                Color color = factory.color;
-                color.a = 0.3f;
-                m_BorderMesh.material.color = color;
-
-                m_BorderMesh.gameObject.SetActive(false);
-
+            if (factory)
                 m_WireMesh.material.color = factory.color;
-            }
         }
 
         /// <summary>

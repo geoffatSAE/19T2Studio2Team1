@@ -224,8 +224,9 @@ namespace TO5.Wires
         /// <summary>
         /// Generates a random wire
         /// </summary>
+        /// <param name="instantSpark">If spark should generate with wire</param>
         /// <returns>Randomly generated wire or null</returns>
-        private Wire GenerateRandomWire()
+        private Wire GenerateRandomWire(bool instantSpark)
         {
             const int maxAttempts = 5;
             Vector3 spawnCenter = GetSpawnCircleCenter();
@@ -255,7 +256,7 @@ namespace TO5.Wires
             }
 
             int segments = Random.Range(m_MinSegments, m_MaxSegments + 1);
-            int sparkDelay = Random.Range(0, m_MaxSparkSegmentDelay + 1);
+            int sparkDelay = instantSpark ? 0 : Random.Range(0, m_MaxSparkSegmentDelay + 1);
 
             // If wire is defective
             float defectiveChance = 0f;
@@ -445,6 +446,8 @@ namespace TO5.Wires
             if (m_Wires.activeCount > 0)
             {
                 bestWire = m_Wires.GetObject(0);
+                if (bestWire == wire)
+                    bestWire = null;
 
                 // Start at one since we already 'tested' it
                 for (int i = 1; i < m_Wires.activeCount; ++i)
@@ -573,15 +576,17 @@ namespace TO5.Wires
             if (m_SparkJumper)
             {
                 Wire closest = FindBestWireToJumpTo(origin);//FindClosestWireTo(origin, true);
-                if (closest)
-                {
-                    m_JumpPenalty = true;
-                    m_SparkJumper.JumpToSpark(closest.spark, true);
-                }
-                else
+                if (!closest)
                 {
                     Debug.LogWarning("Failed to move spark jumper as no wires either exist or have sparks on them");
+                    Debug.LogWarning("Generating new wire and jumping to it");
+
+                    closest = GenerateRandomWire(true);
+                    Assert.IsNotNull(closest);
                 }
+
+                m_JumpPenalty = true;
+                m_SparkJumper.JumpToSpark(closest.spark, true);
             }
         }
 
@@ -650,7 +655,7 @@ namespace TO5.Wires
                 else
                     yield return new WaitForSegment(this, GetJumpersSegment() + delay);
 
-                GenerateRandomWire();
+                GenerateRandomWire(false);
             }
         }
 

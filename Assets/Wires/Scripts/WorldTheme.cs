@@ -7,13 +7,14 @@ namespace TO5.Wires
     /// <summary>
     /// Manages the theme of the world based on wire player is on
     /// </summary>
-    [RequireComponent(typeof(WorldMusic), typeof(WorldColor))]
+    [RequireComponent(typeof(WorldMusic), typeof(WorldColor), typeof(WorldAesthetics))]
     public class WorldTheme : MonoBehaviour
     {
-        private WireManager m_WireManager;      // Wire manager we associate with
-        private WorldMusic m_WorldMusic;        // Handler for games music
-        private WorldColor m_WorldColor;        // Handler for games color
-        private Wire m_CurrentWire;             // Current wire player is on
+        private WireManager m_WireManager;              // Wire manager we associate with
+        private WorldMusic m_WorldMusic;                // Handler for games music
+        private WorldColor m_WorldColor;                // Handler for games color
+        private WorldAesthetics m_WorldAesthetics;      // Handler for games aesthetics
+        private Wire m_CurrentWire;                     // Current wire player is on
 
         private int m_MultiplierStage;          // Stage of multiplier
 
@@ -21,6 +22,7 @@ namespace TO5.Wires
         {
             m_WorldMusic = GetComponent<WorldMusic>();
             m_WorldColor = GetComponent<WorldColor>();
+            m_WorldAesthetics = GetComponent<WorldAesthetics>();
         }
 
         /// <summary>
@@ -52,15 +54,17 @@ namespace TO5.Wires
                     {
                         m_CurrentWire = jumper.spark.GetWire();
 
+                        m_WorldAesthetics.SetActiveAesthetics(m_CurrentWire);
+
                         WireFactory factory = m_CurrentWire.factory;
                         if (factory)
                         {
                             m_WorldMusic.SetPendingMusic(factory.GetMusic(m_MultiplierStage));
                             m_WorldColor.SetActiveColor(factory.skyboxColor);
-
-                            // Instant blend
-                            BlendThemes(1f);
                         }
+
+                        // Instant blend
+                        BlendThemes(1f);
                     }
                 }
             }
@@ -80,13 +84,13 @@ namespace TO5.Wires
             {
                 m_CurrentWire = spark.GetWire();
 
+                m_WorldAesthetics.SetPendingAethetics(m_CurrentWire);
+
                 WireFactory factory = m_CurrentWire.factory;
                 if (factory)
                 {
                     m_WorldMusic.SetPendingMusic(factory.GetMusic(m_MultiplierStage));
                     m_WorldColor.SetActiveColor(factory.skyboxColor);
-
-                    StartCoroutine(BlendThemesRoutine(m_WireManager.sparkJumper));
                 }
 
                 if (m_WireManager)
@@ -119,6 +123,7 @@ namespace TO5.Wires
         {
             m_WorldMusic.BlendMusic(alpha);
             m_WorldColor.BlendColors(alpha);
+            m_WorldAesthetics.BlendAesthetics(alpha);
         }
 
         /// <summary>

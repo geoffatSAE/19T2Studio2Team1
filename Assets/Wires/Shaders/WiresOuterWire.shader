@@ -9,6 +9,7 @@ Shader "Wires/OuterWire"
 		_Color("Color", Color) = (1, 1, 1, 1)
         _MainTex ("Texture", 2D) = "white" {}
 		_PanningSpeed ("Panning Speed (X, Y)", Vector) = (1, 0, 0, 0)
+		_AlphaScale ("Alpha Scale", Range(0, 1)) = 1
     }
     SubShader
     {
@@ -27,6 +28,7 @@ Shader "Wires/OuterWire"
 		half4 _Color;
 		sampler2D _MainTex;
 		half2 _PanningSpeed;
+		half _AlphaScale;
 
 		void surf(Input IN, inout SurfaceOutput o) 
 		{
@@ -39,7 +41,7 @@ Shader "Wires/OuterWire"
 
 			fixed4 c = _Color * (x * normal.x + y * normal.y + z * normal.z);
 			o.Albedo = c.rgb;
-			o.Alpha = c.a;
+			o.Alpha = 0.1f * _AlphaScale;
 		}
 		ENDCG
 	}
