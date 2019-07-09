@@ -769,75 +769,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49238ae0e8e5bf441b7736780dd5b5aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1001 &2780451446922544065
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 1671077178524130715, guid: 9d6ee2c3a0b241145bd4019fd34cfc5c,
-        type: 3}
-      propertyPath: m_Name
-      value: Packet
-      objectReference: {fileID: 0}
-    - target: {fileID: 1671077178524130718, guid: 9d6ee2c3a0b241145bd4019fd34cfc5c,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 14.495344
-      objectReference: {fileID: 0}
-    - target: {fileID: 1671077178524130718, guid: 9d6ee2c3a0b241145bd4019fd34cfc5c,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 3.9907923
-      objectReference: {fileID: 0}
-    - target: {fileID: 1671077178524130718, guid: 9d6ee2c3a0b241145bd4019fd34cfc5c,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 20.151005
-      objectReference: {fileID: 0}
-    - target: {fileID: 1671077178524130718, guid: 9d6ee2c3a0b241145bd4019fd34cfc5c,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1671077178524130718, guid: 9d6ee2c3a0b241145bd4019fd34cfc5c,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1671077178524130718, guid: 9d6ee2c3a0b241145bd4019fd34cfc5c,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1671077178524130718, guid: 9d6ee2c3a0b241145bd4019fd34cfc5c,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1671077178524130718, guid: 9d6ee2c3a0b241145bd4019fd34cfc5c,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 1671077178524130718, guid: 9d6ee2c3a0b241145bd4019fd34cfc5c,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1671077178524130718, guid: 9d6ee2c3a0b241145bd4019fd34cfc5c,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1671077178524130718, guid: 9d6ee2c3a0b241145bd4019fd34cfc5c,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 9d6ee2c3a0b241145bd4019fd34cfc5c, type: 3}
 --- !u!1001 &3395505406314226633
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -915,36 +846,6 @@ PrefabInstance:
       propertyPath: m_DebugText
       value: 
       objectReference: {fileID: 1331242939}
-    - target: {fileID: 3395505406176328835, guid: 9a8c4600bb7ba224baddce08e9afd423,
-        type: 3}
-      propertyPath: m_BorderPanningSpeeds.Array.size
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 3395505406176328835, guid: 9a8c4600bb7ba224baddce08e9afd423,
-        type: 3}
-      propertyPath: m_BorderPanningSpeeds.Array.data[0].y
-      value: 15
-      objectReference: {fileID: 0}
-    - target: {fileID: 3395505406176328835, guid: 9a8c4600bb7ba224baddce08e9afd423,
-        type: 3}
-      propertyPath: m_BorderPanningSpeeds.Array.data[1].y
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 3395505406176328835, guid: 9a8c4600bb7ba224baddce08e9afd423,
-        type: 3}
-      propertyPath: m_BorderPanningSpeeds.Array.data[2].y
-      value: 50
-      objectReference: {fileID: 0}
-    - target: {fileID: 3395505406176328835, guid: 9a8c4600bb7ba224baddce08e9afd423,
-        type: 3}
-      propertyPath: m_BorderPanningSpeeds.Array.data[2].x
-      value: 15
-      objectReference: {fileID: 0}
-    - target: {fileID: 3395505406176328835, guid: 9a8c4600bb7ba224baddce08e9afd423,
-        type: 3}
-      propertyPath: m_BorderPanningSpeeds.Array.data[1].x
-      value: 7.5
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9a8c4600bb7ba224baddce08e9afd423, type: 3}
 --- !u!1001 &8646348427722513404
