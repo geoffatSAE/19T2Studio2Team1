@@ -50,9 +50,9 @@ namespace TO5.Wires
         public Text m_ScoreText;                    // Text for writing score
         public Text m_MultiplierText;               // Text for writing multiplier
 
-        #if UNITY_EDITOR
+        //#if UNITY_EDITOR
         [SerializeField] private Text m_DebugText;      // Text for writing debug data
-        #endif
+       // #endif
 
         // Scores current multiplier
         public float multiplier { get { return m_Multiplier; } }
@@ -82,12 +82,12 @@ namespace TO5.Wires
                 }
             }
 
-            #if UNITY_EDITOR
+           // #if UNITY_EDITOR
                 // Debug text
                 if (m_DebugText)
                 m_DebugText.text = string.Format("Score: {0}\nMultiplier: {1}\nMultiplier Stage: {2}\nPackets Pool Size: {3}\nPackets Active: {4}", 
                     Mathf.FloorToInt(m_Score), m_Multiplier, m_Stage, m_DataPackets.Count, m_DataPackets.activeCount);
-            #endif
+           // #endif
         }
 
         /// <summary>

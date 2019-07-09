@@ -1,0 +1,112 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7946252058374095702
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7946252058374095656}
+  - component: {fileID: 7946252058374095703}
+  - component: {fileID: 7946252058374095657}
+  m_Layer: 0
+  m_Name: WireManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7946252058374095656
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7946252058374095702}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7946252058374095703
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7946252058374095702}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07d7d1b35ce97f545b4433e6238c36ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SparkJumper: {fileID: 0}
+  m_SparkPrefab: {fileID: 7764608039323799731, guid: 630a43b9f7b365f4db327f062cc13540,
+    type: 3}
+  m_SparkSpeed: 2.3
+  m_SparkSwitchInterval: 1.5
+  m_MinSegments: 23
+  m_MaxSegments: 50
+  m_InitialSegments: 30
+  m_Factories:
+  - {fileID: 11400000, guid: 7503fa6e476d74148be8d6db326b6477, type: 2}
+  - {fileID: 11400000, guid: c2de25d8b4bac2d40a177e6c8be5a710, type: 2}
+  - {fileID: 11400000, guid: 83edc1a72b7667e4ab8d4cc017ef1b60, type: 2}
+  - {fileID: 11400000, guid: 7bee21f78d023f1408627f6cfe3092f5, type: 2}
+  m_WireAnimator: {fileID: 0}
+  m_WirePrefab: {fileID: 4698685643518956546, guid: 1f8155c3339076843a6198e146cab368,
+    type: 3}
+  m_MinSpawnInterval: 5
+  m_MaxSpawnInterval: 10
+  m_MinWireOffset: 8
+  m_MaxWireOffset: 20
+  m_SegmentOffset: 5
+  m_MaxSegmentOffsetRange: 30
+  m_MaxSparkSegmentDelay: 1
+  m_DefectiveWireRates:
+  - 0.1
+  - 0.15
+  - 0.2
+  m_DisabledSpot: {fileID: 0}
+  m_ScoreManager: {fileID: 7946252058374095657}
+  m_TickWhenJumping: 0
+  m_WireDistanceOnly: 1
+  m_JumpFailResetsMultiplier: 0
+  m_Debug: 1
+  m_DrawSegmentPlanes: 0
+  m_UseDebugMesh: 0
+  m_DebugMesh: {fileID: 0}
+  m_DebugText: {fileID: 0}
+--- !u!114 &7946252058374095657
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7946252058374095702}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd306b1731ff7d0478430374b888a9e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ScorePerSecond: 15
+  m_JumpScore: 100
+  m_PacketScore: 250
+  m_MultiplierStages: 2
+  m_MultiplierIncreaseInterval: 9
+  m_PacketPrefab: {fileID: 1671077178524130716, guid: 9d6ee2c3a0b241145bd4019fd34cfc5c,
+    type: 3}
+  m_MinPacketSpawnInterval: 8
+  m_MaxPacketSpawnInterval: 17
+  m_MinPacketSpawnOffset: 40
+  m_PacketSpace: 4
+  m_MinPacketSpeed: 6
+  m_MaxPacketSpeed: 15
+  m_PacketLifetime: 7
+  m_ScoreText: {fileID: 0}
+  m_MultiplierText: {fileID: 0}
+  m_DebugText: {fileID: 0}
