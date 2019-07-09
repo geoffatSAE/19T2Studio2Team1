@@ -85,7 +85,7 @@ namespace TO5.Wires
             {
                 float alpha = 0f;
                 if (!switching)
-                    // y = 1^2 (Parabola). We need to convert alpha from 0-1 to -1 to 1
+                    // y = x^2 (Parabola). We need to convert alpha from 0-1 to -1 to 1
                     alpha = Mathf.Pow((progress * 2f) - 1f, 2f);   
 
                 m_BorderMaterial.SetFloat("_AlphaScale", alpha);
