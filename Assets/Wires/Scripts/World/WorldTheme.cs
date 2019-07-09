@@ -55,6 +55,7 @@ namespace TO5.Wires
                         m_CurrentWire = jumper.spark.GetWire();
 
                         m_WorldAesthetics.SetActiveAesthetics(m_CurrentWire);
+                        m_WorldAesthetics.SetIntensity(m_MultiplierStage);
 
                         WireFactory factory = m_CurrentWire.factory;
                         if (factory)
@@ -112,6 +113,8 @@ namespace TO5.Wires
                 WireFactory factory = m_CurrentWire.factory;
                 if (factory)
                     m_WorldMusic.SetActiveMusic(factory.GetMusic(m_MultiplierStage));
+
+                m_WorldAesthetics.SetIntensity(m_MultiplierStage);
             } 
         }
 

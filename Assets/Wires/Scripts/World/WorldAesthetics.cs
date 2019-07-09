@@ -10,10 +10,13 @@ namespace TO5.Wires
     /// </summary>
     public class WorldAesthetics : MonoBehaviour
     {
-        [SerializeField] private Transform m_BorderPivot;       // Pivot for the outer wires border
-        [SerializeField] private Renderer m_BorderRenderer;     // Renderer for the outer wires border
-        private Material m_BorderMaterial;                      // Material of the outer wires border (expects _Color, _MainTex and _AlphaScale)
-        private float m_CachedBorderSize = 1f;                  // Cached size of border when starting
+        [SerializeField] private Transform m_BorderPivot;               // Pivot for the outer wires border
+        [SerializeField] private Renderer m_BorderRenderer;             // Renderer for the outer wires border
+        [SerializeField] private Vector2[] m_BorderPanningSpeeds;       // Panning speeds for outer borders material for each multiplier stage
+        private Material m_BorderMaterial;                              // Material of the outer wires border (expects _Color, _MainTex, _PanningSpeed and _AlphaScale)
+        private float m_CachedBorderSize = 1f;                          // Cached size of border when starting
+
+        [SerializeField] private ParticleSystem m_BorderParticles;      // Particle system for the outer wires particles
 
         private Wire m_ActiveWire;                              // Wire player is either on or travelling to
         private bool m_HaveSwitched = false;                    // If blend has switched (from old to new)
@@ -61,6 +64,22 @@ namespace TO5.Wires
 
                 if (m_BorderRenderer)
                     m_BorderRenderer.enabled = true;
+            }
+        }
+
+        /// <summary>
+        /// Set the intensity of the aesthetics
+        /// </summary>
+        /// <param name="intensity"></param>
+        public void SetIntensity(int intensity)
+        {
+            if (m_BorderRenderer)
+            {
+                if (intensity < m_BorderPanningSpeeds.Length)
+                {
+                    Vector2 speed = m_BorderPanningSpeeds[intensity];
+                    m_BorderMaterial.SetVector("_PanningSpeed", new Vector4(speed.x, speed.y, 0f, 0f));
+                }
             }
         }
 

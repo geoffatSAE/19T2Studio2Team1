@@ -16,6 +16,9 @@ namespace TO5.Wires
         // The color for the skybox
         public Color skyboxColor { get { return m_SkyboxColor; } }
 
+        // The color for the outer wires particles
+        public Color particleColor { get { return m_Color; } }
+
         // The texture for the outer wire
         public Texture2D borderTexture { get { return m_BorderTexture; } }
 

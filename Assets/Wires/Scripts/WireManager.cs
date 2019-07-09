@@ -103,7 +103,7 @@ namespace TO5.Wires
         [SerializeField] private ScoreManager m_ScoreManager;                   // Manager for scoring
         [SerializeField] private bool m_TickWhenJumping = true;                 // If wires/sparks should tick while player is jumping
         [SerializeField] private bool m_WireDistanceOnly = false;               // If we should ignore distance gained via jumping for spawning wires
-        [SerializeField] private bool m_FailJumpResetsMultiplier = false;       // If multiplier completely resets upon reaching end of a wire
+        [SerializeField] private bool m_JumpFailResetsMultiplier = false;       // If multiplier completely resets upon reaching end of a wire
 
         // Spot for hiding inactive objects
         public Vector3 disabledSpot { get { return m_DisabledSpot ? m_DisabledSpot.position : Vector3.zero; } }
@@ -342,7 +342,7 @@ namespace TO5.Wires
 
                 if (m_ScoreManager)
                 {
-                    if (m_FailJumpResetsMultiplier)
+                    if (m_JumpFailResetsMultiplier)
                         m_ScoreManager.ResetMultiplier();
                     else
                         m_ScoreManager.DecreaseMultiplier(1);

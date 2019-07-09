@@ -236,6 +236,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_BorderPivot: {fileID: 6906931480843660677}
   m_BorderRenderer: {fileID: 6906931479638530775}
+  m_BorderPanningSpeeds:
+  - {x: 2.5, y: 15}
+  - {x: 7.5, y: 30}
+  - {x: 15, y: 50}
+  m_BorderParticles: {fileID: 0}
 --- !u!1 &3395505407192623774
 GameObject:
   m_ObjectHideFlags: 0
