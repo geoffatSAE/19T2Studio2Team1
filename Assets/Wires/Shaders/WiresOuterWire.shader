@@ -17,7 +17,7 @@ Shader "Wires/OuterWire"
 
 		CGPROGRAM
 
-		#pragma surface surf Lambert alpha:blend noshadow novertexlights
+		#pragma surface surf Lambert alpha:blend nolighting noshadow
 
 		struct Input 
 		{
@@ -41,7 +41,7 @@ Shader "Wires/OuterWire"
 
 			fixed4 c = _Color * (x * normal.x + y * normal.y + z * normal.z);
 			o.Albedo = c.rgb;
-			o.Alpha = 0.1f * _AlphaScale;
+			o.Alpha = 0.2f * _AlphaScale;
 		}
 		ENDCG
 	}

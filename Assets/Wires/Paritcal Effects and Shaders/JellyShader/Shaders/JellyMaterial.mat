@@ -34,6 +34,6 @@ Material:
     - _WaveFalloff: 1
     - _WaveSpeed: 10
     m_Colors:
-    - _Color: {r: 0.31985295, g: 0.74264693, b: 0.85294116, a: 1}
+    - _Color: {r: 1, g: 0.94731724, b: 0, a: 1}
     - _ImpactOrigin: {r: -5, g: 0, b: 0, a: 0}
     - _ModelOrigin: {r: 0, g: 0, b: 0, a: 0}
