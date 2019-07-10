@@ -60,7 +60,7 @@ namespace TO5.Wires
         {
             // We move in the opposite direction of sparks (so we subtract)
             step *= m_Speed;
-            transform.position -= WireManager.WirePlane * step;
+            transform.position -= WireManager.WirePlane * step;    
         }
 
         /// <summary>

@@ -38,6 +38,11 @@ namespace TO5.Wires
             m_Collider = GetComponent<SphereCollider>();
         }
 
+        void Update()
+        {
+            m_Renderer.material.SetVector("_InfluenceVector", transform.position + new Vector3(5, 0, 0));
+        }
+
         /// <summary>
         /// Activates this spark
         /// </summary>

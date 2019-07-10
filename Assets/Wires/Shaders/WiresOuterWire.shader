@@ -6,7 +6,7 @@ Shader "Wires/OuterWire"
 {
     Properties
     {
-		_Color("Color", Color) = (1, 1, 1, 1)
+		_Color ("Color", Color) = (1, 1, 1, 1)
         _MainTex ("Texture", 2D) = "white" {}
 		_PanningSpeed ("Panning Speed (X, Y)", Vector) = (1, 0, 0, 0)
 		_AlphaScale ("Alpha Scale", Range(0, 1)) = 1
@@ -32,16 +32,20 @@ Shader "Wires/OuterWire"
 
 		void surf(Input IN, inout SurfaceOutput o) 
 		{
-			float3 normal = abs(IN.worldNormal);
+			// Sum up weights to one
+			float3 blend = abs(IN.worldNormal);
+			blend /= dot(blend, 1.f);
+
+			// Move texture (we sample from different location)
 			float2 offset = _PanningSpeed * _Time.x;
 
 			fixed4 x = tex2D(_MainTex, IN.worldPos.yz + offset);
 			fixed4 y = tex2D(_MainTex, IN.worldPos.xz + offset);
 			fixed4 z = tex2D(_MainTex, IN.worldPos.xy + offset);
 
-			fixed4 c = _Color * (x * normal.x + y * normal.y + z * normal.z);
+			fixed4 c = _Color * (x * blend.x + y * blend.y + z * blend.z);
 			o.Albedo = c.rgb;
-			o.Alpha = 0.2f * _AlphaScale;
+			o.Alpha = 0.2 * _AlphaScale;
 		}
 		ENDCG
 	}
