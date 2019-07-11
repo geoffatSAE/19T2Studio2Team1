@@ -82,6 +82,9 @@ namespace TO5.Wires
                 }
             }
 
+            if (m_ScoreText)
+                m_ScoreText.text = string.Format("Score: {0}\nMultiplier: {1}", Mathf.FloorToInt(m_Score), m_Multiplier);
+
            // #if UNITY_EDITOR
                 // Debug text
                 if (m_DebugText)

@@ -48,7 +48,7 @@ namespace TO5.Wires
             trans.localEulerAngles = new Vector3(m_RotationY, m_RotationX, 0f);
 
             if (Input.GetMouseButtonDown(0))
-                    TraceSpark(trans.position, trans.rotation);
+                TraceSpark(trans.position, trans.rotation);
         }
     }
 }
