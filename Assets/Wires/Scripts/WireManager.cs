@@ -45,22 +45,6 @@ namespace TO5.Wires
     }
 
     /// <summary>
-    /// Parameters used for generating wires (including sparks)
-    /// </summary>
-    [System.Serializable]
-    public class WireGenerationParams
-    {                                     
-        public int m_MinSegments = 8;                            // Min segments per wire
-        public int m_MaxSegments = 12;                           // Max segments per wire
-        public float m_MinSpawnInterval = 2f;                    // Min seconds between spawning wires
-        public float m_MaxSpawnInterval = 3f;                    // Max seconds between spawning wires
-        public int m_SparkSpawnSegmentOffset = 5;                // Offset from current segment to spawn wires
-        [Min(0)] public int m_SparkSpawnSegmentRange = 3;        // Range from offset to spawn wires (between -Value and Value)
-        [Min(0)] public int m_SparkSpawnSegmentDelay = 3;        // Segments to wait before spawning spark for wire
-        [Range(0, 1)] public float m_DefectiveWireRate = 0.1f;   // Chance of wire be defective (0 for never, 1 for always)
-    }
-
-    /// <summary>
     /// Manager for the wires and sparks that spawn in. Offers event for listeners
     /// </summary>
     // TODO: Move score manager from here to WiresGameMode
@@ -83,25 +67,25 @@ namespace TO5.Wires
 
         [Header("Sparks")]
         public Spark m_SparkPrefab;                     // The sparks to use
-        public float m_SparkSpeed = 1f;                 // Shared speed of all sparks
-        public float m_SparkSwitchInterval = 2f;        // Interval for sparks switching between on and off
 
         private ObjectPool<Spark> m_Sparks = new ObjectPool<Spark>();       // Sparks being managed
 
         [Header("Wires")]
-        [SerializeField] private int m_InitialSegments = 10;    // Segments to not start anything
+        [SerializeField] private int m_InitialSegments = 10;    // Segments for initial starting wire
         [SerializeField] WireFactory[] m_Factories;             // Factories for generating wire types
         [SerializeField] WireAnimator m_WireAnimator;           // Animator for the wire
 
         public Wire m_WirePrefab;
 
         [Header("Generation")]
-        [SerializeField] private float m_MinWireOffset = 5f;                    // Min distance away to spawn wires
-        [SerializeField] private float m_MaxWireOffset = 20f;                   // Max distance away to spawn wires
-        [SerializeField] private WireGenerationParams[] m_WireParams;           // Parameters for wire generation for each multiplier stage
+        [SerializeField] private float m_MinWireOffset = 5f;                            // Min distance away to spawn wires
+        [SerializeField] private float m_MaxWireOffset = 20f;                           // Max distance away to spawn wires
+        [SerializeField, Range(0, 1)] private float m_BottomCircleCutoff = 0.7f;        // Cutoff from bottom of spawn circle when spawning wires
+        [SerializeField] private WireStageProperties[] m_WireProperties;                // Properties for wire behavior for each multiplier stage
 
         private ObjectPool<Wire> m_Wires = new ObjectPool<Wire>();              // Wires being managed
         private float m_CachedSegmentDistance = 1f;                             // Distance between the start and end of a segment
+        private WireStageProperties m_ActiveWireProperties;                     // Properties for current stage
 
         // Score manager to track multiplier
         public ScoreManager scoreManager { get { return m_ScoreManager; } }
@@ -110,7 +94,6 @@ namespace TO5.Wires
         [SerializeField] private Transform m_DisabledSpot;                      // Spot to hide disabled objects
         [SerializeField] private ScoreManager m_ScoreManager;                   // Manager for scoring
         [SerializeField] private bool m_TickWhenJumping = true;                 // If wires/sparks should tick while player is jumping
-        [SerializeField] private bool m_WireDistanceOnly = false;               // If we should ignore distance gained via jumping for spawning wires
         [SerializeField] private bool m_JumpFailResetsMultiplier = false;       // If multiplier completely resets upon reaching end of a wire
 
         // Spot for hiding inactive objects
@@ -128,7 +111,12 @@ namespace TO5.Wires
         void Awake()
         {
             if (m_ScoreManager)
+            {
                 m_ScoreManager.Initialize(this);
+                m_ScoreManager.OnMultiplierUpdated += MultiplierUpdated;
+
+                m_ActiveWireProperties = GetWireProperties(m_ScoreManager.multiplierStage);
+            }
         }
 
         void Update()
@@ -138,9 +126,11 @@ namespace TO5.Wires
             // Don't tick when player is jumping
             if (m_TickWhenJumping || !sparkJumper.isJumping)         
             {
+                WireStageProperties wireProps = GetStageWireProperties();
+
                 // Step is influenced by multiplier stage
                 float gameSpeed = m_ScoreManager ? m_ScoreManager.multiplierStage + 1 : 1f;
-                step = m_SparkSpeed * gameSpeed * Time.deltaTime;
+                step = wireProps.m_SparkSpeed * gameSpeed * Time.deltaTime;
 
                 for (int i = 0; i < m_Wires.activeCount; ++i)
                 {
@@ -190,7 +180,7 @@ namespace TO5.Wires
                 // Attach player to initial wire
                 {
                     WireFactory factory = GetRandomWireFactory();
-                    Wire spawnWire = GenerateWire(transform.position, m_InitialSegments, 0, false, factory);
+                    Wire spawnWire = GenerateWire(transform.position, m_InitialSegments, 0, 0, factory);
 
                     Assert.IsNotNull(spawnWire.spark);
 
@@ -238,7 +228,7 @@ namespace TO5.Wires
         {
             const int maxAttempts = 5;
             Vector3 spawnCenter = GetSpawnCircleCenter();
-            WireGenerationParams wireParams = GetStageWireParams();
+            WireStageProperties wireProps = GetStageWireProperties();
 
             Vector3 start = transform.position;
             bool success = true;
@@ -248,8 +238,8 @@ namespace TO5.Wires
             while (++attempts <= maxAttempts)
             {
                 Vector2 circleOffset = GetRandomSpawnCircleOffset();
-                int segmentRange = Random.Range(-wireParams.m_SparkSpawnSegmentRange, wireParams.m_SparkSpawnSegmentRange + 1);
-                int segmentOffset = wireParams.m_SparkSpawnSegmentOffset + segmentRange;
+                int segmentRange = Random.Range(-wireProps.m_SparkSpawnSegmentRange, wireProps.m_SparkSpawnSegmentRange + 1);
+                int segmentOffset = wireProps.m_SparkSpawnSegmentOffset + segmentRange;
 
                 start = spawnCenter + new Vector3(circleOffset.x, circleOffset.y, 0f);
                 start.z += segmentOffset * m_CachedSegmentDistance;
@@ -265,19 +255,27 @@ namespace TO5.Wires
                 return null;
             }
 
-            int segments = Random.Range(wireParams.m_MinSegments, wireParams.m_MaxSegments + 1);
-            int sparkDelay = instantSpark ? 0 : Random.Range(0, wireParams.m_SparkSpawnSegmentDelay + 1);
+            int segments = Random.Range(wireProps.m_MinSegments, wireProps.m_MaxSegments + 1);
+            int sparkDelay = instantSpark ? 0 : Random.Range(0, wireProps.m_SparkSpawnSegmentDelay + 1);
 
-            // Wire is defective if scaled chance is less than random number
-            float defectiveChance = wireParams.m_DefectiveWireRate;
-            bool defective = defectiveChance > 0f ? Random.Range(0f, 100f) < (defectiveChance * 100f) : false;
+            // Wires can never be defective if switch interval is zero
+            float sparkInterval = wireProps.m_SparkSwitchInterval;
+            if (sparkInterval > 0f)
+            {              
+                float defectiveChance = wireProps.m_DefectiveWireChance;
+
+                // Wire is defective if scaled chance is less than random number
+                bool defective = defectiveChance > 0f ? Random.Range(0f, 100f) < (defectiveChance * 100f) : false;
+                if (!defective)
+                    sparkInterval = 0f;
+            }
 
             // Random factory (themes)
             WireFactory factory = null;
             if (m_Factories.Length > 0)
                 factory = m_Factories[Random.Range(0, m_Factories.Length)];
 
-            return GenerateWire(start, segments, sparkDelay, defective, factory);
+            return GenerateWire(start, segments, sparkDelay, sparkInterval, factory);
         }
 
         /// <summary>
@@ -286,10 +284,10 @@ namespace TO5.Wires
         /// <param name="start">Start position of the wire</param>
         /// <param name="segments">Segments of the wire</param>
         /// <param name="sparkDelay">Delay before spawning spark</param>
-        /// <param name="defective">If wire is defective</param>
+        /// <param name="sparkInterval">Interval for spark switching status</param>
         /// <param name="factory">Factory for wires aesthetics</param>
         /// <returns>Wire with properties or null</returns>
-        private Wire GenerateWire(Vector3 start, int segments, int sparkDelay, bool defective, WireFactory factory)
+        private Wire GenerateWire(Vector3 start, int segments, int sparkDelay, float sparkInterval, WireFactory factory)
         {
             Wire wire = GetWire();
             if (!wire)
@@ -298,9 +296,9 @@ namespace TO5.Wires
             wire.ActivateWire(start, segments, m_CachedSegmentDistance, factory);
 
             if (sparkDelay > 0)
-                StartCoroutine(DelaySparkActivation(sparkDelay, wire, defective));
+                StartCoroutine(DelaySparkActivation(sparkDelay, wire, sparkInterval));
             else
-                GenerateSpark(wire, defective ? m_SparkSwitchInterval : 0f);
+                GenerateSpark(wire, sparkInterval);
 
             return wire;
         }
@@ -383,10 +381,10 @@ namespace TO5.Wires
             if (m_SparkJumper && m_SparkJumper.spark)
             {
                 Vector3 center = m_SparkJumper.spark.transform.position;
-                WireGenerationParams wireParams = GetStageWireParams();
+                WireStageProperties wireProps = GetStageWireProperties();
 
                 // We would use Ceil in thise case, but this function uses floor
-                int segment = GetPositionSegment(center) + 1 + wireParams.m_SparkSpawnSegmentOffset;
+                int segment = GetPositionSegment(center) + 1 + wireProps.m_SparkSpawnSegmentOffset;
                 center.z = m_CachedSegmentDistance * segment;
 
                 return center;
@@ -401,7 +399,12 @@ namespace TO5.Wires
         /// <returns>Random offset</returns>
         public Vector2 GetRandomSpawnCircleOffset()
         {
-            return Random.insideUnitCircle.normalized * Random.Range(m_MinWireOffset, m_MaxWireOffset);
+            // This has a super teny tiny chance of looping forever
+            Vector2 direction = Random.insideUnitCircle.normalized;
+            while (Vector2.Dot(direction, Vector2.down) > m_BottomCircleCutoff)
+                direction = Random.insideUnitCircle.normalized;
+
+            return direction * Random.Range(m_MinWireOffset, m_MaxWireOffset);
         }
 
         /// <summary>
@@ -652,32 +655,35 @@ namespace TO5.Wires
         }
 
         /// <summary>
-        /// Gets wire generation parameters for index. Checks if params exist for
+        /// Gets wire generation properties for index. Checks if properties exist for
         /// index, either creating a new set or getting best replacement if it doesn't
         /// </summary>
-        /// <param name="index">Index of params</param>
-        /// <returns>Valid params</returns>
-        private WireGenerationParams GetWireParams(int index)
+        /// <param name="index">Index of properties</param>
+        /// <returns>Valid properties</returns>
+        private WireStageProperties GetWireProperties(int index)
         {
-            if (m_WireParams == null || m_WireParams.Length == 0)
-                return new WireGenerationParams();
+            if (m_WireProperties == null || m_WireProperties.Length == 0)
+                return new WireStageProperties();
 
-            // We use the latest params if index is still out of range
-            index = Mathf.Clamp(index, 0, m_WireParams.Length - 1);
-            return m_WireParams[index];
+            // We use the latest properties if index is still out of range
+            index = Mathf.Clamp(index, 0, m_WireProperties.Length - 1);
+            return m_WireProperties[index];
         }
 
         /// <summary>
-        /// Get wire generation parameters for current multiplier stage
+        /// Get wire generation properties for current multiplier stage
         /// </summary>
-        /// <returns>Valid params</returns>
-        private WireGenerationParams GetStageWireParams()
+        /// <returns>Valid properties</returns>
+        private WireStageProperties GetStageWireProperties()
         {
+            if (m_ActiveWireProperties != null)
+                return m_ActiveWireProperties;
+
             int stage = 0;
             if (m_ScoreManager)
                 stage = m_ScoreManager.multiplierStage;
 
-            return GetWireParams(stage);
+            return GetWireProperties(stage);
         }
 
         /// <summary>
@@ -687,8 +693,8 @@ namespace TO5.Wires
         {
             while (enabled)
             {
-                WireGenerationParams wireParams = GetStageWireParams();
-                float delay = Random.Range(wireParams.m_MinSpawnInterval, wireParams.m_MaxSpawnInterval);
+                WireStageProperties wireProps = GetStageWireProperties();
+                float delay = Random.Range(wireProps.m_MinSpawnInterval, wireProps.m_MaxSpawnInterval);
 
                 yield return new WaitForSeconds(delay);
 
@@ -701,11 +707,11 @@ namespace TO5.Wires
         /// </summary>
         /// <param name="delay">Segments to pass before activating</param>
         /// <param name="wire">Wire to activate</param>
-        /// <param name="defective">If wire is defective</param>
-        private IEnumerator DelaySparkActivation(int delay, Wire wire, bool defective)
+        /// <param name="interval">Interval for spark status change</param>
+        private IEnumerator DelaySparkActivation(int delay, Wire wire, float interval)
         {
             yield return new WaitForSegment(this, GetJumpersSegment() + delay);
-            GenerateSpark(wire, defective ? m_SparkSwitchInterval : 0f);
+            GenerateSpark(wire, interval);
         }
 
         /// <summary>
@@ -720,6 +726,14 @@ namespace TO5.Wires
 
                 m_JumpPenalty = false;
             }
+        }
+
+        /// <summary>
+        /// Notify from score manager that players multiplier has changed
+        /// </summary>
+        private void MultiplierUpdated(float multiplier, int stage)
+        {
+            m_ActiveWireProperties = GetWireProperties(stage);
         }
 
         void OnDrawGizmos()
@@ -756,6 +770,27 @@ namespace TO5.Wires
                             Vector3 end = center + ndir * m_MaxWireOffset;
                             Gizmos.DrawLine(start, end);
                         }
+                    }
+
+                    Gizmos.color = Color.red;
+
+                    const float cutoffStart = Mathf.PI * 1.5f;
+                    float cutoffInverse = 1 - m_BottomCircleCutoff;
+
+                    // Left cutoff line
+                    {
+                        float rad = cutoffStart - (Mathf.PI * 0.5f * cutoffInverse);
+                        Vector3 dir = new Vector3(Mathf.Cos(rad), Mathf.Sin(rad), 0f);
+
+                        Gizmos.DrawLine(center, center + dir * m_MaxWireOffset);
+                    }
+
+                    // Right cutoff line
+                    {
+                        float rad = cutoffStart + (Mathf.PI * 0.5f * cutoffInverse);
+                        Vector3 dir = new Vector3(Mathf.Cos(rad), Mathf.Sin(rad), 0f);
+
+                        Gizmos.DrawLine(center, center + dir * m_MaxWireOffset);
                     }
                 }
 

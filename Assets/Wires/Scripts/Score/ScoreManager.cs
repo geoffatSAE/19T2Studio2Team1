@@ -29,14 +29,14 @@ namespace TO5.Wires
         [SerializeField] private float m_MultiplierIncreaseInterval = 15f;      // Seconds before players multiplier increased
 
         [Header("Packets")]
-        [SerializeField] private DataPacket m_PacketPrefab;             // Prefab for data packets
-        [SerializeField] private int m_MinPacketSpawnInterval = 10;     // Min interval between spawning packets
-        [SerializeField] private int m_MaxPacketSpawnInterval = 20;     // Max interval between spawning packets
-        [SerializeField] private int m_MinPacketSpawnOffset = 20;       // Min segments in front of player to spawn
-        [SerializeField] private float m_PacketSpace = 2f;              // The space packet should have (avoid overlap)
-        [SerializeField] private float m_MinPacketSpeed = 1f;           // Min speed of a packet
-        [SerializeField] private float m_MaxPacketSpeed = 2.5f;         // Max speed of a packet
-        [SerializeField] private float m_PacketLifetime = 30f;          // How long data packets last for before expiring
+        [SerializeField] private DataPacket m_PacketPrefab;                         // Prefab for data packets
+        [SerializeField] private int m_MinPacketSpawnOffset = 20;                   // Min segments in front of player to spawn
+        [SerializeField] private float m_PacketSpace = 2f;                          // The space packet should have (avoid overlap)
+        [SerializeField] private PacketStageProperties[] m_PacketProperties;        // Properties for packet behavior for each multiplier stage
+        [SerializeField, Range(0, 1)] private float m_PacketClusterChance = 0.1f;   // Chance for packets spawning in a cluster (when spawn interval elapses)
+        [SerializeField] private int m_MinPacketsPerCluster = 3;                    // Min packets to try and spawn in a cluster
+        [SerializeField] private int m_MaxPacketsPerCluster = 6;                    // Max packets to try and spawn in a cluster
+        [SerializeField] private int m_PacketClusterRate = 5;                       // Rates at which packet clusters happen (clusters only spawn after X attempts since the last)           
 
         // Space required for packets
         public float packetSpace { get { return m_PacketSpace; } }
@@ -45,6 +45,8 @@ namespace TO5.Wires
         public int activePackets { get { return m_DataPackets.activeCount; } }
 
         private ObjectPool<DataPacket> m_DataPackets = new ObjectPool<DataPacket>();    // Packets being managed
+        private PacketStageProperties m_ActivePacketProperties;                         // Properties for current stage
+        private int m_PacketSpawnsSinceLastCluster = 0;                                 // Amount of random packets spawn attempts since the last packet cluster
 
         [Header("UI")]
         public Text m_ScoreText;                    // Text for writing score
@@ -66,6 +68,11 @@ namespace TO5.Wires
         private int m_Stage;                            // Multiplier stage
         private Coroutine m_MultiplierTick;             // Coroutine for multipliers tick
         private Coroutine m_PacketSpawn;                // Coroutine for spawning packets
+
+        void Awake()
+        {
+            enabled = false;
+        }
 
         void Update()
         {
@@ -99,11 +106,13 @@ namespace TO5.Wires
         /// <param name="wireManager">Wire manager</param>
         public void Initialize(WireManager wireManager)
         {
+            m_WireManager = wireManager;
+
             m_Score = 0f;
             m_Multiplier = 1f;
             m_Stage = 0;
 
-            m_WireManager = wireManager;
+            m_PacketSpawnsSinceLastCluster = 0;
         }
 
         /// <summary>
@@ -171,6 +180,8 @@ namespace TO5.Wires
                 m_Stage = Mathf.Clamp(stage, 0, m_MultiplierStages);
                 m_Multiplier = (1 << m_Stage);
 
+                m_ActivePacketProperties = GetPacketProperties(m_Stage);
+
                 if (OnMultiplierUpdated != null)
                     OnMultiplierUpdated.Invoke(m_Multiplier, m_Stage);
             }
@@ -213,11 +224,49 @@ namespace TO5.Wires
         /// <summary>
         /// Generates a data packet randomly located in the world
         /// </summary>
+        /// <param name="tryCluster">If a cluster of packets can possibly be spawned</param>
         /// <returns>Packet or null</returns>
-        private DataPacket GenerateRandomPacket()
+        // TODO: Make function specifically for spawning clusters
+        private DataPacket GenerateRandomPacket(bool tryCluster)
         {
+            // Try to spawn a cluster of packets if possible
+            if (tryCluster && m_PacketSpawnsSinceLastCluster >= m_PacketClusterRate)
+            {
+                bool cluster = m_PacketClusterChance > 0f ? Random.Range(0f, 100f) < (m_PacketClusterChance * 100f) : false;
+                if (cluster)
+                {
+                    DataPacket packet = null;
+
+                    #if UNITY_EDITOR
+                    int packetsSpawned = 0;
+                    #endif
+
+                    // Spawn a cluster!
+                    int clusterSize = Random.Range(m_MinPacketsPerCluster, m_MaxPacketsPerCluster + 1);
+                    for (int i = 0; i < clusterSize; ++i)
+                    {
+                        packet = GenerateRandomPacket(false);
+
+                        #if UNITY_EDITOR
+                        if (packet != null)
+                            ++packetsSpawned;
+                        #endif
+                    }
+
+                    #if UNITY_EDITOR
+                    Debug.Log(string.Format("Packet Cluster Spawn Results - Cluster Size: {0}, Packets Spawned: {1}", clusterSize, packetsSpawned));
+                    #endif
+
+                    // Reset after as to avoid additional increments while spawning cluster
+                    m_PacketSpawnsSinceLastCluster = 0;
+
+                    return packet;
+                }   
+            }
+
             const int maxAttempts = 5;
             Vector3 spawnCenter = m_WireManager.GetSpawnCircleCenter() + WireManager.WirePlane * (m_WireManager.segmentLength * m_MinPacketSpawnOffset);
+            PacketStageProperties packetProps = GetStagePacketProperties();
 
             Vector3 position = Vector3.zero;
             bool success = false;
@@ -240,9 +289,12 @@ namespace TO5.Wires
                 return null;
             }
 
-            float speed = Random.Range(m_MinPacketSpeed, m_MaxPacketSpeed);
+            float speed = Random.Range(packetProps.m_MinSpeed, packetProps.m_MaxSpeed);
 
-            return GeneratePacket(position, speed, m_PacketLifetime);
+            // Will be incremented while generating a cluster, but it gets reset afterwards
+            ++m_PacketSpawnsSinceLastCluster;
+
+            return GeneratePacket(position, speed, packetProps.m_Lifetime);
         }
 
         /// <summary>
@@ -294,6 +346,34 @@ namespace TO5.Wires
         }
 
         /// <summary>
+        /// Gets packet generation properties for index. Checks if properties exist for
+        /// index, either creating a new set or getting best replacement if it doesn't
+        /// </summary>
+        /// <param name="index">Index of properties</param>
+        /// <returns>Valid properties</returns>
+        private PacketStageProperties GetPacketProperties(int index)
+        {
+            if (m_PacketProperties == null || m_PacketProperties.Length == 0)
+                return new PacketStageProperties();
+
+            // We use the latest properties if index is still out of range
+            index = Mathf.Clamp(index, 0, m_PacketProperties.Length - 1);
+            return m_PacketProperties[index];
+        }
+
+        /// <summary>
+        /// Get packet generation parameters for current multiplier stage
+        /// </summary>
+        /// <returns>Valid properties</returns>
+        private PacketStageProperties GetStagePacketProperties()
+        {
+            if (m_ActivePacketProperties != null)
+                return m_ActivePacketProperties;
+
+            return GetPacketProperties(m_Stage);
+        }
+
+        /// <summary>
         /// Notify that player has collected given packet
         /// </summary>
         private void PacketCollected(DataPacket packet)
@@ -318,10 +398,12 @@ namespace TO5.Wires
         {
             while (enabled)
             {
-                int delay = Random.Range(m_MinPacketSpawnInterval, m_MaxPacketSpawnInterval + 1);
-                yield return new WaitForSegment(m_WireManager, m_WireManager.GetJumpersSegment() + delay);
+                PacketStageProperties packetProps = GetStagePacketProperties();
+                float delay = Random.Range(packetProps.m_MinSpawnInterval, packetProps.m_MaxSpawnInterval);
 
-                GenerateRandomPacket();
+                yield return new WaitForSeconds(delay);
+
+                GenerateRandomPacket(true);
             }
         }
 

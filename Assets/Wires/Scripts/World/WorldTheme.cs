@@ -102,8 +102,6 @@ namespace TO5.Wires
         /// <summary>
         /// Notify from score manager that players multiplier has changed
         /// </summary>
-        /// <param name="multiplier"></param>
-        /// <param name="stage"></param>
         private void MultiplierUpdated(float multiplier, int stage)
         {
             m_MultiplierStage = stage;

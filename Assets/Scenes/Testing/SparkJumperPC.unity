@@ -860,21 +860,16 @@ PrefabInstance:
       propertyPath: m_DebugText
       value: 
       objectReference: {fileID: 2014324680}
-    - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
-        type: 3}
-      propertyPath: m_SparkSpeed
-      value: 1.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
-        type: 3}
-      propertyPath: m_DebugText
-      value: 
-      objectReference: {fileID: 1384009259}
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_ScoreText
       value: 
       objectReference: {fileID: 283422452}
+    - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_DebugText
+      value: 
+      objectReference: {fileID: 1384009259}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0c734c134181caa47bd9ea2607cf738b, type: 3}
 --- !u!114 &1444838668 stripped
@@ -1363,16 +1358,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: SparkJumperPC
       objectReference: {fileID: 0}
-    - target: {fileID: 8646348428308405757, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
-        type: 3}
-      propertyPath: m_Sensitivity
-      value: 1.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 8646348428308405757, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
-        type: 3}
-      propertyPath: m_TraceRadius
-      value: 0.5
-      objectReference: {fileID: 0}
     - target: {fileID: 8646348427193185105, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1427,6 +1412,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8646348428308405757, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
+        type: 3}
+      propertyPath: m_Sensitivity
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8646348428308405757, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
+        type: 3}
+      propertyPath: m_TraceRadius
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb, type: 3}
