@@ -1,5 +1,35 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2390351102472782706
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7927552244697839908}
+  m_Layer: 0
+  m_Name: DisabledSpot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7927552244697839908
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2390351102472782706}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -1000, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 7946252058374095656}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7946252058374095702
 GameObject:
   m_ObjectHideFlags: 0
@@ -28,7 +58,8 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 7927552244697839908}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -47,11 +78,9 @@ MonoBehaviour:
   m_SparkJumper: {fileID: 0}
   m_SparkPrefab: {fileID: 7764608039323799731, guid: 630a43b9f7b365f4db327f062cc13540,
     type: 3}
-  m_SparkSpeed: 2.3
+  m_SparkSpeed: 1.5
   m_SparkSwitchInterval: 1.5
-  m_MinSegments: 23
-  m_MaxSegments: 50
-  m_InitialSegments: 30
+  m_InitialSegments: 15
   m_Factories:
   - {fileID: 11400000, guid: 7503fa6e476d74148be8d6db326b6477, type: 2}
   - {fileID: 11400000, guid: c2de25d8b4bac2d40a177e6c8be5a710, type: 2}
@@ -60,18 +89,34 @@ MonoBehaviour:
   m_WireAnimator: {fileID: 0}
   m_WirePrefab: {fileID: 4698685643518956546, guid: 1f8155c3339076843a6198e146cab368,
     type: 3}
-  m_MinSpawnInterval: 5
-  m_MaxSpawnInterval: 10
-  m_MinWireOffset: 8
+  m_MinWireOffset: 5
   m_MaxWireOffset: 20
-  m_SegmentOffset: 5
-  m_MaxSegmentOffsetRange: 30
-  m_MaxSparkSegmentDelay: 1
-  m_DefectiveWireRates:
-  - 0.1
-  - 0.15
-  - 0.2
-  m_DisabledSpot: {fileID: 0}
+  m_WireParams:
+  - m_MinSegments: 12
+    m_MaxSegments: 16
+    m_MinSpawnInterval: 2
+    m_MaxSpawnInterval: 3
+    m_SparkSpawnSegmentOffset: 5
+    m_SparkSpawnSegmentRange: 3
+    m_SparkSpawnSegmentDelay: 3
+    m_DefectiveWireRate: 0.1
+  - m_MinSegments: 18
+    m_MaxSegments: 22
+    m_MinSpawnInterval: 1.5
+    m_MaxSpawnInterval: 2.5
+    m_SparkSpawnSegmentOffset: 5
+    m_SparkSpawnSegmentRange: 3
+    m_SparkSpawnSegmentDelay: 3
+    m_DefectiveWireRate: 0.15
+  - m_MinSegments: 24
+    m_MaxSegments: 28
+    m_MinSpawnInterval: 1
+    m_MaxSpawnInterval: 2
+    m_SparkSpawnSegmentOffset: 5
+    m_SparkSpawnSegmentRange: 3
+    m_SparkSpawnSegmentDelay: 3
+    m_DefectiveWireRate: 0.2
+  m_DisabledSpot: {fileID: 7927552244697839908}
   m_ScoreManager: {fileID: 7946252058374095657}
   m_TickWhenJumping: 0
   m_WireDistanceOnly: 1
