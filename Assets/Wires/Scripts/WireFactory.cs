@@ -34,10 +34,11 @@ namespace TO5.Wires
         /// <returns>Audio clip or null</returns>
         public AudioClip GetMusic(int index)
         {
-            if (index < m_Music.Length)
-                return m_Music[index];
+            if (m_Music == null || m_Music.Length == 0)
+                return null;
 
-            return null;
+            index = Mathf.Clamp(index, 0, m_Music.Length - 1); ;
+            return m_Music[index];
         }
             
         //private MaterialPropertyBlock m_WireMaterialProperties;
