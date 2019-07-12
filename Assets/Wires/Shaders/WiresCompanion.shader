@@ -3,15 +3,16 @@
     Properties
     {
         _MainTex ("Texture", 2D) = "white" { }
+		_Tint ("Tint", COLOR) = (1, 1, 1, 1)
 		_MinAlpha ("Min Alpha", Range(0, 1)) = 0.2
-		_T("T", Float) = 0.3
+		_Encapsulation ("Encapsulation", Range(0, 1)) = 0.2
     }
     SubShader
     {
         Tags { "RenderType" = "Transparent" "Queue" = "Transparent" }
 
 		Blend SrcAlpha OneMinusSrcAlpha
-		//ZWrite Off
+		ZWrite Off
 
         Pass
         {
@@ -31,35 +32,38 @@
             {
                 float3 uv : TEXCOORD0;
                 float4 vertex : SV_POSITION;
-				float3 worldPos : TEXCOORD1;
+				float3 objectPos : TEXCOORD1;
             };
 
             sampler2D _MainTex;
+			fixed4 _Tint;
 			fixed _MinAlpha;
-			fixed _T;
+			fixed _Encapsulation;
 
             v2f vert (appdata v)
             {
-				fixed3 displacement = normalize(_WorldSpaceCameraPos - mul(unity_ObjectToWorld, v.vertex).xyz);
-				fixed3 viewDir = WorldSpaceViewDir(v.vertex);
-
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
 				o.uv.xy = v.uv;
-				o.worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
-				
-				fixed2 t = mul(UNITY_MATRIX_V, mul(unity_ObjectToWorld, v.vertex));
-				fixed l = ceil(length(t) - _T);
-				o.uv.z = max(l, _MinAlpha);
-				
-
+				o.objectPos = v.vertex;
+			
                 return o;
             }
 
             fixed4 frag (v2f i) : SV_Target
             {
-				fixed4 col = fixed4(1, 0, 0, i.uv.z);
-                return col;
+				fixed4 col = tex2D(_MainTex, i.uv);
+
+				// Direction from vertex world position to camera
+				fixed3 posDir = normalize(WorldSpaceViewDir(fixed4(i.objectPos, 1)));
+
+				// Cameras forward vector
+				fixed3 camDir = UNITY_MATRIX_V[2].xyz;
+
+				fixed d = dot(camDir, posDir);
+				col.a = max(clamp(((1 - d) * 2) / _Encapsulation, 0, 1), _MinAlpha);
+
+				return col *_Tint;
             }
             ENDCG
         }
