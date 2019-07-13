@@ -614,7 +614,7 @@ PrefabInstance:
     - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_InitialSegments
-      value: 200
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
