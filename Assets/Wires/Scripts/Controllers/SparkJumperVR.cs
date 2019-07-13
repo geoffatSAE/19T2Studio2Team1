@@ -20,12 +20,22 @@ namespace TO5.Wires
 
             #if UNITY_EDITOR
             // Oculus Rift is used for testing in editor
-            if (OVRInput.GetDown(OVRInput.Button.One))
-                TraceSpark(GetControllerPosition(), OVRInput.GetLocalControllerRotation(ControllerType));
+            {
+                if (OVRInput.GetDown(OVRInput.Button.One))
+                    TraceWorld(GetControllerPosition(), OVRInput.GetLocalControllerRotation(ControllerType));
+
+                if (OVRInput.GetDown(OVRInput.Button.Two))
+                    ActivateBoost();
+            }
             #else
             // Oculus Go is used for packaged builds
-            if (OVRInput.GetDown(OVRInput.Button.PrimaryIndexTrigger))
-                TraceSpark(GetControllerPosition(), OVRInput.GetLocalControllerRotation(ControllerType));
+            {
+                if (OVRInput.GetDown(OVRInput.Button.PrimaryIndexTrigger))
+                    TraceWorld(GetControllerPosition(), OVRInput.GetLocalControllerRotation(ControllerType));
+
+                if (OVRInput.GetDown(OVRInput.Button.PrimaryTouchPad))
+                    ActivateBoost();
+            }
             #endif
         }
 

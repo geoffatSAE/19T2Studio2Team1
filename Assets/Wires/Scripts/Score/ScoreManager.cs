@@ -36,7 +36,12 @@ namespace TO5.Wires
         [SerializeField, Range(0, 1)] private float m_PacketClusterChance = 0.1f;   // Chance for packets spawning in a cluster (when spawn interval elapses)
         [SerializeField] private int m_MinPacketsPerCluster = 3;                    // Min packets to try and spawn in a cluster
         [SerializeField] private int m_MaxPacketsPerCluster = 6;                    // Max packets to try and spawn in a cluster
-        [SerializeField] private int m_PacketClusterRate = 5;                       // Rates at which packet clusters happen (clusters only spawn after X attempts since the last)           
+        [SerializeField] private int m_PacketClusterRate = 5;                       // Rates at which packet clusters happen (clusters only spawn after X attempts since the last) 
+
+        [Header("Boost")]
+        [SerializeField] private float m_BoostChargeRate = 0.83f;                   // Boost player earns per second
+        [SerializeField] private float m_BoostDepletionRate = 10f;                  // Boost player consumes per second (when active)
+        [SerializeField] private float m_BoostMultiplier = 2f;                      // Multipler all score is scaled by when boost is active
 
         // Space required for packets
         public float packetSpace { get { return m_PacketSpace; } }
@@ -56,16 +61,28 @@ namespace TO5.Wires
         [SerializeField] private Text m_DebugText;      // Text for writing debug data
        // #endif
 
-        // Scores current multiplier
+        // Current multiplier
         public float multiplier { get { return m_Multiplier; } }
 
         // Multipliers current stage
         public int multiplierStage { get { return m_Stage; } }
 
+        // Total multipler (default * boost)
+        public float totalMultiplier { get { return m_Multiplier * (m_BoostActive ? m_BoostMultiplier : 1f); } }
+
+        // If boost is ready
+        public bool boostReady { get { return m_Boost >= 100f; } }
+
+        // If boost is active
+        public bool boostActive { get { return m_BoostActive; } }
+
         private WireManager m_WireManager;              // Manager for wires
+        private SparkJumper m_SparkJumper;              // Players spark jumper
         private float m_Score;                          // Players score
         private float m_Multiplier;                     // Players multiplier
         private int m_Stage;                            // Multiplier stage
+        private float m_Boost;                          // Players boost (Between 0 and 100)
+        private bool m_BoostActive;                     // If boost is active
         private Coroutine m_MultiplierTick;             // Coroutine for multipliers tick
         private Coroutine m_PacketSpawn;                // Coroutine for spawning packets
 
@@ -76,11 +93,25 @@ namespace TO5.Wires
 
         void Update()
         {
-            m_Score += m_ScorePerSecond * m_Multiplier * Time.deltaTime;
+            m_Score += m_ScorePerSecond * totalMultiplier * Time.deltaTime;
+
+            // Tick boost
+            if (m_SparkJumper)
+            {
+                if (m_BoostActive)
+                {
+                    m_Boost = Mathf.Max(0, m_Boost - (m_BoostDepletionRate * Time.deltaTime));
+                    m_BoostActive = m_Boost > 0f;
+                }
+                else if (!m_SparkJumper.isDrifting)
+                {
+                    m_Boost = Mathf.Min(100, m_Boost + (m_BoostChargeRate * Time.deltaTime));
+                }
+            }
 
             // Tick packets
             {
-                float step = Time.deltaTime;// * m_Multiplier;
+                float step = Time.deltaTime;
 
                 for (int i = 0; i < m_DataPackets.activeCount; ++i)
                 {
@@ -90,13 +121,13 @@ namespace TO5.Wires
             }
 
             if (m_ScoreText)
-                m_ScoreText.text = string.Format("Score: {0}\nMultiplier: {1}", Mathf.FloorToInt(m_Score), m_Multiplier);
+                m_ScoreText.text = string.Format("Score: {0}\nMultiplier: {1}", Mathf.FloorToInt(m_Score), totalMultiplier);
 
            // #if UNITY_EDITOR
                 // Debug text
                 if (m_DebugText)
-                m_DebugText.text = string.Format("Score: {0}\nMultiplier: {1}\nMultiplier Stage: {2}\nPackets Pool Size: {3}\nPackets Active: {4}", 
-                    Mathf.FloorToInt(m_Score), m_Multiplier, m_Stage, m_DataPackets.Count, m_DataPackets.activeCount);
+                m_DebugText.text = string.Format("Score: {0}\nMultiplier: {1}\nMultiplier Stage: {2}\nPackets Pool Size: {3}\nPackets Active: {4}\nBoost Meter: {5}\nBoost Active: {6}", 
+                    Mathf.FloorToInt(m_Score), m_Multiplier, m_Stage, m_DataPackets.Count, m_DataPackets.activeCount, Mathf.FloorToInt(m_Boost), m_BoostActive);
            // #endif
         }
 
@@ -107,10 +138,17 @@ namespace TO5.Wires
         public void Initialize(WireManager wireManager)
         {
             m_WireManager = wireManager;
+            m_SparkJumper = wireManager.sparkJumper;
+
+            if (m_SparkJumper)
+                m_SparkJumper.OnActivateBoost = ActivateBoost;
 
             m_Score = 0f;
             m_Multiplier = 1f;
             m_Stage = 0;
+
+            m_Boost = 0f;
+            m_BoostActive = false;
 
             m_PacketSpawnsSinceLastCluster = 0;
         }
@@ -128,6 +166,9 @@ namespace TO5.Wires
                 m_Score = 0f;
                 m_Multiplier = 1f;
                 m_Score = 0;
+
+                m_Boost = 0f;
+                m_BoostActive = false;
             }
 
             m_MultiplierTick = StartCoroutine(MultiplierTickRoutine());
@@ -201,7 +242,7 @@ namespace TO5.Wires
         /// </summary>
         public void AwardJumpPoints()
         {
-            m_Score += (m_JumpScore * m_Multiplier);
+            m_Score += (m_JumpScore * totalMultiplier);
         }
 
         /// <summary>
@@ -378,7 +419,7 @@ namespace TO5.Wires
         /// </summary>
         private void PacketCollected(DataPacket packet)
         {
-            m_Score += (m_PacketScore * m_Multiplier);
+            m_Score += (m_PacketScore * totalMultiplier);
             PacketExpired(packet);
         }
 
@@ -389,6 +430,21 @@ namespace TO5.Wires
         {
             packet.Deactivate();
             m_DataPackets.DeactivateObject(packet);
+        }
+
+        /// <summary>
+        /// Notify from player that they wish to activate boost
+        /// </summary>
+        /// <returns>If boost was activated</returns>
+        private bool ActivateBoost()
+        {
+            if (!m_BoostActive && boostReady)
+            {
+                m_BoostActive = true;
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>

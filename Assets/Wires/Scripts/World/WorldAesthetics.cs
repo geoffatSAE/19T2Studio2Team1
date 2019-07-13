@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -17,6 +16,8 @@ namespace TO5.Wires
         private float m_CachedBorderSize = 1f;                          // Cached size of border when starting
 
         [SerializeField] private ParticleSystem m_BorderParticles;      // Particle system for the outer wires particles
+        [SerializeField] private float[] m_ParticleSimulationSpeeds;    // Velocity of particles for eahc multiplier stage
+        private Color m_ParticleColor = Color.white;                    // Color of particles before blending
 
         private Wire m_ActiveWire;                              // Wire player is either on or travelling to
         private bool m_HaveSwitched = false;                    // If blend has switched (from old to new)
@@ -33,6 +34,12 @@ namespace TO5.Wires
                 // Don't render will we start
                 m_BorderRenderer.enabled = false;
             }   
+
+            if (m_BorderParticles)
+            {
+                ParticleSystem.TrailModule trails = m_BorderParticles.trails;
+                m_ParticleColor = trails.colorOverLifetime.color;
+            }
         }
 
         /// <summary>
@@ -44,7 +51,7 @@ namespace TO5.Wires
             if (wire)
             {
                 m_ActiveWire = wire;
-                UpdateBorderAesthetics();
+                UpdateBorderAesthetics(true);
 
                 if (m_BorderRenderer)
                     m_BorderRenderer.enabled = true;
@@ -81,6 +88,17 @@ namespace TO5.Wires
                     m_BorderMaterial.SetVector("_PanningSpeed", new Vector4(speed.x, speed.y, 0f, 0f));
                 }
             }
+
+            if (m_BorderParticles)
+            {
+                if (intensity < m_ParticleSimulationSpeeds.Length)
+                {
+                    float speed = m_ParticleSimulationSpeeds[intensity];
+
+                    ParticleSystem.MainModule main = m_BorderParticles.main;
+                    main.simulationSpeed = speed;
+                }
+            }
         }
 
         /// <summary>
@@ -95,7 +113,7 @@ namespace TO5.Wires
 
             // Switch over while border should be finished
             if (!m_HaveSwitched && progress > 0.5f)
-                UpdateBorderAesthetics();
+                UpdateBorderAesthetics(false);
 
             switching = switching != m_HaveSwitched;
 
@@ -109,12 +127,20 @@ namespace TO5.Wires
 
                 m_BorderMaterial.SetFloat("_AlphaScale", alpha);
             }
+
+            // Interpolate colors
+            if (m_ActiveWire && m_ActiveWire.factory)
+            {
+                WireFactory factory = m_ActiveWire.factory;
+                SetParticleColors(Color.Lerp(m_ParticleColor, factory.particleColor, progress));
+            }
         }
 
         /// <summary>
         /// Updates the aethetics to match specifications on active wires factory
         /// </summary>
-        private void UpdateBorderAesthetics()
+        /// <param name="particleColor">If particle colors should also be updated</param>
+        private void UpdateBorderAesthetics(bool particleColor)
         {
             Assert.IsNotNull(m_ActiveWire);
 
@@ -139,7 +165,23 @@ namespace TO5.Wires
                 m_BorderMaterial.SetTexture("_MainTex", factory.borderTexture);
             }
 
+            if (particleColor)
+                SetParticleColors(factory.particleColor);
+
             m_HaveSwitched = true;
+        }
+
+        private void SetParticleColors(Color color)
+        {
+            if (m_BorderParticles)
+            {
+                ParticleSystem.MainModule main = m_BorderParticles.main;
+                main.startColor = new ParticleSystem.MinMaxGradient(color);
+
+                ParticleSystem.TrailModule trails = m_BorderParticles.trails;
+                trails.colorOverLifetime = new ParticleSystem.MinMaxGradient(color);
+                trails.colorOverTrail = new ParticleSystem.MinMaxGradient(color);
+            }
         }
     }
 }

@@ -17,13 +17,14 @@ namespace TO5.Wires
         public Color skyboxColor { get { return m_SkyboxColor; } }
 
         // The color for the outer wires particles
-        public Color particleColor { get { return m_Color; } }
+        public Color particleColor { get { return m_ParticleColor; } }
 
         // The texture for the outer wire
         public Texture2D borderTexture { get { return m_BorderTexture; } }
 
         [SerializeField] private Color m_Color;                     // Wires color
         [SerializeField] private Color m_SkyboxColor;               // Skyboxes color
+        [SerializeField] private Color m_ParticleColor;             // Particles color
         [SerializeField] private Texture2D m_BorderTexture;         // Texture for outer border
         [SerializeField] private AudioClip[] m_Music;               // Wires music tracks (for each intensity)
 

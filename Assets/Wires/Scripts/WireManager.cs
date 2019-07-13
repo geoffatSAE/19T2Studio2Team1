@@ -343,7 +343,7 @@ namespace TO5.Wires
             {
                 JumpToClosestWire(wire);
 
-                if (m_ScoreManager)
+                if (m_ScoreManager && !m_ScoreManager.boostActive)
                 {
                     if (m_JumpFailResetsMultiplier)
                         m_ScoreManager.ResetMultiplier();
