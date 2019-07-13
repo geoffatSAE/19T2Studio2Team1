@@ -37,11 +37,13 @@ namespace TO5.Wires
         [SerializeField] private int m_MinPacketsPerCluster = 3;                    // Min packets to try and spawn in a cluster
         [SerializeField] private int m_MaxPacketsPerCluster = 6;                    // Max packets to try and spawn in a cluster
         [SerializeField] private int m_PacketClusterRate = 5;                       // Rates at which packet clusters happen (clusters only spawn after X attempts since the last) 
+        [SerializeField, Min(0)] private int m_PacketClusterSpawnRange = 2;         // Spawn range (in segments) for spawning clusters (m_MinPacketSpawnOffset + Random(-Range, Range))
 
         [Header("Boost")]
         [SerializeField] private float m_BoostChargeRate = 0.83f;                   // Boost player earns per second
         [SerializeField] private float m_BoostDepletionRate = 10f;                  // Boost player consumes per second (when active)
         [SerializeField] private float m_BoostMultiplier = 2f;                      // Multipler all score is scaled by when boost is active
+        [SerializeField] private float m_BoostPerPacket = 5f;                       // Boost player earns when collecting a packet
 
         // Space required for packets
         public float packetSpace { get { return m_PacketSpace; } }
@@ -267,7 +269,6 @@ namespace TO5.Wires
         /// </summary>
         /// <param name="tryCluster">If a cluster of packets can possibly be spawned</param>
         /// <returns>Packet or null</returns>
-        // TODO: Make function specifically for spawning clusters
         private DataPacket GenerateRandomPacket(bool tryCluster)
         {
             // Try to spawn a cluster of packets if possible
@@ -276,29 +277,7 @@ namespace TO5.Wires
                 bool cluster = m_PacketClusterChance > 0f ? Random.Range(0f, 100f) < (m_PacketClusterChance * 100f) : false;
                 if (cluster)
                 {
-                    DataPacket packet = null;
-
-                    #if UNITY_EDITOR
-                    int packetsSpawned = 0;
-                    #endif
-
-                    // Spawn a cluster!
-                    int clusterSize = Random.Range(m_MinPacketsPerCluster, m_MaxPacketsPerCluster + 1);
-                    for (int i = 0; i < clusterSize; ++i)
-                    {
-                        packet = GenerateRandomPacket(false);
-
-                        #if UNITY_EDITOR
-                        if (packet != null)
-                            ++packetsSpawned;
-                        #endif
-                    }
-
-                    #if UNITY_EDITOR
-                    Debug.Log(string.Format("Packet Cluster Spawn Results - Cluster Size: {0}, Packets Spawned: {1}", clusterSize, packetsSpawned));
-                    #endif
-
-                    // Reset after as to avoid additional increments while spawning cluster
+                    DataPacket packet = GeneratePacketCluster();
                     m_PacketSpawnsSinceLastCluster = 0;
 
                     return packet;
@@ -319,7 +298,8 @@ namespace TO5.Wires
                 Vector2 circleOffset = m_WireManager.GetRandomSpawnCircleOffset();
                 position = spawnCenter + new Vector3(circleOffset.x, circleOffset.y, 0f);
 
-                success = m_WireManager.HasSpaceAtLocation(position);
+                // We expect to spawn far in front of wires
+                success = m_WireManager.HasSpaceAtLocation(position, true);
                 if (success)
                     break;
             }
@@ -332,7 +312,6 @@ namespace TO5.Wires
 
             float speed = Random.Range(packetProps.m_MinSpeed, packetProps.m_MaxSpeed);
 
-            // Will be incremented while generating a cluster, but it gets reset afterwards
             ++m_PacketSpawnsSinceLastCluster;
 
             return GeneratePacket(position, speed, packetProps.m_Lifetime);
@@ -352,6 +331,70 @@ namespace TO5.Wires
                 return null;
 
             packet.Activate(position, speed, lifetime);
+
+            return packet;
+        }
+
+        /// <summary>
+        /// Generates a random cluster of packets
+        /// </summary>
+        /// <returns>Last packet generated or null</returns>
+        private DataPacket GeneratePacketCluster()
+        {
+            const int maxAttempts = 5;
+            Vector3 spawnCenter = m_WireManager.GetSpawnCircleCenter() + WireManager.WirePlane * (m_WireManager.segmentLength * m_MinPacketSpawnOffset);
+            PacketStageProperties packetProps = GetStagePacketProperties();
+
+            DataPacket packet = null;
+
+            #if UNITY_EDITOR
+            int packetsSpawned = 0;
+            #endif
+
+            int clusterSize = Random.Range(m_MinPacketsPerCluster, m_MaxPacketsPerCluster + 1);
+            for (int i = 0; i < clusterSize; ++i)
+            {
+                Vector3 position = Vector3.zero;
+                bool success = false;
+
+                // We don't want to loop to many times
+                int attempts = 0;
+                while (++attempts <= maxAttempts)
+                {
+                    // Offset along plane
+                    int randomSegmentOffset = Random.Range(-m_PacketClusterSpawnRange, m_PacketClusterSpawnRange + 1);
+                    Vector3 planeOffset = WireManager.WirePlane * (m_WireManager.segmentLength * randomSegmentOffset);
+
+                    // Offset inside circle
+                    Vector2 circleOffset = m_WireManager.GetRandomSpawnCircleOffset();
+
+                    position = spawnCenter + planeOffset + new Vector3(circleOffset.x, circleOffset.y, 0f);
+
+                    // We expect to spawn far in front of wires
+                    success = m_WireManager.HasSpaceAtLocation(position, true);
+                    if (success)
+                        break;
+                }
+
+                if (!success)
+                {
+                    Debug.LogWarning(string.Format("Failed to generate packet after {0} attempts", maxAttempts), this);
+                    continue;
+                }
+
+                float speed = Random.Range(packetProps.m_MinSpeed, packetProps.m_MaxSpeed);
+
+                packet = GeneratePacket(position, speed, packetProps.m_Lifetime);
+
+                #if UNITY_EDITOR
+                if (packet != null)
+                    ++packetsSpawned;
+                #endif
+            }
+
+            #if UNITY_EDITOR
+            Debug.Log(string.Format("Packet Cluster Spawn Results - Cluster Size: {0}, Packets Spawned: {1}", clusterSize, packetsSpawned));
+            #endif
 
             return packet;
         }
@@ -419,7 +462,9 @@ namespace TO5.Wires
         /// </summary>
         private void PacketCollected(DataPacket packet)
         {
-            m_Score += (m_PacketScore * totalMultiplier);
+            m_Score += m_PacketScore * totalMultiplier;
+            m_Boost = Mathf.Clamp(m_Boost + m_BoostPerPacket, 0, 100f);
+
             PacketExpired(packet);
         }
 

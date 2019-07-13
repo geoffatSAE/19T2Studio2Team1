@@ -244,7 +244,7 @@ namespace TO5.Wires
                 start = spawnCenter + new Vector3(circleOffset.x, circleOffset.y, 0f);
                 start.z += segmentOffset * m_CachedSegmentDistance;
 
-                success = HasSpaceAtLocation(start);
+                success = HasSpaceAtLocation(start, false);
                 if (success)
                     break;
             }
@@ -607,8 +607,9 @@ namespace TO5.Wires
         /// If a wire has space to spawn at location, assumes position will be in front of active wires
         /// </summary>
         /// <param name="position">Position of wire</param>
+        /// <param name="ignoreZ">If Z axis should be ignored</param>
         /// <returns>If wire has space</returns>
-        public bool HasSpaceAtLocation(Vector3 position)
+        public bool HasSpaceAtLocation(Vector3 position, bool ignoreZ)
         {
             float sqrMinDistance = m_MinWireOffset * m_MinWireOffset;
 
@@ -627,8 +628,8 @@ namespace TO5.Wires
                 // Might be in within min offset required, but not in in terms of the z axis
                 if (distance < sqrMinDistance)
                 {
-                    int wireEnd = GetPositionSegment(wire.end);
-                    if (start <= wireEnd)
+                    bool invalid = ignoreZ || start <= GetPositionSegment(wire.end);
+                    if (invalid)
                         return false;
                 }
             }
