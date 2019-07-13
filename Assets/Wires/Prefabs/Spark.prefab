@@ -295,6 +295,31 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5459279890404764970, guid: 09c139b4e6caf554dbb86742bba9c342,
+        type: 3}
+      propertyPath: TrailModule.colorOverLifetime.maxGradient.key1.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5459279890404764970, guid: 09c139b4e6caf554dbb86742bba9c342,
+        type: 3}
+      propertyPath: TrailModule.colorOverLifetime.maxGradient.key1.g
+      value: 0.87304294
+      objectReference: {fileID: 0}
+    - target: {fileID: 5459279890404764970, guid: 09c139b4e6caf554dbb86742bba9c342,
+        type: 3}
+      propertyPath: TrailModule.colorOverLifetime.maxGradient.key1.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5459279890404764970, guid: 09c139b4e6caf554dbb86742bba9c342,
+        type: 3}
+      propertyPath: InitialModule.startSize.scalar
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 5459279890404764970, guid: 09c139b4e6caf554dbb86742bba9c342,
+        type: 3}
+      propertyPath: InitialModule.startSize.minScalar
+      value: 5
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 5459279891317145702, guid: 09c139b4e6caf554dbb86742bba9c342, type: 3}
     - {fileID: 5459279891317145707, guid: 09c139b4e6caf554dbb86742bba9c342, type: 3}
