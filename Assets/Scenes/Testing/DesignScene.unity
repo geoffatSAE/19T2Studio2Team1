@@ -477,7 +477,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 10, y: -210}
-  m_SizeDelta: {x: 400, y: 100}
+  m_SizeDelta: {x: 400, y: 140}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1384009259
 MonoBehaviour:
@@ -1022,6 +1022,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_MinPacketSpawnOffset
       value: 70
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_BoostDepletionRate
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_PacketClusterChance
+      value: 0.15
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0c734c134181caa47bd9ea2607cf738b, type: 3}
