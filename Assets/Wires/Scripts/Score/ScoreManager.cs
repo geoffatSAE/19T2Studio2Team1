@@ -463,7 +463,10 @@ namespace TO5.Wires
         private void PacketCollected(DataPacket packet)
         {
             m_Score += m_PacketScore * totalMultiplier;
-            m_Boost = Mathf.Clamp(m_Boost + m_BoostPerPacket, 0, 100f);
+
+            // Only give boost when not active
+            if (!m_BoostActive)
+                m_Boost = Mathf.Clamp(m_Boost + m_BoostPerPacket, 0, 100f);
 
             PacketExpired(packet);
         }
