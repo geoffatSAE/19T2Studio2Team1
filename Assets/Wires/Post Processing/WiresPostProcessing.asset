@@ -31,5 +31,8 @@ MonoBehaviour:
     overrideState: 1
     value: 1
   m_Blend:
-    overrideState: 0
-    value: 0.5
+    overrideState: 1
+    value: 0.8
+  m_PulseSpeed:
+    overrideState: 1
+    value: 1
