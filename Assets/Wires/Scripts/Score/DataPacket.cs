@@ -78,7 +78,7 @@ namespace TO5.Wires
         // IInteractive Interface
         public bool CanInteract(SparkJumper jumper)
         {
-            return isActiveAndEnabled;
+            return isActiveAndEnabled && !jumper.isDrifting;
         }
         
         // IInteractive Interface

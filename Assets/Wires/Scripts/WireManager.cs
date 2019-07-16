@@ -71,9 +71,11 @@ namespace TO5.Wires
         private ObjectPool<Spark> m_Sparks = new ObjectPool<Spark>();       // Sparks being managed
 
         [Header("Wires")]
-        [SerializeField] private int m_InitialSegments = 10;    // Segments for initial starting wire
-        [SerializeField] WireFactory[] m_Factories;             // Factories for generating wire types
-        [SerializeField] WireAnimator m_WireAnimator;           // Animator for the wire
+        [SerializeField] private int m_InitialSegments = 10;            // Segments for initial starting wire
+        [SerializeField] WireAnimator m_WireAnimator;                   // Animator for the wire
+        [SerializeField] WireFactory[] m_Factories;                     // Factories for generating wire types
+        [SerializeField] private float m_DriftOverrideSpeed = 0.5f;     // Speed of sparks when player is drifting
+        [SerializeField] private float m_MaxDriftTime = 5f;             // Max time player can be drifting for before auto jump
 
         public Wire m_WirePrefab;
 
@@ -87,6 +89,7 @@ namespace TO5.Wires
         private ObjectPool<Wire> m_Wires = new ObjectPool<Wire>();              // Wires being managed
         private float m_CachedSegmentDistance = 1f;                             // Distance between the start and end of a segment
         private WireStageProperties m_ActiveWireProperties;                     // Properties for current stage
+        private Wire m_DriftingWire;                                            // The wire the player was last on before drifting
 
         // Score manager to track multiplier
         public ScoreManager scoreManager { get { return m_ScoreManager; } }
@@ -125,13 +128,24 @@ namespace TO5.Wires
             float step = 0f;
 
             // Don't tick when player is jumping
-            if (m_TickWhenJumping || !sparkJumper.isJumping)         
+            if (m_TickWhenJumping || !m_SparkJumper.isJumping)         
             {
                 WireStageProperties wireProps = GetStageWireProperties();
 
-                // Step is influenced by multiplier stage
-                float gameSpeed = m_ScoreManager ? m_ScoreManager.multiplierStage + 1 : 1f;
-                step = wireProps.m_SparkSpeed * gameSpeed * Time.deltaTime;
+                if (sparkJumper.isDrifting)
+                {
+                    step = m_DriftOverrideSpeed * Time.deltaTime;
+
+                    // Move player with drift
+                    Vector3 position = m_SparkJumper.GetPosition() + (WirePlane * step);
+                    m_SparkJumper.SetPosition(position);
+                }
+                else
+                {
+                    // Step is influenced by multiplier stage
+                    float gameSpeed = m_ScoreManager ? m_ScoreManager.multiplierStage + 1 : 1f;
+                    step = wireProps.m_SparkSpeed * gameSpeed * Time.deltaTime;
+                }
 
                 for (int i = 0; i < m_Wires.activeCount; ++i)
                 {
@@ -342,7 +356,10 @@ namespace TO5.Wires
             // Penalties for not jumping before reaching the end of a wire
             if (spark && spark.sparkJumper != null)
             {
-                JumpToClosestWire(wire);
+                //JumpToClosestWire(wire);
+                m_DriftingWire = wire;
+                spark.DetachJumper();
+                m_SparkJumper.SetDriftingEnabled(true);    
 
                 if (m_ScoreManager && !m_ScoreManager.boostActive)
                 {
@@ -718,6 +735,16 @@ namespace TO5.Wires
         {
             yield return new WaitForSegment(this, GetJumpersSegment() + delay);
             GenerateSpark(wire, interval);
+        }
+
+        private IEnumerator AutoJumpRoutine()
+        {
+            yield return new WaitForSeconds(m_MaxDriftTime);
+
+            m_SparkJumper.SetDriftingEnabled(false);
+            JumpToClosestWire(m_DriftingWire);
+
+            // TODO: Deactivate wire
         }
 
         /// <summary>
