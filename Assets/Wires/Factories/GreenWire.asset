@@ -15,7 +15,7 @@ MonoBehaviour:
   m_Color: {r: 0.25207162, g: 1, b: 0, a: 1}
   m_SkyboxColor: {r: 0, g: 0.735849, b: 0.025971096, a: 1}
   m_ParticleColor: {r: 0, g: 0.7372549, b: 0.027450982, a: 1}
-  m_BorderTexture: {fileID: 2800000, guid: e4c89e70ed611a34a8127d96a0ec2bfa, type: 3}
+  m_BorderTexture: {fileID: 2800000, guid: deff90eebe787eb4baf1deb26e423804, type: 3}
   m_Music:
   - {fileID: 8300000, guid: 2400764a13f052d4e9bbd015f258c63f, type: 3}
   - {fileID: 8300000, guid: 91908fd35e5f61141996f160e469917d, type: 3}

@@ -78,50 +78,69 @@ MonoBehaviour:
   m_SparkJumper: {fileID: 0}
   m_SparkPrefab: {fileID: 7764608039323799731, guid: 630a43b9f7b365f4db327f062cc13540,
     type: 3}
-  m_SparkSpeeds: []
-  m_InitialSegments: 15
+  m_InitialSegments: 20
   m_Factories:
   - {fileID: 11400000, guid: 7503fa6e476d74148be8d6db326b6477, type: 2}
-  - {fileID: 11400000, guid: c2de25d8b4bac2d40a177e6c8be5a710, type: 2}
-  - {fileID: 11400000, guid: 83edc1a72b7667e4ab8d4cc017ef1b60, type: 2}
   - {fileID: 11400000, guid: 7bee21f78d023f1408627f6cfe3092f5, type: 2}
+  - {fileID: 11400000, guid: 83edc1a72b7667e4ab8d4cc017ef1b60, type: 2}
+  - {fileID: 11400000, guid: c2de25d8b4bac2d40a177e6c8be5a710, type: 2}
   m_WireAnimator: {fileID: 0}
   m_WirePrefab: {fileID: 4698685643518956546, guid: 1f8155c3339076843a6198e146cab368,
     type: 3}
-  m_MinWireOffset: 5
-  m_MaxWireOffset: 20
-  m_BottomCircleCutoff: 0.7
   m_WireProperties:
-  - m_MinSegments: 14
-    m_MaxSegments: 18
+  - m_InnerSpawnRadius: 5
+    m_OuterSpawnRadius: 20
+    m_BottomCircleCutoff: 0.7
+    m_MinSegments: 30
+    m_MaxSegments: 40
     m_MinSpawnInterval: 2
     m_MaxSpawnInterval: 3
+    m_SparkSpawnSegmentOffset: 4
+    m_SparkSpawnSegmentRange: 3
+    m_SparkSpawnSegmentDelay: 2
+    m_DefectiveWireChance: 0.05
+    m_SparkSpeed: 2.75
+    m_SparkSwitchInterval: 0.3
+  - m_InnerSpawnRadius: 5
+    m_OuterSpawnRadius: 20
+    m_BottomCircleCutoff: 0.7
+    m_MinSegments: 40
+    m_MaxSegments: 50
+    m_MinSpawnInterval: 1.5
+    m_MaxSpawnInterval: 2.5
+    m_SparkSpawnSegmentOffset: 5
+    m_SparkSpawnSegmentRange: 3
+    m_SparkSpawnSegmentDelay: 3
+    m_DefectiveWireChance: 0.075
+    m_SparkSpeed: 3
+    m_SparkSwitchInterval: 0.45
+  - m_InnerSpawnRadius: 5
+    m_OuterSpawnRadius: 20
+    m_BottomCircleCutoff: 0.7
+    m_MinSegments: 50
+    m_MaxSegments: 60
+    m_MinSpawnInterval: 1
+    m_MaxSpawnInterval: 2
     m_SparkSpawnSegmentOffset: 5
     m_SparkSpawnSegmentRange: 3
     m_SparkSpawnSegmentDelay: 3
     m_DefectiveWireChance: 0.1
-    m_SparkSpeed: 1.5
-    m_SparkSwitchInterval: 1.5
-  - m_MinSegments: 20
-    m_MaxSegments: 24
-    m_MinSpawnInterval: 1.5
-    m_MaxSpawnInterval: 2.5
+    m_SparkSpeed: 3.25
+    m_SparkSwitchInterval: 0.45
+  - m_InnerSpawnRadius: 5
+    m_OuterSpawnRadius: 20
+    m_BottomCircleCutoff: 0.7
+    m_MinSegments: 60
+    m_MaxSegments: 70
+    m_MinSpawnInterval: 0.5
+    m_MaxSpawnInterval: 1
     m_SparkSpawnSegmentOffset: 5
     m_SparkSpawnSegmentRange: 3
     m_SparkSpawnSegmentDelay: 3
-    m_DefectiveWireChance: 0.15
-    m_SparkSpeed: 2
-    m_SparkSwitchInterval: 1.5
-  - m_MinSegments: 26
-    m_MaxSegments: 30
-    m_MinSpawnInterval: 1.5
-    m_MaxSpawnInterval: 2.5
-    m_SparkSpawnSegmentOffset: 5
-    m_SparkSpawnSegmentRange: 3
-    m_SparkSpawnSegmentDelay: 3
-    m_DefectiveWireChance: 0.2
-    m_SparkSpeed: 2.5
-    m_SparkSwitchInterval: 1
+    m_DefectiveWireChance: 0.125
+    m_SparkSpeed: 3.5
+    m_SparkSwitchInterval: 0.45
+  m_WirePropertiesStagePreview: 0
   m_DisabledSpot: {fileID: 7927552244697839908}
   m_ScoreManager: {fileID: 7946252058374095657}
   m_TickWhenJumping: 0
@@ -146,32 +165,42 @@ MonoBehaviour:
   m_ScorePerSecond: 15
   m_JumpScore: 100
   m_PacketScore: 250
-  m_MultiplierStages: 2
-  m_MultiplierIncreaseInterval: 9
+  m_MultiplierStages: 3
+  m_MultiplierIncreaseInterval: 10
   m_PacketPrefab: {fileID: 1671077178524130716, guid: 9d6ee2c3a0b241145bd4019fd34cfc5c,
     type: 3}
-  m_MinPacketSpawnOffset: 40
-  m_PacketSpace: 4
+  m_MinPacketSpawnOffset: 70
+  m_PacketSpace: 5
   m_PacketProperties:
   - m_MinSpawnInterval: 3
     m_MaxSpawnInterval: 4
+    m_MinSpeed: 8
+    m_MaxSpeed: 12
+    m_Lifetime: 10
+  - m_MinSpawnInterval: 2
+    m_MaxSpawnInterval: 3
     m_MinSpeed: 5
-    m_MaxSpeed: 7.5
-    m_Lifetime: 7
-  - m_MinSpawnInterval: 3
-    m_MaxSpawnInterval: 4
-    m_MinSpeed: 5
-    m_MaxSpeed: 7.5
-    m_Lifetime: 7
-  - m_MinSpawnInterval: 3
-    m_MaxSpawnInterval: 4
-    m_MinSpeed: 5
-    m_MaxSpeed: 7.5
-    m_Lifetime: 7
-  m_PacketClusterChance: 0.1
-  m_MinPacketsPerCluster: 3
-  m_MaxPacketsPerCluster: 6
+    m_MaxSpeed: 9
+    m_Lifetime: 20
+  - m_MinSpawnInterval: 2
+    m_MaxSpawnInterval: 2.5
+    m_MinSpeed: 3
+    m_MaxSpeed: 7
+    m_Lifetime: 20
+  - m_MinSpawnInterval: 1.5
+    m_MaxSpawnInterval: 2
+    m_MinSpeed: 2
+    m_MaxSpeed: 5
+    m_Lifetime: 20
+  m_PacketClusterChance: 0.15
+  m_MinPacketsPerCluster: 5
+  m_MaxPacketsPerCluster: 9
   m_PacketClusterRate: 5
+  m_PacketClusterSpawnRange: 2
+  m_BoostChargeRate: 0.83
+  m_BoostDepletionRate: 20
+  m_BoostMultiplier: 2
+  m_BoostPerPacket: 5
   m_ScoreText: {fileID: 0}
   m_MultiplierText: {fileID: 0}
   m_DebugText: {fileID: 0}
