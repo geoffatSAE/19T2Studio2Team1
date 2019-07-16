@@ -30,10 +30,16 @@ namespace TO5.Wires
     [Serializable]
     public class PacketStageProperties
     {
-        [SerializeField] public float m_MinSpawnInterval = 4;      // Min seconds between spawning packets
-        [SerializeField] public float m_MaxSpawnInterval = 6;      // Max seconds between spawning packets
-        [SerializeField] public float m_MinSpeed = 1f;             // Min speed of a packet
-        [SerializeField] public float m_MaxSpeed = 2.5f;           // Max speed of a packet
-        [SerializeField, Min(0)] public float m_Lifetime = 10f;    // How long data packets last for before expiring
+        public int m_MinSpawnOffset = 20;                               // Min segments in front of player to spawn
+        public float m_MinSpawnInterval = 4;                            // Min seconds between spawning packets
+        public float m_MaxSpawnInterval = 6;                            // Max seconds between spawning packets
+        public float m_MinSpeed = 1f;                                   // Min speed of a packet
+        public float m_MaxSpeed = 2.5f;                                 // Max speed of a packet
+        [Min(0)] public float m_Lifetime = 10f;                         // How long data packets last for before expiring
+        [Range(0, 1)] public float m_ClusterChance = 0.1f;              // Chance for packets spawning in a cluster (when spawn interval elapses)
+        public int m_MinPacketsPerCluster = 3;                          // Min packets to try and spawn in a cluster
+        public int m_MaxPacketsPerCluster = 6;                          // Max packets to try and spawn in a cluster
+        public int m_ClusterRate = 5;                                   // Rates at which packet clusters happen (clusters only spawn after X attempts since the last) 
+        [Min(0)] public int m_ClusterSpawnRange = 2;                    // Spawn range (in segments) for spawning clusters (m_MinPacketSpawnOffset + Random(-Range, Range))
     }
 }
