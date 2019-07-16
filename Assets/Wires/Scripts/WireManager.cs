@@ -78,10 +78,11 @@ namespace TO5.Wires
         public Wire m_WirePrefab;
 
         [Header("Generation")]
-        [SerializeField] private float m_MinWireOffset = 5f;                            // Min distance away to spawn wires
-        [SerializeField] private float m_MaxWireOffset = 20f;                           // Max distance away to spawn wires
-        [SerializeField, Range(0, 1)] private float m_BottomCircleCutoff = 0.7f;        // Cutoff from bottom of spawn circle when spawning wires
         [SerializeField] private WireStageProperties[] m_WireProperties;                // Properties for wire behavior for each multiplier stage
+
+        #if UNITY_EDITOR
+        public int m_WirePropertiesStagePreview = 0;            // Preview properties for wire stage at index
+        #endif
 
         private ObjectPool<Wire> m_Wires = new ObjectPool<Wire>();              // Wires being managed
         private float m_CachedSegmentDistance = 1f;                             // Distance between the start and end of a segment
@@ -237,7 +238,7 @@ namespace TO5.Wires
             int attempts = 0;
             while (++attempts <= maxAttempts)
             {
-                Vector2 circleOffset = GetRandomSpawnCircleOffset();
+                Vector2 circleOffset = GetRandomSpawnCircleOffset(wireProps.m_InnerSpawnRadius);
                 int segmentRange = Random.Range(-wireProps.m_SparkSpawnSegmentRange, wireProps.m_SparkSpawnSegmentRange + 1);
                 int segmentOffset = wireProps.m_SparkSpawnSegmentOffset + segmentRange;
 
@@ -396,15 +397,18 @@ namespace TO5.Wires
         /// <summary>
         /// Generates a random offset within bounds of spawn parameters
         /// </summary>
+        /// <param name="minOffset">Min offset of random distance</param>
         /// <returns>Random offset</returns>
-        public Vector2 GetRandomSpawnCircleOffset()
+        public Vector2 GetRandomSpawnCircleOffset(float minOffset)
         {
+            WireStageProperties wireProps = GetStageWireProperties();
+
             // This has a super teny tiny chance of looping forever
             Vector2 direction = Random.insideUnitCircle.normalized;
-            while (Vector2.Dot(direction, Vector2.down) > m_BottomCircleCutoff)
+            while (Vector2.Dot(direction, Vector2.down) > wireProps.m_BottomCircleCutoff)
                 direction = Random.insideUnitCircle.normalized;
-
-            return direction * Random.Range(m_MinWireOffset, m_MaxWireOffset);
+   
+            return direction * Random.Range(minOffset, wireProps.m_OuterSpawnRadius);
         }
 
         /// <summary>
@@ -611,7 +615,8 @@ namespace TO5.Wires
         /// <returns>If wire has space</returns>
         public bool HasSpaceAtLocation(Vector3 position, bool ignoreZ)
         {
-            float sqrMinDistance = m_MinWireOffset * m_MinWireOffset;
+            WireStageProperties wireProps = GetStageWireProperties();
+            float sqrMinDistance = wireProps.m_InnerSpawnRadius * wireProps.m_InnerSpawnRadius;
 
             // Chance we might need this
             int start = GetPositionSegment(position);
@@ -744,9 +749,17 @@ namespace TO5.Wires
             {
                 Vector3 center = GetSpawnCircleCenter();
 
+                // We want to draw current properties while playing, while drawing preview while in inspector
+                WireStageProperties wireProps = null;
+                if (Application.isPlaying)
+                    wireProps = GetStageWireProperties();
+                else if (m_WirePropertiesStagePreview >= 0 && m_WirePropertiesStagePreview < m_WireProperties.Length)
+                    wireProps = GetWireProperties(m_WirePropertiesStagePreview);
+
                 // Draw spawn radius
+                if (wireProps != null)
                 {
-                    Gizmos.color = Color.green;     
+                    Gizmos.color = Color.green;
 
                     const int segments = 16;
                     const float step = Mathf.PI * 2f / segments;
@@ -760,15 +773,15 @@ namespace TO5.Wires
 
                         // Inner border
                         {
-                            Vector3 start = center + cdir * m_MinWireOffset;
-                            Vector3 end = center + ndir * m_MinWireOffset;
+                            Vector3 start = center + cdir * wireProps.m_InnerSpawnRadius;
+                            Vector3 end = center + ndir * wireProps.m_InnerSpawnRadius;
                             Gizmos.DrawLine(start, end);
                         }
 
                         // Outer border
                         {
-                            Vector3 start = center + cdir * m_MaxWireOffset;
-                            Vector3 end = center + ndir * m_MaxWireOffset;
+                            Vector3 start = center + cdir * wireProps.m_OuterSpawnRadius;
+                            Vector3 end = center + ndir * wireProps.m_OuterSpawnRadius;
                             Gizmos.DrawLine(start, end);
                         }
                     }
@@ -776,14 +789,14 @@ namespace TO5.Wires
                     Gizmos.color = Color.red;
 
                     const float cutoffStart = Mathf.PI * 1.5f;
-                    float cutoffInverse = 1 - m_BottomCircleCutoff;
+                    float cutoffInverse = 1 - wireProps.m_BottomCircleCutoff;
 
                     // Left cutoff line
                     {
                         float rad = cutoffStart - (Mathf.PI * 0.5f * cutoffInverse);
                         Vector3 dir = new Vector3(Mathf.Cos(rad), Mathf.Sin(rad), 0f);
 
-                        Gizmos.DrawLine(center, center + dir * m_MaxWireOffset);
+                        Gizmos.DrawLine(center, center + dir * wireProps.m_OuterSpawnRadius);
                     }
 
                     // Right cutoff line
@@ -791,7 +804,7 @@ namespace TO5.Wires
                         float rad = cutoffStart + (Mathf.PI * 0.5f * cutoffInverse);
                         Vector3 dir = new Vector3(Mathf.Cos(rad), Mathf.Sin(rad), 0f);
 
-                        Gizmos.DrawLine(center, center + dir * m_MaxWireOffset);
+                        Gizmos.DrawLine(center, center + dir * wireProps.m_OuterSpawnRadius);
                     }
                 }
 

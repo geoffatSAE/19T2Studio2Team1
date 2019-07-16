@@ -9,6 +9,9 @@ namespace TO5.Wires
     [Serializable]
     public class WireStageProperties
     {
+        public float m_InnerSpawnRadius = 5f;                           // Inner radius of spawn circle (wires do not spawn inside this radius)
+        public float m_OuterSpawnRadius = 20f;                          // Outer radius of spawn circle (wires do not spawn outside this radius)
+        [Range(0, 1)] public float m_BottomCircleCutoff = 0.7f;         // Cutoff from bottom of spawn circle (no wires will spawn in cutoff)
         public int m_MinSegments = 8;                                   // Min segments per wire
         public int m_MaxSegments = 12;                                  // Max segments per wire
         public float m_MinSpawnInterval = 2f;                           // Min seconds between spawning wires

@@ -295,7 +295,7 @@ namespace TO5.Wires
             int attempts = 0;
             while (++attempts <= maxAttempts)
             {
-                Vector2 circleOffset = m_WireManager.GetRandomSpawnCircleOffset();
+                Vector2 circleOffset = m_WireManager.GetRandomSpawnCircleOffset(m_PacketSpace);
                 position = spawnCenter + new Vector3(circleOffset.x, circleOffset.y, 0f);
 
                 // We expect to spawn far in front of wires
@@ -366,7 +366,7 @@ namespace TO5.Wires
                     Vector3 planeOffset = WireManager.WirePlane * (m_WireManager.segmentLength * randomSegmentOffset);
 
                     // Offset inside circle
-                    Vector2 circleOffset = m_WireManager.GetRandomSpawnCircleOffset();
+                    Vector2 circleOffset = m_WireManager.GetRandomSpawnCircleOffset(m_PacketSpace);
 
                     position = spawnCenter + planeOffset + new Vector3(circleOffset.x, circleOffset.y, 0f);
 
