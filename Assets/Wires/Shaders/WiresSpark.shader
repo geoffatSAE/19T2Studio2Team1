@@ -14,6 +14,7 @@
     SubShader
 	{
 		Tags { "RenderType" = "Opaque" }
+
 		Pass
 		{
 			CGPROGRAM
@@ -71,7 +72,7 @@
 			fixed4 frag(v2f i) : SV_Target
 			{
 				fixed4 col;
-				col.rgb = _Color.rgb;
+				col.rgb = fixed3(1, 0, 0);// _Color.rgb;
 				col.a = 1.f;
 				return col;
 			}

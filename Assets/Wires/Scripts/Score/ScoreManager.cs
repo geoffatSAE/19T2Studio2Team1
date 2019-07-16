@@ -374,7 +374,7 @@ namespace TO5.Wires
 
                 if (!success)
                 {
-                    Debug.LogWarning(string.Format("Failed to generate packet after {0} attempts", maxAttempts), this);
+                    Debug.LogWarning(string.Format("Failed to generate packet after {0} attempts for cluster", maxAttempts), this);
                     continue;
                 }
 

@@ -77,6 +77,8 @@ namespace TO5.Wires
         [SerializeField] private float m_DriftOverrideSpeed = 0.5f;     // Speed of sparks when player is drifting
         [SerializeField] private float m_MaxDriftTime = 5f;             // Max time player can be drifting for before auto jump
 
+        private Coroutine m_DriftRoutine;
+
         public Wire m_WirePrefab;
 
         [Header("Generation")]
@@ -150,6 +152,10 @@ namespace TO5.Wires
                 for (int i = 0; i < m_Wires.activeCount; ++i)
                 {
                     Wire wire = m_Wires.GetObject(i);
+
+                    // We don't update the drifting wire (as it should already be finished)
+                    if (wire == m_DriftingWire)
+                        continue;
 
                     float progress = wire.TickWire(step);
                     if (progress >= 1f)
@@ -359,7 +365,9 @@ namespace TO5.Wires
                 //JumpToClosestWire(wire);
                 m_DriftingWire = wire;
                 spark.DetachJumper();
-                m_SparkJumper.SetDriftingEnabled(true);    
+                m_SparkJumper.SetDriftingEnabled(true);
+
+                m_DriftRoutine = StartCoroutine(AutoJumpRoutine());
 
                 if (m_ScoreManager && !m_ScoreManager.boostActive)
                 {
@@ -368,6 +376,8 @@ namespace TO5.Wires
                     else
                         m_ScoreManager.DecreaseMultiplier(1);
                 }
+
+                return;
             }
 
             wire.DeactivateWire();
@@ -741,10 +751,22 @@ namespace TO5.Wires
         {
             yield return new WaitForSeconds(m_MaxDriftTime);
 
-            m_SparkJumper.SetDriftingEnabled(false);
-            JumpToClosestWire(m_DriftingWire);
+            Wire wire = m_DriftingWire;
+            Spark spark = m_DriftingWire.spark;
+            m_DriftingWire = null;
 
-            // TODO: Deactivate wire
+            m_SparkJumper.SetDriftingEnabled(false);
+            JumpToClosestWire(wire);
+
+
+            wire.DeactivateWire();
+            wire.transform.position = disabledSpot;
+            spark.transform.position = disabledSpot;
+
+            m_Sparks.DeactivateObject(spark);
+            m_Wires.DeactivateObject(wire);
+
+            m_DriftRoutine = null;
         }
 
         /// <summary>
@@ -758,6 +780,25 @@ namespace TO5.Wires
                     m_ScoreManager.AwardJumpPoints();
 
                 m_JumpPenalty = false;
+            }
+
+            if (m_DriftingWire)
+            {
+                StopCoroutine(m_DriftRoutine);
+
+                Wire wire = m_DriftingWire;
+                Spark spark2 = m_DriftingWire.spark;
+                m_DriftingWire = null;
+
+                //m_SparkJumper.SetDriftingEnabled(false);
+
+                wire.DeactivateWire();
+                wire.transform.position = disabledSpot;
+                spark2.transform.position = disabledSpot;
+
+                m_Sparks.DeactivateObject(spark2);
+                m_Wires.DeactivateObject(wire);
+                m_DriftRoutine = null;
             }
         }
 
