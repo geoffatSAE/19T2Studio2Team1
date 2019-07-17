@@ -179,6 +179,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8910129730801368193, guid: 63d94be21e8b39a4f97e9f6c380700a7,
+        type: 3}
+      propertyPath: InitialModule.maxNumParticles
+      value: 300
+      objectReference: {fileID: 0}
+    - target: {fileID: 8910129730801368193, guid: 63d94be21e8b39a4f97e9f6c380700a7,
+        type: 3}
+      propertyPath: EmissionModule.rateOverTime.scalar
+      value: 250
+      objectReference: {fileID: 0}
+    - target: {fileID: 8910129730801368193, guid: 63d94be21e8b39a4f97e9f6c380700a7,
+        type: 3}
+      propertyPath: EmissionModule.rateOverDistance.scalar
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8910129730801368193, guid: 63d94be21e8b39a4f97e9f6c380700a7,
+        type: 3}
+      propertyPath: lengthInSec
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 63d94be21e8b39a4f97e9f6c380700a7, type: 3}
 --- !u!114 &283422452 stripped
@@ -585,7 +605,7 @@ PrefabInstance:
     - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_WireProperties.Array.size
-      value: 7
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
@@ -685,7 +705,7 @@ PrefabInstance:
     - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_WireProperties.Array.data[4].m_DefectiveWireChance
-      value: 0.15
+      value: 0.08
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
@@ -695,7 +715,7 @@ PrefabInstance:
     - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_WireProperties.Array.data[4].m_SparkSwitchInterval
-      value: 0.3
+      value: 0.35
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
@@ -745,12 +765,12 @@ PrefabInstance:
     - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_WireProperties.Array.data[5].m_SparkSpawnSegmentDelay
-      value: 3
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_WireProperties.Array.data[5].m_DefectiveWireChance
-      value: 0.15
+      value: 0.08
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
@@ -760,7 +780,7 @@ PrefabInstance:
     - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_WireProperties.Array.data[5].m_SparkSwitchInterval
-      value: 0.2
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
@@ -825,7 +845,7 @@ PrefabInstance:
     - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_WireProperties.Array.data[6].m_SparkSwitchInterval
-      value: 0.45
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
@@ -960,7 +980,7 @@ PrefabInstance:
     - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_WireProperties.Array.data[0].m_SparkSwitchInterval
-      value: 0.4
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
@@ -971,6 +991,101 @@ PrefabInstance:
         type: 3}
       propertyPath: m_WireProperties.Array.data[3].m_SparkSpawnSegmentOffset
       value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_WireProperties.Array.data[1].m_SparkSwitchInterval
+      value: 0.45
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_WireProperties.Array.data[2].m_SparkSwitchInterval
+      value: 0.45
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_WireProperties.Array.data[3].m_SparkSwitchInterval
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_WireProperties.Array.data[1].m_JumpTime
+      value: 0.45
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_WireProperties.Array.data[2].m_JumpTime
+      value: 0.45
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_WireProperties.Array.data[3].m_JumpTime
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_WireProperties.Array.data[4].m_JumpTime
+      value: 0.35
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_WireProperties.Array.data[5].m_JumpTime
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_WireProperties.Array.data[0].m_JumpTime
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_WireProperties.Array.data[2].m_SpawnSegmentOffset
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_WireProperties.Array.data[2].m_SpawnSegmentRange
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_WireProperties.Array.data[3].m_SpawnSegmentOffset
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_WireProperties.Array.data[3].m_SpawnSegmentRange
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_WireProperties.Array.data[4].m_SpawnSegmentOffset
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_WireProperties.Array.data[4].m_SpawnSegmentRange
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_WireProperties.Array.data[5].m_SpawnSegmentOffset
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_WireProperties.Array.data[5].m_SpawnSegmentRange
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_WireProperties.Array.data[2].m_DefectiveWireChance
+      value: 0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_WireProperties.Array.data[3].m_DefectiveWireChance
+      value: 0.075
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
@@ -1000,7 +1115,7 @@ PrefabInstance:
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_PacketProperties.Array.data[4].m_MinSpawnOffset
-      value: 140
+      value: 125
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
@@ -1035,17 +1150,17 @@ PrefabInstance:
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_PacketProperties.Array.data[4].m_MinPacketsPerCluster
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
-        type: 3}
-      propertyPath: m_PacketProperties.Array.data[4].m_MaxPacketsPerCluster
       value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
+      propertyPath: m_PacketProperties.Array.data[4].m_MaxPacketsPerCluster
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
       propertyPath: m_PacketProperties.Array.data[4].m_ClusterRate
-      value: 5
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
@@ -1055,7 +1170,7 @@ PrefabInstance:
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_PacketProperties.Array.data[5].m_MinSpawnOffset
-      value: 160
+      value: 135
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
@@ -1090,17 +1205,17 @@ PrefabInstance:
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_PacketProperties.Array.data[5].m_MinPacketsPerCluster
-      value: 5
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_PacketProperties.Array.data[5].m_MaxPacketsPerCluster
-      value: 10
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_PacketProperties.Array.data[5].m_ClusterRate
-      value: 5
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
@@ -1115,17 +1230,17 @@ PrefabInstance:
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_PacketProperties.Array.data[1].m_MinSpawnOffset
-      value: 80
+      value: 65
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_PacketProperties.Array.data[2].m_MinSpawnOffset
-      value: 100
+      value: 85
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_PacketProperties.Array.data[3].m_MinSpawnOffset
-      value: 120
+      value: 105
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
@@ -1140,17 +1255,17 @@ PrefabInstance:
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_PacketProperties.Array.data[1].m_MinPacketsPerCluster
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_PacketProperties.Array.data[1].m_MaxPacketsPerCluster
-      value: 7
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_PacketProperties.Array.data[1].m_ClusterRate
-      value: 4
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
@@ -1185,17 +1300,17 @@ PrefabInstance:
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_PacketProperties.Array.data[2].m_MaxPacketsPerCluster
-      value: 8
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_PacketProperties.Array.data[3].m_MinPacketsPerCluster
-      value: 5
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_PacketProperties.Array.data[3].m_MaxPacketsPerCluster
-      value: 9
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
@@ -1205,12 +1320,12 @@ PrefabInstance:
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_PacketProperties.Array.data[0].m_MinSpawnOffset
-      value: 60
+      value: 300
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_PacketProperties.Array.data[6].m_MinSpawnOffset
-      value: 160
+      value: 145
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
@@ -1230,12 +1345,12 @@ PrefabInstance:
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_PacketProperties.Array.data[6].m_MaxSpeed
-      value: 1
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_PacketProperties.Array.data[6].m_Lifetime
-      value: 20
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
@@ -1255,7 +1370,7 @@ PrefabInstance:
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_PacketProperties.Array.data[6].m_ClusterRate
-      value: 5
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
@@ -1265,7 +1380,7 @@ PrefabInstance:
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_BoostPerPacket
-      value: 6
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
@@ -1286,6 +1401,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_PacketProperties.Array.data[3].m_MaxSpawnInterval
       value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_PacketProperties.Array.data[3].m_ClusterRate
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_PacketProperties.Array.data[2].m_ClusterRate
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_PacketProperties.Array.data[0].m_ClusterRate
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0c734c134181caa47bd9ea2607cf738b, type: 3}
@@ -1929,7 +2059,7 @@ PrefabInstance:
     - target: {fileID: 8646348428308405757, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
         type: 3}
       propertyPath: m_Sensitivity
-      value: 1.2
+      value: 1.45
       objectReference: {fileID: 0}
     - target: {fileID: 8646348428308405757, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
         type: 3}
@@ -1939,7 +2069,7 @@ PrefabInstance:
     - target: {fileID: 8646348428308405757, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
         type: 3}
       propertyPath: m_JumpTime
-      value: 0.3
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 8646348428977238135, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
         type: 3}
