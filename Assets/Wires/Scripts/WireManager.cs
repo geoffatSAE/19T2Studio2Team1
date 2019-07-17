@@ -344,7 +344,8 @@ namespace TO5.Wires
 
             spark.transform.position += WirePlane * offset;
 
-            if (!m_SparkJumper.spark)
+            // Don't jump if drifting
+            if (!m_SparkJumper.spark && !m_SparkJumper.isDrifting)
                 m_SparkJumper.InstantJumpToSpark(spark);
 
             return spark;
@@ -361,9 +362,11 @@ namespace TO5.Wires
 
             // Penalties for not jumping before reaching the end of a wire
             if (spark && spark.sparkJumper != null)
-            {
-                // Jumper drifts independant of spark
+            {      
                 spark.DetachJumper();
+
+                // Jumper drifts independant of spark
+                //m_SparkJumper.JumpOffSpark();
                 m_SparkJumper.SetDriftingEnabled(true);
 
                 m_DriftingWire = wire;
@@ -798,11 +801,14 @@ namespace TO5.Wires
 
                 m_JumpPenalty = false;
             }
-
-            if (m_DriftingWire)
+            else
             {
-                StopCoroutine(m_DriftRoutine);
-                DeactivateDriftingWire();
+                // Drifting wire will be valid if player is jumping while drifting (without drift time running out)
+                if (m_DriftingWire)
+                {
+                    StopCoroutine(m_DriftRoutine);
+                    DeactivateDriftingWire();
+                }
             }
         }
 

@@ -13,17 +13,10 @@
     }
     SubShader
 	{
-		Tags { "Queue" = "Geometry-1" }
+		Tags { "RenderType" = "Opaque" "Queue" = "Opaque" }
 
 		Pass
 		{
-			Stencil
-			{
-				Ref 2
-				Comp Always
-				Pass Replace
-			}
-
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag

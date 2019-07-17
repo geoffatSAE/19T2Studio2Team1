@@ -20,8 +20,8 @@ namespace TO5.Wires
         /// <summary>
         /// Delegate for when jumper enters/exits drifting mode
         /// </summary>
-        /// <param name="enabled">If jumper is now drifting</param>
-        public delegate void DriftingUpdated(bool enabled);
+        /// <param name="isEnabled">If jumper is now drifting</param>
+        public delegate void DriftingUpdated(bool isEnabled);
 
         /// <summary>
         /// Delegate for when jumper is attempting to activate the boost
@@ -82,6 +82,9 @@ namespace TO5.Wires
             m_Spark.FreezeSwitching();
             m_Spark.AttachJumper(this);
 
+            // Can't be drifting while jumping
+            SetDriftingEnabled(false);
+
             StartCoroutine(JumpRoutine());
 
             if (OnJumpToSpark != null)
@@ -107,6 +110,18 @@ namespace TO5.Wires
 
             m_Spark.FreezeSwitching();
             m_Spark.AttachJumper(this);
+        }
+
+        /// <summary>
+        /// Jumps off of current spark
+        /// </summary>
+        public void JumpOffSpark()
+        {
+            if (m_Spark)
+            {
+                m_Spark.DetachJumper();
+                m_Spark = null;
+            }
         }
 
         /// <summary>
@@ -152,11 +167,15 @@ namespace TO5.Wires
             return false;
         }
 
+        /// <summary>
+        /// Set if jumper is drifting in space
+        /// </summary>
+        /// <param name="enable">If drifting</param>
         public void SetDriftingEnabled(bool enable)
         {
             if (m_IsDrifting != enable)
             {
-                m_IsDrifting = enabled;
+                m_IsDrifting = enable;
 
                 if (OnDriftingUpdated != null)
                     OnDriftingUpdated.Invoke(m_IsDrifting);
@@ -195,7 +214,6 @@ namespace TO5.Wires
             if (m_Spark)
             {
                 m_IsJumping = true;
-                SetDriftingEnabled(false);
 
                 Vector3 from = GetPosition();
                 float end = Time.time + m_JumpTime;

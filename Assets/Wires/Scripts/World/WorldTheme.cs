@@ -49,6 +49,7 @@ namespace TO5.Wires
                 if (jumper != null)
                 {
                     jumper.OnJumpToSpark += JumpToSpark;
+                    jumper.OnDriftingUpdated += DriftingUpdated;
 
                     if (jumper.spark)
                     {
@@ -97,6 +98,11 @@ namespace TO5.Wires
                 if (m_WireManager)
                     StartCoroutine(BlendThemesRoutine(m_WireManager.sparkJumper));
             }
+        }
+
+        private void DriftingUpdated(bool isEnabled)
+        {
+            m_WorldColor.SetGrayscaleEnabled(isEnabled);
         }
         
         /// <summary>

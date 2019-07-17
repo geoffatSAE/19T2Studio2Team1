@@ -9,13 +9,14 @@ namespace TO5.Wires
     /// </summary>
     public class WorldColor : MonoBehaviour
     {
-        [SerializeField] private PostProcessVolume m_Volume;        // Post-Process volume (assumed to be global)
-        
+        [SerializeField, Range(0, 1)] private float m_GrayscaleBlend = 0.8f;
+        [SerializeField] private float m_GrayscalePulseSpeed = 1f;
 
         private Color m_BlendFrom, m_BlendTo;       // Colors to blend from and to
         private Material m_Skybox;                  // Skybox material
-        private Grayscale m_Grayscale;              // Grayscale post processing effect
 
+        private PostProcessVolume m_Volume;         // Volume for post processing
+        private Grayscale m_Grayscale;              // Grayscale post processing effect
         private bool m_PulseEnabled = false;        // If grayscale pulse is enabled
 
         void Awake()
@@ -24,11 +25,12 @@ namespace TO5.Wires
             m_Skybox = new Material(RenderSettings.skybox);
             RenderSettings.skybox = m_Skybox;
 
-            if (m_Volume && m_Volume.profile)
-            {
-                m_Grayscale = m_Volume.profile.GetSetting<Grayscale>();
-                m_Grayscale.enabled.value = false;
-            }
+            m_Grayscale = ScriptableObject.CreateInstance<Grayscale>();
+            m_Grayscale.enabled.Override(false);
+            m_Grayscale.blend.Override(0f);
+
+            m_Volume = PostProcessManager.instance.QuickVolume(0, 1f, m_Grayscale);
+            m_Volume.enabled = false;
         }
 
         /// <summary>
@@ -53,20 +55,39 @@ namespace TO5.Wires
                 m_Skybox.color = Color.Lerp(m_BlendFrom, m_BlendTo, progress);
         }
 
+        public void SetGrayscaleEnabled(bool enable)
+        {
+            if (m_PulseEnabled != enable)
+            {
+                m_PulseEnabled = enable;
+
+                // This routine will exit itself upon completion
+                if (m_PulseEnabled)
+                    StartCoroutine(GrayscalePulseRoutine());
+            }
+        }
+
+        /// <summary>
+        /// Routine for pulsing the grayscale of the scene
+        /// </summary>
         private IEnumerator GrayscalePulseRoutine()
         {
             if (m_Grayscale)
             {
-                m_Grayscale.enabled.value = true;
+                m_Volume.enabled = true;
+                m_Grayscale.enabled.Override(true);
 
                 float start = Time.time;
                 while (m_PulseEnabled)
                 {
-                    m_Grayscale.m_PulseTime.value = Time.time - start;
+                    float alpha = Mathf.Abs(Mathf.Sin((Time.time - start) * m_GrayscalePulseSpeed));
+                    m_Grayscale.blend.Override(Mathf.Lerp(0f, m_GrayscaleBlend, alpha));
+
                     yield return null;
                 }
 
-                m_Grayscale.enabled.value = false;
+                m_Grayscale.enabled.Override(false);
+                m_Volume.enabled = false;
             }
         }
     }
