@@ -18,16 +18,23 @@ namespace TO5.Wires
         public delegate void JumpedToSpark(Spark spark, bool finished);
 
         /// <summary>
+        /// Delegate for when jumper enters/exits drifting mode
+        /// </summary>
+        /// <param name="isEnabled">If jumper is now drifting</param>
+        public delegate void DriftingUpdated(bool isEnabled);
+
+        /// <summary>
         /// Delegate for when jumper is attempting to activate the boost
         /// </summary>
         /// <returns>If activation was successful</returns>
         public delegate bool TryActivateBoost();
 
         public JumpedToSpark OnJumpToSpark;             // Event for when jumping to new spark
+        public DriftingUpdated OnDriftingUpdated;       // Event for when entering/exiting drifting
         public TryActivateBoost OnActivateBoost;        // Event for when attempting boost activation
 
         public Transform m_Anchor;                                                          // Anchor to move instead of gameObject
-        [SerializeField, Min(0.1f)] private float m_JumpTime = 0.75f;                       // Transition time between sparks
+        public float m_JumpTime = 0.75f;                                                    // Transition time between sparks
         [SerializeField, Min(0.1f)] protected float m_TraceRadius = 0.5f;                   // Radius of sphere cast
         [SerializeField] private LayerMask m_InteractiveLayer = Physics.AllLayers;          // Layer for interactives
 
@@ -35,7 +42,7 @@ namespace TO5.Wires
         public bool canJump { get { return !m_IsJumping; } }
 
         // If the player is drifting in space
-        public bool isDrifting { get { return false; } }
+        public bool isDrifting { get { return m_IsDrifting; } }
 
         // Spark the player is on
         public Spark spark { get { return m_Spark; } }
@@ -54,6 +61,7 @@ namespace TO5.Wires
 
         private Spark m_Spark;                          // Spark we are on
         private bool m_IsJumping = false;               // If transition is in progress
+        private bool m_IsDrifting = false;              // If drifting in space
         private float m_CachedJumpProgress = -1f;       // Cached progress of jump
         private float m_WireDistanceTravelled = 0f;     // Distance jumper has travelled while on wires
 
@@ -73,6 +81,9 @@ namespace TO5.Wires
 
             m_Spark.FreezeSwitching();
             m_Spark.AttachJumper(this);
+
+            // Can't be drifting while jumping
+            SetDriftingEnabled(false);
 
             StartCoroutine(JumpRoutine());
 
@@ -94,8 +105,23 @@ namespace TO5.Wires
 
             m_Spark = spark;
 
+            m_IsJumping = false;
+            SetDriftingEnabled(false);
+
             m_Spark.FreezeSwitching();
             m_Spark.AttachJumper(this);
+        }
+
+        /// <summary>
+        /// Jumps off of current spark
+        /// </summary>
+        public void JumpOffSpark()
+        {
+            if (m_Spark)
+            {
+                m_Spark.DetachJumper();
+                m_Spark = null;
+            }
         }
 
         /// <summary>
@@ -130,15 +156,30 @@ namespace TO5.Wires
         }
 
         /// <summary>
-        /// Attempts to activate 
+        /// Attempts to activate boost
         /// </summary>
-        /// <returns></returns>
+        /// <returns>If boost was activated</returns>
         public bool ActivateBoost()
         {
             if (OnActivateBoost != null)
                 return OnActivateBoost.Invoke();
 
             return false;
+        }
+
+        /// <summary>
+        /// Set if jumper is drifting in space
+        /// </summary>
+        /// <param name="enable">If drifting</param>
+        public void SetDriftingEnabled(bool enable)
+        {
+            if (m_IsDrifting != enable)
+            {
+                m_IsDrifting = enable;
+
+                if (OnDriftingUpdated != null)
+                    OnDriftingUpdated.Invoke(m_IsDrifting);
+            }
         }
 
         /// <summary>
@@ -194,7 +235,7 @@ namespace TO5.Wires
                     else
                     {
                         // TODO:
-                        Debug.Log("Aborting jump");
+                        Debug.LogAssertion("Aborting jump");
                         break;
                     }
                 }

@@ -69,6 +69,10 @@ namespace TO5.Wires
                 m_ActiveWire = wire;
                 m_HaveSwitched = false;
 
+                // Cache previous color now for blending
+                if (m_ActiveWire && m_ActiveWire.factory)
+                    m_ParticleColor = m_ActiveWire.factory.particleColor;
+
                 if (m_BorderRenderer)
                     m_BorderRenderer.enabled = true;
             }

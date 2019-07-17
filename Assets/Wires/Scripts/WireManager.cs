@@ -71,21 +71,27 @@ namespace TO5.Wires
         private ObjectPool<Spark> m_Sparks = new ObjectPool<Spark>();       // Sparks being managed
 
         [Header("Wires")]
-        [SerializeField] private int m_InitialSegments = 10;    // Segments for initial starting wire
-        [SerializeField] WireFactory[] m_Factories;             // Factories for generating wire types
-        [SerializeField] WireAnimator m_WireAnimator;           // Animator for the wire
+        [SerializeField] private int m_InitialSegments = 10;            // Segments for initial starting wire
+        [SerializeField] WireAnimator m_WireAnimator;                   // Animator for the wire
+        [SerializeField] WireFactory[] m_Factories;                     // Factories for generating wire types
+        [SerializeField] private float m_DriftOverrideSpeed = 0.5f;     // Speed of sparks when player is drifting
+        [SerializeField] private float m_MaxDriftTime = 5f;             // Max time player can be drifting for before auto jump
+
+        private Coroutine m_DriftRoutine;
 
         public Wire m_WirePrefab;
 
         [Header("Generation")]
-        [SerializeField] private float m_MinWireOffset = 5f;                            // Min distance away to spawn wires
-        [SerializeField] private float m_MaxWireOffset = 20f;                           // Max distance away to spawn wires
-        [SerializeField, Range(0, 1)] private float m_BottomCircleCutoff = 0.7f;        // Cutoff from bottom of spawn circle when spawning wires
         [SerializeField] private WireStageProperties[] m_WireProperties;                // Properties for wire behavior for each multiplier stage
+
+        #if UNITY_EDITOR
+        public int m_WirePropertiesStagePreview = 0;            // Preview properties for wire stage at index
+        #endif
 
         private ObjectPool<Wire> m_Wires = new ObjectPool<Wire>();              // Wires being managed
         private float m_CachedSegmentDistance = 1f;                             // Distance between the start and end of a segment
         private WireStageProperties m_ActiveWireProperties;                     // Properties for current stage
+        private Wire m_DriftingWire;                                            // The wire the player was last on before drifting
 
         // Score manager to track multiplier
         public ScoreManager scoreManager { get { return m_ScoreManager; } }
@@ -124,17 +130,32 @@ namespace TO5.Wires
             float step = 0f;
 
             // Don't tick when player is jumping
-            if (m_TickWhenJumping || !sparkJumper.isJumping)         
+            if (m_TickWhenJumping || !m_SparkJumper.isJumping)         
             {
                 WireStageProperties wireProps = GetStageWireProperties();
 
-                // Step is influenced by multiplier stage
-                float gameSpeed = m_ScoreManager ? m_ScoreManager.multiplierStage + 1 : 1f;
-                step = wireProps.m_SparkSpeed * gameSpeed * Time.deltaTime;
+                if (sparkJumper.isDrifting)
+                {
+                    step = m_DriftOverrideSpeed * Time.deltaTime;
+
+                    // Move player with drift
+                    Vector3 position = m_SparkJumper.GetPosition() + (WirePlane * step);
+                    m_SparkJumper.SetPosition(position);
+                }
+                else
+                {
+                    // Step is influenced by multiplier stage
+                    float gameSpeed = m_ScoreManager ? m_ScoreManager.multiplierStage + 1 : 1f;
+                    step = wireProps.m_SparkSpeed * gameSpeed * Time.deltaTime;
+                }
 
                 for (int i = 0; i < m_Wires.activeCount; ++i)
                 {
                     Wire wire = m_Wires.GetObject(i);
+
+                    // We don't update the drifting wire (as it should already be finished)
+                    if (wire == m_DriftingWire)
+                        continue;
 
                     float progress = wire.TickWire(step);
                     if (progress >= 1f)
@@ -237,9 +258,9 @@ namespace TO5.Wires
             int attempts = 0;
             while (++attempts <= maxAttempts)
             {
-                Vector2 circleOffset = GetRandomSpawnCircleOffset();
-                int segmentRange = Random.Range(-wireProps.m_SparkSpawnSegmentRange, wireProps.m_SparkSpawnSegmentRange + 1);
-                int segmentOffset = wireProps.m_SparkSpawnSegmentOffset + segmentRange;
+                Vector2 circleOffset = GetRandomSpawnCircleOffset(wireProps.m_InnerSpawnRadius);
+                int segmentRange = Random.Range(-wireProps.m_SpawnSegmentRange, wireProps.m_SpawnSegmentRange + 1);
+                int segmentOffset = wireProps.m_SpawnSegmentOffset + segmentRange;
 
                 start = spawnCenter + new Vector3(circleOffset.x, circleOffset.y, 0f);
                 start.z += segmentOffset * m_CachedSegmentDistance;
@@ -323,7 +344,8 @@ namespace TO5.Wires
 
             spark.transform.position += WirePlane * offset;
 
-            if (!m_SparkJumper.spark)
+            // Don't jump if drifting
+            if (!m_SparkJumper.spark && !m_SparkJumper.isDrifting)
                 m_SparkJumper.InstantJumpToSpark(spark);
 
             return spark;
@@ -340,8 +362,15 @@ namespace TO5.Wires
 
             // Penalties for not jumping before reaching the end of a wire
             if (spark && spark.sparkJumper != null)
-            {
-                JumpToClosestWire(wire);
+            {      
+                spark.DetachJumper();
+
+                // Jumper drifts independant of spark
+                //m_SparkJumper.JumpOffSpark();
+                m_SparkJumper.SetDriftingEnabled(true);
+
+                m_DriftingWire = wire;
+                m_DriftRoutine = StartCoroutine(AutoJumpRoutine());
 
                 if (m_ScoreManager && !m_ScoreManager.boostActive)
                 {
@@ -349,15 +378,45 @@ namespace TO5.Wires
                         m_ScoreManager.ResetMultiplier();
                     else
                         m_ScoreManager.DecreaseMultiplier(1);
+
+                    m_ScoreManager.DisableScoring();
                 }
+
+                m_JumpPenalty = true;
             }
+            else
+            {
 
-            wire.DeactivateWire();
-            wire.transform.position = disabledSpot;
-            spark.transform.position = disabledSpot;
+                wire.DeactivateWire();
+                wire.transform.position = disabledSpot;
+                spark.transform.position = disabledSpot;
 
-            m_Sparks.DeactivateObject(spark);
-            m_Wires.DeactivateObject(wire);
+                m_Sparks.DeactivateObject(spark);
+                m_Wires.DeactivateObject(wire);
+            }
+        }
+
+        /// <summary>
+        /// Deactivates the wire the player is drifting from
+        /// </summary>
+        private void DeactivateDriftingWire()
+        {
+            if (m_DriftingWire)
+            {
+                Wire wire = m_DriftingWire;
+                Spark spark = wire.spark;
+
+                m_DriftingWire = null;
+
+                wire.DeactivateWire();
+                wire.transform.position = disabledSpot;
+                spark.transform.position = disabledSpot;
+
+                m_Sparks.DeactivateObject(spark);
+                m_Wires.DeactivateObject(wire);
+
+                m_DriftingWire = null;
+            }
         }
 
         /// <summary>
@@ -384,7 +443,7 @@ namespace TO5.Wires
                 WireStageProperties wireProps = GetStageWireProperties();
 
                 // We would use Ceil in thise case, but this function uses floor
-                int segment = GetPositionSegment(center) + 1 + wireProps.m_SparkSpawnSegmentOffset;
+                int segment = GetPositionSegment(center) + 1 + wireProps.m_SpawnSegmentOffset;
                 center.z = m_CachedSegmentDistance * segment;
 
                 return center;
@@ -396,15 +455,18 @@ namespace TO5.Wires
         /// <summary>
         /// Generates a random offset within bounds of spawn parameters
         /// </summary>
+        /// <param name="minOffset">Min offset of random distance</param>
         /// <returns>Random offset</returns>
-        public Vector2 GetRandomSpawnCircleOffset()
+        public Vector2 GetRandomSpawnCircleOffset(float minOffset)
         {
+            WireStageProperties wireProps = GetStageWireProperties();
+
             // This has a super teny tiny chance of looping forever
             Vector2 direction = Random.insideUnitCircle.normalized;
-            while (Vector2.Dot(direction, Vector2.down) > m_BottomCircleCutoff)
+            while (Vector2.Dot(direction, Vector2.down) > wireProps.m_BottomCircleCutoff)
                 direction = Random.insideUnitCircle.normalized;
-
-            return direction * Random.Range(m_MinWireOffset, m_MaxWireOffset);
+   
+            return direction * Random.Range(minOffset, wireProps.m_OuterSpawnRadius);
         }
 
         /// <summary>
@@ -454,19 +516,13 @@ namespace TO5.Wires
             Wire bestWire = null;
             if (m_Wires.activeCount > 0)
             {
-                bestWire = m_Wires.GetObject(0);
-                if (bestWire == wire)
-                    bestWire = null;
-
-                // Start at one since we already 'tested' it
-                for (int i = 1; i < m_Wires.activeCount; ++i)
+                for (int i = 0; i < m_Wires.activeCount; ++i)
                 {
                     // Wire requires spark
                     Wire w = m_Wires.GetObject(i);
                     if (w == wire || !w.spark)
                         continue;
                     
-                    // In-case we reset back to null
                     if (bestWire == null)
                         bestWire = w;
 
@@ -611,7 +667,8 @@ namespace TO5.Wires
         /// <returns>If wire has space</returns>
         public bool HasSpaceAtLocation(Vector3 position, bool ignoreZ)
         {
-            float sqrMinDistance = m_MinWireOffset * m_MinWireOffset;
+            WireStageProperties wireProps = GetStageWireProperties();
+            float sqrMinDistance = wireProps.m_InnerSpawnRadius * wireProps.m_InnerSpawnRadius;
 
             // Chance we might need this
             int start = GetPositionSegment(position);
@@ -716,6 +773,23 @@ namespace TO5.Wires
         }
 
         /// <summary>
+        /// Forces player to jump to suitable wire after drifting
+        /// </summary>
+        private IEnumerator AutoJumpRoutine()
+        {
+            yield return new WaitForSeconds(m_MaxDriftTime);
+
+            // We cache wire here as deactivate nullifies it
+            Wire wire = m_DriftingWire;
+            DeactivateDriftingWire();
+
+            JumpToClosestWire(wire);
+
+            if (m_ScoreManager)
+                m_ScoreManager.EnableScoring(false);
+        }
+
+        /// <summary>
         /// Notify that player has jumped to another spark
         /// </summary>
         private void JumpToSpark(Spark spark, bool finished)
@@ -727,6 +801,18 @@ namespace TO5.Wires
 
                 m_JumpPenalty = false;
             }
+            else
+            {
+                // Drifting wire will be valid if player is jumping while drifting (without drift time running out)
+                if (m_DriftingWire)
+                {
+                    StopCoroutine(m_DriftRoutine);
+                    DeactivateDriftingWire();
+
+                    if (m_ScoreManager)
+                        m_ScoreManager.EnableScoring(false);
+                }
+            }
         }
 
         /// <summary>
@@ -735,6 +821,9 @@ namespace TO5.Wires
         private void MultiplierUpdated(float multiplier, int stage)
         {
             m_ActiveWireProperties = GetWireProperties(stage);
+
+            if (m_SparkJumper)
+                m_SparkJumper.m_JumpTime = m_ActiveWireProperties.m_JumpTime;
         }
 
         void OnDrawGizmos()
@@ -744,9 +833,17 @@ namespace TO5.Wires
             {
                 Vector3 center = GetSpawnCircleCenter();
 
+                // We want to draw current properties while playing, while drawing preview while in inspector
+                WireStageProperties wireProps = null;
+                if (Application.isPlaying)
+                    wireProps = GetStageWireProperties();
+                else if (m_WirePropertiesStagePreview >= 0 && m_WirePropertiesStagePreview < m_WireProperties.Length)
+                    wireProps = GetWireProperties(m_WirePropertiesStagePreview);
+
                 // Draw spawn radius
+                if (wireProps != null)
                 {
-                    Gizmos.color = Color.green;     
+                    Gizmos.color = Color.green;
 
                     const int segments = 16;
                     const float step = Mathf.PI * 2f / segments;
@@ -760,15 +857,15 @@ namespace TO5.Wires
 
                         // Inner border
                         {
-                            Vector3 start = center + cdir * m_MinWireOffset;
-                            Vector3 end = center + ndir * m_MinWireOffset;
+                            Vector3 start = center + cdir * wireProps.m_InnerSpawnRadius;
+                            Vector3 end = center + ndir * wireProps.m_InnerSpawnRadius;
                             Gizmos.DrawLine(start, end);
                         }
 
                         // Outer border
                         {
-                            Vector3 start = center + cdir * m_MaxWireOffset;
-                            Vector3 end = center + ndir * m_MaxWireOffset;
+                            Vector3 start = center + cdir * wireProps.m_OuterSpawnRadius;
+                            Vector3 end = center + ndir * wireProps.m_OuterSpawnRadius;
                             Gizmos.DrawLine(start, end);
                         }
                     }
@@ -776,14 +873,14 @@ namespace TO5.Wires
                     Gizmos.color = Color.red;
 
                     const float cutoffStart = Mathf.PI * 1.5f;
-                    float cutoffInverse = 1 - m_BottomCircleCutoff;
+                    float cutoffInverse = 1 - wireProps.m_BottomCircleCutoff;
 
                     // Left cutoff line
                     {
                         float rad = cutoffStart - (Mathf.PI * 0.5f * cutoffInverse);
                         Vector3 dir = new Vector3(Mathf.Cos(rad), Mathf.Sin(rad), 0f);
 
-                        Gizmos.DrawLine(center, center + dir * m_MaxWireOffset);
+                        Gizmos.DrawLine(center, center + dir * wireProps.m_OuterSpawnRadius);
                     }
 
                     // Right cutoff line
@@ -791,7 +888,7 @@ namespace TO5.Wires
                         float rad = cutoffStart + (Mathf.PI * 0.5f * cutoffInverse);
                         Vector3 dir = new Vector3(Mathf.Cos(rad), Mathf.Sin(rad), 0f);
 
-                        Gizmos.DrawLine(center, center + dir * m_MaxWireOffset);
+                        Gizmos.DrawLine(center, center + dir * wireProps.m_OuterSpawnRadius);
                     }
                 }
 

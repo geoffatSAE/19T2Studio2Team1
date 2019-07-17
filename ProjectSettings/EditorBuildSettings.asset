@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Testing/SparkJumperVR.unity
-    guid: 8db8163aef949f644b12d7e6486f342c
+    path: Assets/Scenes/Game/SparkJumper.unity
+    guid: 30c341e753044ca45a3c11812ef4db45
   m_configObjects: {}

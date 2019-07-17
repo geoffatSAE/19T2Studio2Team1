@@ -30,14 +30,8 @@ namespace TO5.Wires
 
         [Header("Packets")]
         [SerializeField] private DataPacket m_PacketPrefab;                         // Prefab for data packets
-        [SerializeField] private int m_MinPacketSpawnOffset = 20;                   // Min segments in front of player to spawn
         [SerializeField] private float m_PacketSpace = 2f;                          // The space packet should have (avoid overlap)
         [SerializeField] private PacketStageProperties[] m_PacketProperties;        // Properties for packet behavior for each multiplier stage
-        [SerializeField, Range(0, 1)] private float m_PacketClusterChance = 0.1f;   // Chance for packets spawning in a cluster (when spawn interval elapses)
-        [SerializeField] private int m_MinPacketsPerCluster = 3;                    // Min packets to try and spawn in a cluster
-        [SerializeField] private int m_MaxPacketsPerCluster = 6;                    // Max packets to try and spawn in a cluster
-        [SerializeField] private int m_PacketClusterRate = 5;                       // Rates at which packet clusters happen (clusters only spawn after X attempts since the last) 
-        [SerializeField, Min(0)] private int m_PacketClusterSpawnRange = 2;         // Spawn range (in segments) for spawning clusters (m_MinPacketSpawnOffset + Random(-Range, Range))
 
         [Header("Boost")]
         [SerializeField] private float m_BoostChargeRate = 0.83f;                   // Boost player earns per second
@@ -271,10 +265,12 @@ namespace TO5.Wires
         /// <returns>Packet or null</returns>
         private DataPacket GenerateRandomPacket(bool tryCluster)
         {
+            PacketStageProperties packetProps = GetStagePacketProperties();
+
             // Try to spawn a cluster of packets if possible
-            if (tryCluster && m_PacketSpawnsSinceLastCluster >= m_PacketClusterRate)
+            if (tryCluster && m_PacketSpawnsSinceLastCluster >= packetProps.m_ClusterRate)
             {
-                bool cluster = m_PacketClusterChance > 0f ? Random.Range(0f, 100f) < (m_PacketClusterChance * 100f) : false;
+                bool cluster = packetProps.m_ClusterChance > 0f ? Random.Range(0f, 100f) < (packetProps.m_ClusterChance * 100f) : false;
                 if (cluster)
                 {
                     DataPacket packet = GeneratePacketCluster();
@@ -285,8 +281,7 @@ namespace TO5.Wires
             }
 
             const int maxAttempts = 5;
-            Vector3 spawnCenter = m_WireManager.GetSpawnCircleCenter() + WireManager.WirePlane * (m_WireManager.segmentLength * m_MinPacketSpawnOffset);
-            PacketStageProperties packetProps = GetStagePacketProperties();
+            Vector3 spawnCenter = m_WireManager.GetSpawnCircleCenter() + WireManager.WirePlane * (m_WireManager.segmentLength * packetProps.m_MinSpawnOffset);
 
             Vector3 position = Vector3.zero;
             bool success = false;
@@ -295,7 +290,7 @@ namespace TO5.Wires
             int attempts = 0;
             while (++attempts <= maxAttempts)
             {
-                Vector2 circleOffset = m_WireManager.GetRandomSpawnCircleOffset();
+                Vector2 circleOffset = m_WireManager.GetRandomSpawnCircleOffset(m_PacketSpace);
                 position = spawnCenter + new Vector3(circleOffset.x, circleOffset.y, 0f);
 
                 // We expect to spawn far in front of wires
@@ -341,9 +336,10 @@ namespace TO5.Wires
         /// <returns>Last packet generated or null</returns>
         private DataPacket GeneratePacketCluster()
         {
-            const int maxAttempts = 5;
-            Vector3 spawnCenter = m_WireManager.GetSpawnCircleCenter() + WireManager.WirePlane * (m_WireManager.segmentLength * m_MinPacketSpawnOffset);
             PacketStageProperties packetProps = GetStagePacketProperties();
+
+            const int maxAttempts = 5;
+            Vector3 spawnCenter = m_WireManager.GetSpawnCircleCenter() + WireManager.WirePlane * (m_WireManager.segmentLength * packetProps.m_MinSpawnOffset);     
 
             DataPacket packet = null;
 
@@ -351,7 +347,7 @@ namespace TO5.Wires
             int packetsSpawned = 0;
             #endif
 
-            int clusterSize = Random.Range(m_MinPacketsPerCluster, m_MaxPacketsPerCluster + 1);
+            int clusterSize = Random.Range(packetProps.m_MinPacketsPerCluster, packetProps.m_MaxPacketsPerCluster + 1);
             for (int i = 0; i < clusterSize; ++i)
             {
                 Vector3 position = Vector3.zero;
@@ -362,11 +358,11 @@ namespace TO5.Wires
                 while (++attempts <= maxAttempts)
                 {
                     // Offset along plane
-                    int randomSegmentOffset = Random.Range(-m_PacketClusterSpawnRange, m_PacketClusterSpawnRange + 1);
+                    int randomSegmentOffset = Random.Range(-packetProps.m_ClusterSpawnRange, packetProps.m_ClusterSpawnRange + 1);
                     Vector3 planeOffset = WireManager.WirePlane * (m_WireManager.segmentLength * randomSegmentOffset);
 
                     // Offset inside circle
-                    Vector2 circleOffset = m_WireManager.GetRandomSpawnCircleOffset();
+                    Vector2 circleOffset = m_WireManager.GetRandomSpawnCircleOffset(m_PacketSpace);
 
                     position = spawnCenter + planeOffset + new Vector3(circleOffset.x, circleOffset.y, 0f);
 
@@ -378,7 +374,7 @@ namespace TO5.Wires
 
                 if (!success)
                 {
-                    Debug.LogWarning(string.Format("Failed to generate packet after {0} attempts", maxAttempts), this);
+                    Debug.LogWarning(string.Format("Failed to generate packet after {0} attempts for cluster", maxAttempts), this);
                     continue;
                 }
 

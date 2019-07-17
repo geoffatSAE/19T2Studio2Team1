@@ -33,7 +33,7 @@ namespace TO5.Wires
                 if (OVRInput.GetDown(OVRInput.Button.PrimaryIndexTrigger))
                     TraceWorld(GetControllerPosition(), OVRInput.GetLocalControllerRotation(ControllerType));
 
-                if (OVRInput.GetDown(OVRInput.Button.PrimaryTouchPad))
+                if (OVRInput.GetDown(OVRInput.Button.PrimaryTouchpad))
                     ActivateBoost();
             }
             #endif

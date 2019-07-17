@@ -3,13 +3,14 @@
     Properties
     {
 		_Color ("Color", Color) = (1, 1, 1, 1)
+		_Alpha ("Alpha", Float) = 0.2
         _MainTex ("Texture", 2D) = "white" {}
 		_PanningSpeed ("Panning Speed (X, Y)", Vector) = (1, 0, 0, 0)
 		_AlphaScale ("Alpha Scale", Range(0, 1)) = 1
     }
     SubShader
     {
-        Tags { "RenderType"="Transparent" "Queue" = "Transparent"}
+        Tags { "RenderType"="Transparent" "Queue" = "Transparent" }
 
 		CGPROGRAM
 
@@ -22,6 +23,7 @@
 		};
 
 		half4 _Color;
+		half _Alpha;
 		sampler2D _MainTex;
 		half2 _PanningSpeed;
 		half _AlphaScale;
@@ -41,7 +43,7 @@
 
 			fixed4 c = _Color * (x * blend.x + y * blend.y + z * blend.z);
 			o.Albedo = c.rgb;
-			o.Alpha = 0.2 * _AlphaScale;
+			o.Alpha = _Alpha * _AlphaScale;
 		}
 		ENDCG
 	}
