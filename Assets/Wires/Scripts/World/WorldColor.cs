@@ -26,11 +26,15 @@ namespace TO5.Wires
             RenderSettings.skybox = m_Skybox;
 
             m_Grayscale = ScriptableObject.CreateInstance<Grayscale>();
-            m_Grayscale.enabled.Override(false);
+            m_Grayscale.enabled.Override(true);
             m_Grayscale.blend.Override(0f);
 
-            m_Volume = PostProcessManager.instance.QuickVolume(0, 1f, m_Grayscale);
-            m_Volume.enabled = false;
+            m_Volume = PostProcessManager.instance.QuickVolume(gameObject.layer, 100f, m_Grayscale);
+        }
+
+        void OnDestroy()
+        {
+            RuntimeUtilities.DestroyVolume(m_Volume, true, false);
         }
 
         /// <summary>
@@ -74,20 +78,26 @@ namespace TO5.Wires
         {
             if (m_Grayscale)
             {
-                m_Volume.enabled = true;
-                m_Grayscale.enabled.Override(true);
-
                 float start = Time.time;
                 while (m_PulseEnabled)
                 {
-                    float alpha = Mathf.Abs(Mathf.Sin((Time.time - start) * m_GrayscalePulseSpeed));
-                    m_Grayscale.blend.Override(Mathf.Lerp(0f, m_GrayscaleBlend, alpha));
+                    if (m_GrayscalePulseSpeed > 0f)
+                    {
+                        // We don't use Mathf.Abs to allow grayscale to blend for a while
+                        float alpha = Mathf.Max(0, Mathf.Cos((Time.time - start) * m_GrayscalePulseSpeed));
+
+                        // Inversed as 'gray' is the default state
+                        m_Grayscale.blend.value = Mathf.Lerp(0f, m_GrayscaleBlend, 1f - alpha);
+                    }
+                    else
+                    {
+                        m_Grayscale.blend.value = Mathf.Min(Time.time - start, m_GrayscaleBlend);
+                    }
 
                     yield return null;
                 }
 
-                m_Grayscale.enabled.Override(false);
-                m_Volume.enabled = false;
+                m_Grayscale.blend.value = 0f;
             }
         }
     }

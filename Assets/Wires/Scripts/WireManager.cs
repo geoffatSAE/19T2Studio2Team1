@@ -378,7 +378,11 @@ namespace TO5.Wires
                         m_ScoreManager.ResetMultiplier();
                     else
                         m_ScoreManager.DecreaseMultiplier(1);
+
+                    m_ScoreManager.DisableScoring();
                 }
+
+                m_JumpPenalty = true;
             }
             else
             {
@@ -785,8 +789,10 @@ namespace TO5.Wires
             Wire wire = m_DriftingWire;
             DeactivateDriftingWire();
 
-            // Forcefully jump player to closest wire
             JumpToClosestWire(wire);
+
+            if (m_ScoreManager)
+                m_ScoreManager.EnableScoring(false);
         }
 
         /// <summary>
@@ -808,6 +814,9 @@ namespace TO5.Wires
                 {
                     StopCoroutine(m_DriftRoutine);
                     DeactivateDriftingWire();
+
+                    if (m_ScoreManager)
+                        m_ScoreManager.EnableScoring(false);
                 }
             }
         }
