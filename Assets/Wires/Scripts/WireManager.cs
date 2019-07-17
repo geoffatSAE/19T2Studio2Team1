@@ -259,8 +259,8 @@ namespace TO5.Wires
             while (++attempts <= maxAttempts)
             {
                 Vector2 circleOffset = GetRandomSpawnCircleOffset(wireProps.m_InnerSpawnRadius);
-                int segmentRange = Random.Range(-wireProps.m_SparkSpawnSegmentRange, wireProps.m_SparkSpawnSegmentRange + 1);
-                int segmentOffset = wireProps.m_SparkSpawnSegmentOffset + segmentRange;
+                int segmentRange = Random.Range(-wireProps.m_SpawnSegmentRange, wireProps.m_SpawnSegmentRange + 1);
+                int segmentOffset = wireProps.m_SpawnSegmentOffset + segmentRange;
 
                 start = spawnCenter + new Vector3(circleOffset.x, circleOffset.y, 0f);
                 start.z += segmentOffset * m_CachedSegmentDistance;
@@ -443,7 +443,7 @@ namespace TO5.Wires
                 WireStageProperties wireProps = GetStageWireProperties();
 
                 // We would use Ceil in thise case, but this function uses floor
-                int segment = GetPositionSegment(center) + 1 + wireProps.m_SparkSpawnSegmentOffset;
+                int segment = GetPositionSegment(center) + 1 + wireProps.m_SpawnSegmentOffset;
                 center.z = m_CachedSegmentDistance * segment;
 
                 return center;
@@ -516,19 +516,13 @@ namespace TO5.Wires
             Wire bestWire = null;
             if (m_Wires.activeCount > 0)
             {
-                bestWire = m_Wires.GetObject(0);
-                if (bestWire == wire)
-                    bestWire = null;
-
-                // Start at one since we already 'tested' it
-                for (int i = 1; i < m_Wires.activeCount; ++i)
+                for (int i = 0; i < m_Wires.activeCount; ++i)
                 {
                     // Wire requires spark
                     Wire w = m_Wires.GetObject(i);
                     if (w == wire || !w.spark)
                         continue;
                     
-                    // In-case we reset back to null
                     if (bestWire == null)
                         bestWire = w;
 
@@ -827,6 +821,9 @@ namespace TO5.Wires
         private void MultiplierUpdated(float multiplier, int stage)
         {
             m_ActiveWireProperties = GetWireProperties(stage);
+
+            if (m_SparkJumper)
+                m_SparkJumper.m_JumpTime = m_ActiveWireProperties.m_JumpTime;
         }
 
         void OnDrawGizmos()

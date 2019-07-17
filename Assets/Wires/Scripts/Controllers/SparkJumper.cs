@@ -34,7 +34,7 @@ namespace TO5.Wires
         public TryActivateBoost OnActivateBoost;        // Event for when attempting boost activation
 
         public Transform m_Anchor;                                                          // Anchor to move instead of gameObject
-        [SerializeField, Min(0.1f)] private float m_JumpTime = 0.75f;                       // Transition time between sparks
+        public float m_JumpTime = 0.75f;                                                    // Transition time between sparks
         [SerializeField, Min(0.1f)] protected float m_TraceRadius = 0.5f;                   // Radius of sphere cast
         [SerializeField] private LayerMask m_InteractiveLayer = Physics.AllLayers;          // Layer for interactives
 

@@ -16,12 +16,13 @@ namespace TO5.Wires
         public int m_MaxSegments = 12;                                  // Max segments per wire
         public float m_MinSpawnInterval = 2f;                           // Min seconds between spawning wires
         public float m_MaxSpawnInterval = 3f;                           // Max seconds between spawning wires
-        public int m_SparkSpawnSegmentOffset = 5;                       // Offset from current segment to spawn wires
-        [Min(0)] public int m_SparkSpawnSegmentRange = 3;               // Range from offset to spawn wires (between -Value and Value)
+        public int m_SpawnSegmentOffset = 5;                            // Offset from current segment to spawn wires
+        [Min(0)] public int m_SpawnSegmentRange = 3;                    // Range from offset to spawn wires (between -Value and Value + 1)
         [Min(0)] public int m_SparkSpawnSegmentDelay = 3;               // Max segments to wait before spawning spark for wire
         [Range(0, 1)] public float m_DefectiveWireChance = 0.1f;        // Chance of wire be defective (0 for never, 1 for always)
         [Min(0)] public float m_SparkSpeed = 1f;                        // Speed of sparks    
         [Min(0)] public float m_SparkSwitchInterval = 1.5f;             // Interval for sparks switching on and off (0 for always on)
+        [Min(0)] public float m_JumpTime = 0.75f;                       // Jump time for player
     }
 
     /// <summary>
