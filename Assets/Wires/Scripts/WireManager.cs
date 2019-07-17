@@ -362,11 +362,11 @@ namespace TO5.Wires
             // Penalties for not jumping before reaching the end of a wire
             if (spark && spark.sparkJumper != null)
             {
-                //JumpToClosestWire(wire);
-                m_DriftingWire = wire;
+                // Jumper drifts independant of spark
                 spark.DetachJumper();
                 m_SparkJumper.SetDriftingEnabled(true);
 
+                m_DriftingWire = wire;
                 m_DriftRoutine = StartCoroutine(AutoJumpRoutine());
 
                 if (m_ScoreManager && !m_ScoreManager.boostActive)
@@ -376,16 +376,40 @@ namespace TO5.Wires
                     else
                         m_ScoreManager.DecreaseMultiplier(1);
                 }
-
-                return;
             }
+            else
+            {
 
-            wire.DeactivateWire();
-            wire.transform.position = disabledSpot;
-            spark.transform.position = disabledSpot;
+                wire.DeactivateWire();
+                wire.transform.position = disabledSpot;
+                spark.transform.position = disabledSpot;
 
-            m_Sparks.DeactivateObject(spark);
-            m_Wires.DeactivateObject(wire);
+                m_Sparks.DeactivateObject(spark);
+                m_Wires.DeactivateObject(wire);
+            }
+        }
+
+        /// <summary>
+        /// Deactivates the wire the player is drifting from
+        /// </summary>
+        private void DeactivateDriftingWire()
+        {
+            if (m_DriftingWire)
+            {
+                Wire wire = m_DriftingWire;
+                Spark spark = wire.spark;
+
+                m_DriftingWire = null;
+
+                wire.DeactivateWire();
+                wire.transform.position = disabledSpot;
+                spark.transform.position = disabledSpot;
+
+                m_Sparks.DeactivateObject(spark);
+                m_Wires.DeactivateObject(wire);
+
+                m_DriftingWire = null;
+            }
         }
 
         /// <summary>
@@ -747,26 +771,19 @@ namespace TO5.Wires
             GenerateSpark(wire, interval);
         }
 
+        /// <summary>
+        /// Forces player to jump to suitable wire after drifting
+        /// </summary>
         private IEnumerator AutoJumpRoutine()
         {
             yield return new WaitForSeconds(m_MaxDriftTime);
 
+            // We cache wire here as deactivate nullifies it
             Wire wire = m_DriftingWire;
-            Spark spark = m_DriftingWire.spark;
-            m_DriftingWire = null;
+            DeactivateDriftingWire();
 
-            m_SparkJumper.SetDriftingEnabled(false);
+            // Forcefully jump player to closest wire
             JumpToClosestWire(wire);
-
-
-            wire.DeactivateWire();
-            wire.transform.position = disabledSpot;
-            spark.transform.position = disabledSpot;
-
-            m_Sparks.DeactivateObject(spark);
-            m_Wires.DeactivateObject(wire);
-
-            m_DriftRoutine = null;
         }
 
         /// <summary>
@@ -785,20 +802,7 @@ namespace TO5.Wires
             if (m_DriftingWire)
             {
                 StopCoroutine(m_DriftRoutine);
-
-                Wire wire = m_DriftingWire;
-                Spark spark2 = m_DriftingWire.spark;
-                m_DriftingWire = null;
-
-                //m_SparkJumper.SetDriftingEnabled(false);
-
-                wire.DeactivateWire();
-                wire.transform.position = disabledSpot;
-                spark2.transform.position = disabledSpot;
-
-                m_Sparks.DeactivateObject(spark2);
-                m_Wires.DeactivateObject(wire);
-                m_DriftRoutine = null;
+                DeactivateDriftingWire();
             }
         }
 

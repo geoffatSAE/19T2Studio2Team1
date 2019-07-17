@@ -103,7 +103,7 @@ namespace TO5.Wires
             m_Spark = spark;
 
             m_IsJumping = false;
-            m_IsDrifting = false;
+            SetDriftingEnabled(false);
 
             m_Spark.FreezeSwitching();
             m_Spark.AttachJumper(this);
@@ -195,7 +195,7 @@ namespace TO5.Wires
             if (m_Spark)
             {
                 m_IsJumping = true;
-                m_IsDrifting = false;
+                SetDriftingEnabled(false);
 
                 Vector3 from = GetPosition();
                 float end = Time.time + m_JumpTime;

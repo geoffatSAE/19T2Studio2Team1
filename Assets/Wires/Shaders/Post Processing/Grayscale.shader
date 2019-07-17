@@ -1,39 +1,34 @@
 ﻿Shader "Wires/PostProcess/Grayscale"
 {
-	HLSLINCLUDE
-
-	#include "Packages/com.unity.postprocessing/PostProcessing/Shaders/StdLib.hlsl"
-
-	TEXTURE2D_SAMPLER2D(_MainTex, sampler_MainTex);
-	float _Blend;
-	float _PulseSpeed;
-	float _PulseTime;
-
-	float4 Frag(VaryingsDefault i) : SV_Target
-	{
-		float4 color = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.texcoord);
-		float luminance = dot(color.rgb, float3(0.2126729f, 0.7151522f, 0.0721750f));
-
-		color.rgb = lerp(color.rgb, luminance.xxx, _Blend.xxx *abs(sin(_PulseTime * _PulseSpeed)));
-		return color;
-	}
-
-	ENDHLSL
-
 	SubShader
 	{
-		Cull Off 
-		ZWrite Off 
-		ZTest Always
+	Pass
+	{
+		Stencil
+			{
+				Ref 2
+				Comp NotEqual
+			}
 
-		Pass
-		{
-			HLSLPROGRAM
-
-			#pragma vertex VertDefault
-			#pragma fragment Frag
-
-			ENDHLSL
-		}
+	CGPROGRAM
+		 #pragma vertex vert
+		 #pragma fragment frag
+		 struct appdata {
+			 float4 vertex : POSITION;
+		 };
+		 struct v2f {
+			 float4 pos : SV_POSITION;
+		 };
+		 v2f vert(appdata v) {
+			 v2f o;
+			 o.pos = UnityObjectToClipPos(v.vertex);
+			 return o;
+		 }
+		 half4 frag(v2f i) : COLOR{
+			 float4 color = float4(1, 0, 0, 1);
+				return color;
+		 }
+		 ENDCG
+	}
 	}
 }

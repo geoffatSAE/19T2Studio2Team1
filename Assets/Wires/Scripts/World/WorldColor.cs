@@ -10,6 +10,7 @@ namespace TO5.Wires
     public class WorldColor : MonoBehaviour
     {
         [SerializeField] private PostProcessVolume m_Volume;        // Post-Process volume (assumed to be global)
+        
 
         private Color m_BlendFrom, m_BlendTo;       // Colors to blend from and to
         private Material m_Skybox;                  // Skybox material
