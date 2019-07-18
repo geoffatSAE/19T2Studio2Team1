@@ -51,13 +51,12 @@ namespace TO5.Wires
         private PacketStageProperties m_ActivePacketProperties;                         // Properties for current stage
         private int m_PacketSpawnsSinceLastCluster = 0;                                 // Amount of random packets spawn attempts since the last packet cluster
 
-        [Header("UI")]
-        public Text m_ScoreText;                    // Text for writing score
-        public Text m_MultiplierText;               // Text for writing multiplier
-
-        //#if UNITY_EDITOR
+        #if UNITY_EDITOR
         [SerializeField] private Text m_DebugText;      // Text for writing debug data
-                                                        // #endif
+        #endif
+
+        // Current score
+        public float score { get { return m_Score; } }
 
         // Current multiplier
         public float multiplier { get { return m_Multiplier; } }
@@ -73,6 +72,9 @@ namespace TO5.Wires
 
         // If boost is active
         public bool boostActive { get { return m_BoostActive; } }
+
+        // Current boost built up (in percentage)
+        public float boost { get { return m_Boost / 100f; } }
 
         private WireManager m_WireManager;              // Manager for wires
         private SparkJumper m_SparkJumper;              // Players spark jumper
@@ -118,17 +120,14 @@ namespace TO5.Wires
                 }
             }
 
-            if (m_ScoreText)
-                m_ScoreText.text = string.Format("Score: {0}\nMultiplier: {1}", Mathf.FloorToInt(m_Score), totalMultiplier);
-
-            // #if UNITY_EDITOR
+            #if UNITY_EDITOR
             // Debug text
             if (m_DebugText)
             {
                 m_DebugText.text = string.Format("Score: {0}\nMultiplier: {1}\nMultiplier Stage: {2}\nPackets Pool Size: {3}\nPackets Active: {4}\nBoost Meter: {5}\nBoost Active: {6}\nHandicap Count: {7}\nResets Till Handicap: {8}",
                     Mathf.FloorToInt(m_Score), m_Multiplier, m_Stage, m_DataPackets.Count, m_DataPackets.activeCount, Mathf.FloorToInt(m_Boost), m_BoostActive, m_StageResets, Mathf.Max(0, m_ActivePacketProperties.m_ResetsTillHandicap - m_StageResets));
             }
-            // #endif
+            #endif
         }
 
         /// <summary>

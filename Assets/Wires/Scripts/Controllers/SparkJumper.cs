@@ -50,6 +50,9 @@ namespace TO5.Wires
         // Wire the player is on
         public Wire wire { get { return m_Spark ? m_Spark.GetWire() : null; } }
 
+        // Progress along players current wire
+        public float wireProgress { get { return m_Spark ? m_Spark.GetWire().sparkProgress : 0f; } }
+
         // If player is jumping
         public bool isJumping { get { return m_IsJumping; } }
 
