@@ -1080,7 +1080,7 @@ PrefabInstance:
     - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_WireProperties.Array.data[2].m_DefectiveWireChance
-      value: 0.05
+      value: 0.7
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
@@ -1110,12 +1110,12 @@ PrefabInstance:
     - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_WireProperties.Array.data[0].m_SparkDriftScale
-      value: 0.3
+      value: 0.7
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_WireProperties.Array.data[1].m_SparkDriftScale
-      value: 0.3
+      value: 0.7
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
@@ -1175,7 +1175,7 @@ PrefabInstance:
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_PacketProperties.Array.data[4].m_ClusterChance
-      value: 0.3
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
@@ -1210,7 +1210,7 @@ PrefabInstance:
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_PacketProperties.Array.data[5].m_MaxSpawnInterval
-      value: 1
+      value: 0.8
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
@@ -1230,7 +1230,7 @@ PrefabInstance:
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_PacketProperties.Array.data[5].m_ClusterChance
-      value: 0.3
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
@@ -1275,12 +1275,12 @@ PrefabInstance:
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_PacketProperties.Array.data[0].m_MinSpawnInterval
-      value: 3
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_PacketProperties.Array.data[0].m_MaxSpawnInterval
-      value: 5
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
@@ -1315,12 +1315,12 @@ PrefabInstance:
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_PacketProperties.Array.data[2].m_ClusterChance
-      value: 0.2
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_PacketProperties.Array.data[3].m_ClusterChance
-      value: 0.25
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
@@ -1350,7 +1350,7 @@ PrefabInstance:
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_PacketProperties.Array.data[0].m_MinSpawnOffset
-      value: 300
+      value: 70
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
@@ -1430,7 +1430,7 @@ PrefabInstance:
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_PacketProperties.Array.data[3].m_MaxSpawnInterval
-      value: 1.5
+      value: 1.7
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
@@ -1476,6 +1476,96 @@ PrefabInstance:
         type: 3}
       propertyPath: m_PacketProperties.Array.data[3].m_MaxSpeed
       value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_PacketProperties.Array.data[1].m_MinSpawnInterval
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_PacketProperties.Array.data[1].m_MaxSpawnInterval
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_PacketProperties.Array.data[1].m_ClusterChance
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_PacketProperties.Array.data[0].m_MultiplierIncreaseInterval
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_PacketProperties.Array.data[2].m_MultiplierIncreaseInterval
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_PacketProperties.Array.data[3].m_MultiplierIncreaseInterval
+      value: 21
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_PacketProperties.Array.data[4].m_MultiplierIncreaseInterval
+      value: 23
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_PacketProperties.Array.data[5].m_MultiplierIncreaseInterval
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_PacketProperties.Array.data[2].m_ResetsTillHandicap
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_PacketProperties.Array.data[3].m_ResetsTillHandicap
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_PacketProperties.Array.data[5].m_ResetsTillHandicap
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_PacketProperties.Array.data[4].m_ResetsTillHandicap
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_PacketProperties.Array.data[0].m_HandicapMultiplierIncreaseInterval
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_PacketProperties.Array.data[1].m_HandicapMultiplierIncreaseInterval
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_PacketProperties.Array.data[2].m_HandicapMultiplierIncreaseInterval
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_PacketProperties.Array.data[3].m_HandicapMultiplierIncreaseInterval
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_PacketProperties.Array.data[4].m_HandicapMultiplierIncreaseInterval
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_PacketProperties.Array.data[5].m_HandicapMultiplierIncreaseInterval
+      value: 18
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0c734c134181caa47bd9ea2607cf738b, type: 3}
