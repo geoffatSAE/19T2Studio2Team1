@@ -25,6 +25,8 @@ namespace TO5.Wires
         [Range(0, 1)] public float m_SparkDriftScale = 0.2f;            // Percentage of sparks speed to use when player is drifting (player drifts at same speed)
         [Min(0)] public float m_SparkSwitchInterval = 1.5f;             // Interval for sparks switching on and off (0 for always on)
 
+        // This is the easiest place to put these for now
+
         [Min(0)] public float m_JumpTime = 0.75f;                       // Jump time for player
     }
 
@@ -46,6 +48,8 @@ namespace TO5.Wires
         public int m_MaxPacketsPerCluster = 6;                          // Max packets to try and spawn in a cluster
         public int m_ClusterRate = 5;                                   // Rates at which packet clusters happen (clusters only spawn after X attempts since the last) 
         [Min(0)] public int m_ClusterSpawnRange = 2;                    // Spawn range (in segments) for spawning clusters (m_MinPacketSpawnOffset + Random(-Range, Range))
+
+        // This is the easiet place to put these for now
 
         public float m_MultiplierIncreaseInterval = 15f;                // Time to reach next stage   
         public float m_HandicapMultiplierIncreaseInterval = 10f;        // Time to reach next stage after failing X times

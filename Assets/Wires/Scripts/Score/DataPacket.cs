@@ -16,10 +16,18 @@ namespace TO5.Wires
         public PacketCollected OnCollected;     // Event for when player collects this packet
         public PacketCollected OnExpired;       // Event for when this packet expires
 
+        [SerializeField] private FloatingMovement m_FloatingMovement;       // Movement component (calls Move during Tick)
         [SerializeField] private AudioSource m_Ambience;
 
         private float m_Speed;          // The speed of this packet
         
+        void Awake()
+        {
+            // We update it manually
+            if (m_FloatingMovement)
+                m_FloatingMovement.enabled = false;
+        }
+
         /// <summary>
         /// Activates this data packet
         /// </summary>
@@ -60,7 +68,10 @@ namespace TO5.Wires
         {
             // We move in the opposite direction of sparks (so we subtract)
             step *= m_Speed;
-            transform.position -= WireManager.WirePlane * step;    
+            transform.position -= WireManager.WirePlane * step;
+
+            if (m_FloatingMovement)
+                m_FloatingMovement.Move(Time.deltaTime);
         }
 
         /// <summary>

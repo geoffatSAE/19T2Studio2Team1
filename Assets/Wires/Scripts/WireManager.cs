@@ -50,13 +50,12 @@ namespace TO5.Wires
     // TODO: Move score manager from here to WiresGameMode
     public class WireManager : MonoBehaviour
     {
-        public static Vector3 WirePlane = Vector3.forward;
-
-        private bool m_Running = false;
+        public static Vector3 WirePlane = Vector3.forward;    
 
         [Header("Player")]
         [SerializeField] private SparkJumper m_SparkJumper;      // The players spark jumper
 
+        private bool m_Running = false;             // If game is running
         private bool m_JumpPenalty = false;         // If player has jump penalty applied (didn't jump in time)
 
         // Players spark jumper
@@ -99,7 +98,6 @@ namespace TO5.Wires
         [SerializeField] private Transform m_DisabledSpot;                      // Spot to hide disabled objects
         [SerializeField] private ScoreManager m_ScoreManager;                   // Manager for scoring
         [SerializeField] private bool m_TickWhenJumping = true;                 // If wires/sparks should tick while player is jumping
-        [SerializeField] private bool m_JumpFailResetsMultiplier = false;       // If multiplier completely resets upon reaching end of a wire
 
         // Spot for hiding inactive objects
         public Vector3 disabledSpot { get { return m_DisabledSpot ? m_DisabledSpot.position : Vector3.zero; } }
@@ -371,13 +369,9 @@ namespace TO5.Wires
                 m_DriftingWire = wire;
                 m_DriftRoutine = StartCoroutine(AutoJumpRoutine());
 
-                if (m_ScoreManager && !m_ScoreManager.boostActive)
+                if (m_ScoreManager)
                 {
-                    if (m_JumpFailResetsMultiplier)
-                        m_ScoreManager.ResetMultiplier(false);
-                    else
-                        m_ScoreManager.DecreaseMultiplier(1);
-
+                    m_ScoreManager.TryDecreaseMultiplier();
                     m_ScoreManager.DisableScoring();
                 }
 
@@ -740,7 +734,8 @@ namespace TO5.Wires
             if (m_ScoreManager)
                 stage = m_ScoreManager.multiplierStage;
 
-            return GetWireProperties(stage);
+            m_ActiveWireProperties = GetWireProperties(stage);
+            return m_ActiveWireProperties;
         }
 
         /// <summary>

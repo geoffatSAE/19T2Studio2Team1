@@ -27,7 +27,8 @@ namespace TO5.Wires
         [Header("Multiplier")]
         [SerializeField, Range(0, 32)] private int m_MultiplierStages = 2;      // The amount of stages for the multiplier
 
-        private Dictionary<int, int> m_StageHandicapCounts = new Dictionary<int, int>();        // Count for resets per multiplier stage
+        private int m_StageResets = 0;                                              // How many times current stage has been reset
+        [System.Obsolete] private Dictionary<int, int> m_StageHandicapCounts;       // Count for resets per multiplier stage
 
         [Header("Packets")]
         [SerializeField] private DataPacket m_PacketPrefab;                         // Prefab for data packets
@@ -56,7 +57,7 @@ namespace TO5.Wires
 
         //#if UNITY_EDITOR
         [SerializeField] private Text m_DebugText;      // Text for writing debug data
-       // #endif
+                                                        // #endif
 
         // Current multiplier
         public float multiplier { get { return m_Multiplier; } }
@@ -124,11 +125,10 @@ namespace TO5.Wires
             // Debug text
             if (m_DebugText)
             {
-                int handicapCount = GetHandicapCount(m_Stage);
                 m_DebugText.text = string.Format("Score: {0}\nMultiplier: {1}\nMultiplier Stage: {2}\nPackets Pool Size: {3}\nPackets Active: {4}\nBoost Meter: {5}\nBoost Active: {6}\nHandicap Count: {7}\nResets Till Handicap: {8}",
-                    Mathf.FloorToInt(m_Score), m_Multiplier, m_Stage, m_DataPackets.Count, m_DataPackets.activeCount, Mathf.FloorToInt(m_Boost), m_BoostActive, handicapCount, Mathf.Max(0, m_ActivePacketProperties.m_ResetsTillHandicap - handicapCount));
+                    Mathf.FloorToInt(m_Score), m_Multiplier, m_Stage, m_DataPackets.Count, m_DataPackets.activeCount, Mathf.FloorToInt(m_Boost), m_BoostActive, m_StageResets, Mathf.Max(0, m_ActivePacketProperties.m_ResetsTillHandicap - m_StageResets));
             }
-           // #endif
+            // #endif
         }
 
         /// <summary>
@@ -167,7 +167,7 @@ namespace TO5.Wires
             {
                 m_Score = 0f;
                 m_Multiplier = 1f;
-                m_StageHandicapCounts.Clear();
+                m_StageResets = 0;
 
                 m_Score = 0;
 
@@ -198,8 +198,6 @@ namespace TO5.Wires
         /// <param name="stages">Stages to increase by</param>
         public void IncreaseMultiplier(int stages = 1)
         {
-            ResetHandicap(m_Stage);
-
             SetMultiplierStage(m_Stage + stages);
         }
 
@@ -209,8 +207,6 @@ namespace TO5.Wires
         /// <param name="stages"></param>
         public void DecreaseMultiplier(int stages = 1)
         {
-            IncreaseHandicap(m_Stage);
-
             SetMultiplierStage(m_Stage - stages);
 
             // Reset the multiplier tick routine
@@ -229,6 +225,8 @@ namespace TO5.Wires
                 m_Stage = Mathf.Clamp(stage, 0, m_MultiplierStages);
                 m_Multiplier = 1 << m_Stage;
 
+                m_StageResets = 0;
+
                 m_ActivePacketProperties = GetPacketProperties(m_Stage);
 
                 if (OnMultiplierUpdated != null)
@@ -237,16 +235,35 @@ namespace TO5.Wires
         }
 
         /// <summary>
+        /// Attempts to decrease the multiplier (based on resets)
+        /// </summary>
+        /// <returns>If multiplier was decreased</returns>
+        public bool TryDecreaseMultiplier()
+        {
+            PacketStageProperties packetProps = GetStagePacketProperties();
+
+            ++m_StageResets;
+            if (!boostActive && m_StageResets >= packetProps.m_ResetsTillHandicap * 2)
+            {
+                DecreaseMultiplier(1);
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Resets the multiplier stage
         /// </summary>
         /// <param name="resetHandicaps">If handicaps should also be reset</param>
-        public void ResetMultiplier(bool resetHandicaps)
+        public void ResetMultiplier(bool resetHandicaps = false)
         {
             m_Multiplier = 1f;
             m_Stage = 0;
+            m_StageResets = 0;
 
-            if (resetHandicaps)
-                m_StageHandicapCounts.Clear();
+            //if (resetHandicaps)
+            //    m_StageHandicapCounts.Clear();
         }
 
         /// <summary>
@@ -254,6 +271,7 @@ namespace TO5.Wires
         /// </summary>
         /// <param name="stage">Stage for handicap</param>
         /// <param name="amount">Amount of increase count by</param>
+        [System.Obsolete("Please use TryDecreaseMultiplier", true)]
         private void IncreaseHandicap(int stage, int amount = 1)
         {
             if (stage >= 0 && stage < m_MultiplierStages)
@@ -269,6 +287,7 @@ namespace TO5.Wires
         /// Resets handicap stage for stage
         /// </summary>
         /// <param name="stage">Stage for handicap</param>
+        [System.Obsolete("Please use TryDecreaseMultiplier", true)]
         private void ResetHandicap(int stage)
         {
             if (stage >= 0 && stage < m_MultiplierStages)
@@ -280,6 +299,7 @@ namespace TO5.Wires
         /// </summary>
         /// <param name="stage">Stage for handicap</param>
         /// <returns>Count for stage or 0</returns>
+        [System.Obsolete("Please use TryDecreaseMultiplier", true)]
         private int GetHandicapCount(int stage)
         {
             if (stage >= 0 && stage < m_MultiplierStages)
@@ -311,8 +331,7 @@ namespace TO5.Wires
                 float interval = packetProps.m_MultiplierIncreaseInterval;
 
                 // Handicap
-                int stageHandicap = GetHandicapCount(m_Stage);
-                if (stageHandicap >= packetProps.m_ResetsTillHandicap)
+                if (m_StageResets >= packetProps.m_ResetsTillHandicap)
                     interval = packetProps.m_HandicapMultiplierIncreaseInterval;
 
                 yield return new WaitForSeconds(interval);
@@ -522,7 +541,8 @@ namespace TO5.Wires
             if (m_ActivePacketProperties != null)
                 return m_ActivePacketProperties;
 
-            return GetPacketProperties(m_Stage);
+            m_ActivePacketProperties = GetPacketProperties(m_Stage);
+            return m_ActivePacketProperties;
         }
 
         /// <summary>
