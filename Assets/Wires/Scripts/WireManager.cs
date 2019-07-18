@@ -74,7 +74,6 @@ namespace TO5.Wires
         [SerializeField] private int m_InitialSegments = 10;            // Segments for initial starting wire
         [SerializeField] WireAnimator m_WireAnimator;                   // Animator for the wire
         [SerializeField] WireFactory[] m_Factories;                     // Factories for generating wire types
-        [SerializeField] private float m_DriftOverrideSpeed = 0.5f;     // Speed of sparks when player is drifting
         [SerializeField] private float m_MaxDriftTime = 5f;             // Max time player can be drifting for before auto jump
 
         private Coroutine m_DriftRoutine;
@@ -136,7 +135,7 @@ namespace TO5.Wires
 
                 if (sparkJumper.isDrifting)
                 {
-                    step = m_DriftOverrideSpeed * Time.deltaTime;
+                    step = wireProps.m_SparkSpeed * wireProps.m_SparkDriftScale * Time.deltaTime;
 
                     // Move player with drift
                     Vector3 position = m_SparkJumper.GetPosition() + (WirePlane * step);
@@ -375,7 +374,7 @@ namespace TO5.Wires
                 if (m_ScoreManager && !m_ScoreManager.boostActive)
                 {
                     if (m_JumpFailResetsMultiplier)
-                        m_ScoreManager.ResetMultiplier();
+                        m_ScoreManager.ResetMultiplier(false);
                     else
                         m_ScoreManager.DecreaseMultiplier(1);
 
