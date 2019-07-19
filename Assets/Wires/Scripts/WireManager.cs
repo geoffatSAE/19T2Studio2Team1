@@ -216,21 +216,20 @@ namespace TO5.Wires
         /// Generates the default wire and spark for player to jump onto
         /// </summary>
         /// <param name="wireProps">Wire properties to use for tutorial mode</param>
-        public void StartTutorial(WireStageProperties wireProps)
+        /// <returns>If no errors were encountered</returns>
+        public bool StartTutorial(WireStageProperties wireProps, int initialSegments)
         {
             if (!m_Running)
             {
                 if (!Initialize())
-                    return;
+                    return false;
 
                 m_ActiveWireProperties = wireProps;
 
                 // Attach player to initial wire
                 {
-                    int segments = Random.Range(wireProps.m_MinSegments, wireProps.m_MaxSegments + 1);
-
                     WireFactory factory = GetRandomWireFactory();
-                    Wire spawnWire = GenerateWire(transform.position, segments, 0, 0, factory);
+                    Wire spawnWire = GenerateWire(transform.position, initialSegments, 0, 0, factory);
 
                     Assert.IsNotNull(spawnWire.spark);
                 }
@@ -238,20 +237,25 @@ namespace TO5.Wires
                 m_Running = true;
                 m_Tutorial = true;
                 enabled = true;
+
+                return true;
             }
+
+            return false;
         }
 
         /// <summary>
         /// Starts spawning wires. Can be used by default or after calling StartTutorial.
         /// </summary>
-        public void StartWires()
+        /// <returns>If no errors were encountered</returns>
+        public bool StartWires()
         {
             if (!m_Running || m_Tutorial) 
             {
                 if (!m_Running)
                 {
                     if (!Initialize())
-                        return;
+                        return false;
 
                     // Attach player to initial wire
                     {
@@ -274,7 +278,11 @@ namespace TO5.Wires
                 m_Running = true;
                 m_Tutorial = false;
                 enabled = true;
+
+                return true;
             }
+
+            return false;
         }
 
         /// <summary>

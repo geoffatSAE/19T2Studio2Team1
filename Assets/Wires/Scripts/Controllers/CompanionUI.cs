@@ -15,6 +15,7 @@ namespace TO5.Wires
 
         public string m_ScoreTextFormat = "Score: {0}";         // Formatting for score text ({0} is required, will be replaced by actual score)
 
+        [SerializeField] private Canvas m_Canvas;               // Canvas for companions HUD
         [SerializeField] private Text m_ScoreText;              // Text block for writing players score
         [SerializeField] private Text m_MultiplierText;         // Text block for writing players multiplier
         [SerializeField] private Slider m_ProgressSlider;       // Slider for displaying wire progress
@@ -33,6 +34,16 @@ namespace TO5.Wires
                 m_MultiplierText.text = string.Format("Multiplier: x{0}", m_ScoreManager.totalMultiplier);
                 m_BoostSlider.value = m_ScoreManager.boost;
             }
+        }
+
+        /// <summary>
+        /// Set if HUD of companion should be rendered
+        /// </summary>
+        /// <param name="render">Enable HUD</param>
+        public void SetRenderHUD(bool render)
+        {
+            if (m_Canvas)
+                m_Canvas.gameObject.SetActive(render);
         }
     }
 }

@@ -14,10 +14,12 @@ namespace TO5.Wires
 
         [Header("Tutorial")]
         [SerializeField] private bool m_EnableTutorial = true;                  // If tutorial is enabled (at start of game)
+        [SerializeField] private int m_TutorialInitialSegments = 30;            // Segments of the initial wire in tutorial mode
         [SerializeField] private int m_TutorialWireSegments = 20;               // Segments per wire in tutorial mode
         [SerializeField] private float m_TutorialWireRadius = 5f;               // Spawn radius of wires in tutorial mode
         [SerializeField] private float m_TutorialSparkSpeed = 1f;               // Spark speed in tutorial mode
         [SerializeField] private float m_TutorialJumpTime = 1.5f;               // Jump time in tutorial mode
+        [SerializeField] private Canvas m_TutorialDisplay;                      // HUD to display during tutorial mode
 
         #if UNITY_EDITOR
         [Header("Debug")]
@@ -81,10 +83,18 @@ namespace TO5.Wires
             tutorialProps.m_SparkSpeed = m_TutorialSparkSpeed;
             tutorialProps.m_JumpTime = m_TutorialJumpTime;
 
-            m_WireManager.StartTutorial(tutorialProps);
+            if (m_WireManager.StartTutorial(tutorialProps, m_TutorialInitialSegments))
+            {
+                // Initial wire to spawn for player (others will spawn if they failed to jump of current one)
+                StartCoroutine(TutorialWireSpawnRoutine());
 
-            // Initial wire to spawn for player (others will spawn if they failed to jump of current one)
-            StartCoroutine(TutorialWireSpawnRoutine());
+                if (m_TutorialDisplay)
+                    m_TutorialDisplay.gameObject.SetActive(true);
+
+                SparkJumper sparkJumper = m_WireManager.sparkJumper;
+                if (sparkJumper.m_Companion)
+                    sparkJumper.m_Companion.SetRenderHUD(false);
+            }
         }
 
         /// <summary>
@@ -93,6 +103,13 @@ namespace TO5.Wires
         private void EndTutorial()
         {
             m_WireManager.PlayerJumpedOffWire -= TutorialJumpedOffWire;
+
+            if (m_TutorialDisplay)
+                m_TutorialDisplay.gameObject.SetActive(false);
+
+            SparkJumper sparkJumper = m_WireManager.sparkJumper;
+            if (sparkJumper.m_Companion)
+                sparkJumper.m_Companion.SetRenderHUD(true);
 
             StartArcade();
         }
