@@ -37,6 +37,7 @@ namespace TO5.Wires
         public float m_JumpTime = 0.75f;                                                    // Transition time between sparks
         [SerializeField, Min(0.1f)] protected float m_TraceRadius = 0.5f;                   // Radius of sphere cast
         [SerializeField] private LayerMask m_InteractiveLayer = Physics.AllLayers;          // Layer for interactives
+        public CompanionUI m_Companion;                                                     // Players companion
 
         // If the player is allowed to request a jump
         public bool canJump { get { return !m_IsJumping; } }
