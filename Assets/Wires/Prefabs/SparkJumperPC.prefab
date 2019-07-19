@@ -295,6 +295,11 @@ PrefabInstance:
       propertyPath: m_SparkJumper
       value: 
       objectReference: {fileID: 8646348428308405757}
+    - target: {fileID: 970081076064455249, guid: a5a33f51ce935c547bd9d87b27f3a6a2,
+        type: 3}
+      propertyPath: m_Camera
+      value: 
+      objectReference: {fileID: 8646348428977238135}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a5a33f51ce935c547bd9d87b27f3a6a2, type: 3}
 --- !u!4 &7727903305461585556 stripped

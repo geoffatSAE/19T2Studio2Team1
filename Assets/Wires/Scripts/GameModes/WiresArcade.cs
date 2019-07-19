@@ -21,6 +21,8 @@ namespace TO5.Wires
         [SerializeField] private float m_TutorialJumpTime = 1.5f;               // Jump time in tutorial mode
         [SerializeField] private Canvas m_TutorialDisplay;                      // HUD to display during tutorial mode
 
+        private bool m_TutorialActive = false;              // If tutorial is active
+
         #if UNITY_EDITOR
         [Header("Debug")]
         [SerializeField] private Text m_DebugText;      // Text for writing debug data
@@ -94,6 +96,8 @@ namespace TO5.Wires
                 SparkJumper sparkJumper = m_WireManager.sparkJumper;
                 if (sparkJumper.m_Companion)
                     sparkJumper.m_Companion.SetRenderHUD(false);
+
+                m_TutorialActive = true;
             }
         }
 
@@ -102,22 +106,42 @@ namespace TO5.Wires
         /// </summary>
         private void EndTutorial()
         {
-            m_WireManager.PlayerJumpedOffWire -= TutorialJumpedOffWire;
+            if (m_TutorialActive)
+            {
+                m_WireManager.PlayerJumpedOffWire -= TutorialJumpedOffWire;
 
-            if (m_TutorialDisplay)
-                m_TutorialDisplay.gameObject.SetActive(false);
+                if (m_TutorialDisplay)
+                    m_TutorialDisplay.gameObject.SetActive(false);
 
-            SparkJumper sparkJumper = m_WireManager.sparkJumper;
-            if (sparkJumper.m_Companion)
-                sparkJumper.m_Companion.SetRenderHUD(true);
+                SparkJumper sparkJumper = m_WireManager.sparkJumper;
+                if (sparkJumper.m_Companion)
+                    sparkJumper.m_Companion.SetRenderHUD(true);
 
-            StartArcade();
+                m_TutorialActive = false;
+
+                StartArcade();
+            }
         }
-
+        
+        /// <summary>
+        /// Starts arcade mode
+        /// </summary>
         private void StartArcade()
         {
             m_WireManager.StartWires();
             StartCoroutine(GameTimerRoutine());
+        }
+
+        /// <summary>
+        /// Skips the tutorial (if active)
+        /// </summary>
+        public void SkipTutorial()
+        {
+            if (m_TutorialActive)
+            {
+                StopCoroutine("TutorialWireSpawnRoutine");
+                EndTutorial();
+            }
         }
 
         /// <summary>
