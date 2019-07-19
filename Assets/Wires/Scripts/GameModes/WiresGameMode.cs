@@ -63,8 +63,6 @@ namespace TO5.Wires
 
             StartGame();
 
-            Debug.Log("Starting game");
-
             return true;
         }
     }

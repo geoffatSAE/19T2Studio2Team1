@@ -50,19 +50,20 @@ namespace TO5.Wires
     // TODO: Move score manager from here to WiresGameMode
     public class WireManager : MonoBehaviour
     {
-        public static Vector3 WirePlane = Vector3.forward;    
+        public static Vector3 WirePlane = Vector3.forward;
+        
+        /// <summary>
+        /// Delegate for when the player has jumped off a wire
+        /// </summary>
+        /// <param name="failed">If player 'failed' to jump (was auto jumped or jumped while drifting)</param>
+        public delegate void JumpedOffWire(bool failed);
+
+        public JumpedOffWire PlayerJumpedOffWire;       // Event for when player has jumped off a wire
+        private bool m_Running = false;                 // If game is running
+        private bool m_WireFailed = false;              // If player has jump penalty applied (didn't jump in time)
 
         [Header("Player")]
         [SerializeField] private SparkJumper m_SparkJumper;      // The players spark jumper
-
-        private bool m_Running = false;             // If game is running
-        private bool m_JumpPenalty = false;         // If player has jump penalty applied (didn't jump in time)
-
-        // Players spark jumper
-        public SparkJumper sparkJumper { get { return m_SparkJumper; } }
-
-        // Length of a segment
-        public float segmentLength { get { return m_CachedSegmentDistance; } }
 
         [Header("Sparks")]
         public Spark m_SparkPrefab;                     // The sparks to use
@@ -73,6 +74,7 @@ namespace TO5.Wires
         [SerializeField] private int m_InitialSegments = 10;            // Segments for initial starting wire
         [SerializeField] WireAnimator m_WireAnimator;                   // Animator for the wire
         [SerializeField] WireFactory[] m_Factories;                     // Factories for generating wire types
+        public bool m_DriftingEnabled = true;                           // If drifting is enabled
         [SerializeField] private float m_MaxDriftTime = 5f;             // Max time player can be drifting for before auto jump
 
         private Coroutine m_DriftRoutine;
@@ -91,16 +93,25 @@ namespace TO5.Wires
         private WireStageProperties m_ActiveWireProperties;                     // Properties for current stage
         private Wire m_DriftingWire;                                            // The wire the player was last on before drifting
 
-        // Score manager to track multiplier
-        public ScoreManager scoreManager { get { return m_ScoreManager; } }
-
         [Header("Manager")]
         [SerializeField] private Transform m_DisabledSpot;                      // Spot to hide disabled objects
         [SerializeField] private ScoreManager m_ScoreManager;                   // Manager for scoring
         [SerializeField] private bool m_TickWhenJumping = true;                 // If wires/sparks should tick while player is jumping
 
+        // If the game is running
+        public bool isRunning { get { return m_Running; } }
+
+        // Players spark jumper
+        public SparkJumper sparkJumper { get { return m_SparkJumper; } }
+
+        // Length of a segment
+        public float segmentLength { get { return m_CachedSegmentDistance; } }
+
         // Spot for hiding inactive objects
         public Vector3 disabledSpot { get { return m_DisabledSpot ? m_DisabledSpot.position : Vector3.zero; } }
+
+        // Score manager to track multiplier
+        public ScoreManager scoreManager { get { return m_ScoreManager; } }
 
         #if UNITY_EDITOR
         [Header("Debug")]
@@ -111,14 +122,14 @@ namespace TO5.Wires
         [SerializeField] private Text m_DebugText;              // Text for writing debug data
         #endif
 
+        public bool m_Tutorial;         // Temp bool for when tutorial mode is active   
+
         void Awake()
         {
             if (m_ScoreManager)
             {
                 m_ScoreManager.Initialize(this);
                 m_ScoreManager.OnMultiplierUpdated += MultiplierUpdated;
-
-                m_ActiveWireProperties = GetWireProperties(m_ScoreManager.multiplierStage);
             }
         }
 
@@ -157,7 +168,7 @@ namespace TO5.Wires
                     float progress = wire.TickWire(step);
                     if (progress >= 1f)
                     {
-                        DeactivateWire(wire);
+                        HandleDeactivatingWire(wire);
 
                         // Object pool swaps when deactivating objects, we need
                         // to update the swapped object since it is still active
@@ -209,7 +220,50 @@ namespace TO5.Wires
                 StartCoroutine(WireSpawnRoutine());
 
                 if (m_ScoreManager)
+                {
                     m_ScoreManager.EnableScoring(true);
+                    m_ActiveWireProperties = GetWireProperties(m_ScoreManager.multiplierStage);
+                }
+
+                enabled = true;
+                m_Running = true;
+            }
+        }
+
+        public void StartWiresManual(int initialSegments, WireStageProperties defaultProperties)
+        {
+            if (!m_Running)
+            {
+                if (!m_SparkJumper)
+                {
+                    Debug.LogError("Unable to start wires as no spark jumper has been assigned");
+                    return;
+                }
+
+                // Hook events
+                {
+                    m_SparkJumper.OnJumpToSpark += JumpToSpark;
+                }
+
+                m_CachedSegmentDistance = CalculateSegmentDistance();
+
+                // Attach player to initial wire
+                {
+                    WireFactory factory = GetRandomWireFactory();
+                    Wire spawnWire = GenerateWire(transform.position, initialSegments, 0, 0, factory);
+
+                    Assert.IsNotNull(spawnWire.spark);
+
+                    //m_SparkJumper.InstantJumpToSpark(spawnWire.spark);
+                }
+
+                // Start spawning wires
+                StartCoroutine(WireSpawnRoutine());
+
+                if (defaultProperties != null)
+                    m_ActiveWireProperties = defaultProperties;
+                else
+                    m_ActiveWireProperties = GetStageWireProperties();
 
                 enabled = true;
                 m_Running = true;
@@ -255,7 +309,7 @@ namespace TO5.Wires
             int attempts = 0;
             while (++attempts <= maxAttempts)
             {
-                Vector2 circleOffset = GetRandomSpawnCircleOffset(wireProps.m_InnerSpawnRadius);
+                Vector2 circleOffset = GetRandomSpawnCircleOffset(wireProps.m_InnerSpawnRadius, wireProps.m_OuterSpawnRadius);
                 int segmentRange = Random.Range(-wireProps.m_SpawnSegmentRange, wireProps.m_SpawnSegmentRange + 1);
                 int segmentOffset = wireProps.m_SpawnSegmentOffset + segmentRange;
 
@@ -288,11 +342,7 @@ namespace TO5.Wires
                     sparkInterval = 0f;
             }
 
-            // Random factory (themes)
-            WireFactory factory = null;
-            if (m_Factories.Length > 0)
-                factory = m_Factories[Random.Range(0, m_Factories.Length)];
-
+            WireFactory factory = GetRandomWireFactory();
             return GenerateWire(start, segments, sparkDelay, sparkInterval, factory);
         }
 
@@ -305,7 +355,7 @@ namespace TO5.Wires
         /// <param name="sparkInterval">Interval for spark switching status</param>
         /// <param name="factory">Factory for wires aesthetics</param>
         /// <returns>Wire with properties or null</returns>
-        private Wire GenerateWire(Vector3 start, int segments, int sparkDelay, float sparkInterval, WireFactory factory)
+        public Wire GenerateWire(Vector3 start, int segments, int sparkDelay, float sparkInterval, WireFactory factory)
         {
             Wire wire = GetWire();
             if (!wire)
@@ -349,43 +399,72 @@ namespace TO5.Wires
         }
 
         /// <summary>
-        /// Deactivates the wire, handles if player is attached to spark
+        /// Handles deactivating the wire, including if player is attached to spark
         /// </summary>
         /// <param name="wire">Wire to deactivate</param>
-        private void DeactivateWire(Wire wire)
+        private void HandleDeactivatingWire(Wire wire)
         {
             // Resetting wire will have it drop its spark reference
             Spark spark = wire.spark;
 
             // Penalties for not jumping before reaching the end of a wire
             if (spark && spark.sparkJumper != null)
-            {      
+            {
+                m_WireFailed = true;
+
                 spark.DetachJumper();
-
-                // Jumper drifts independant of spark
-                //m_SparkJumper.JumpOffSpark();
-                m_SparkJumper.SetDriftingEnabled(true);
-
-                m_DriftingWire = wire;
-                m_DriftRoutine = StartCoroutine(AutoJumpRoutine());
 
                 if (m_ScoreManager)
                 {
                     m_ScoreManager.TryDecreaseMultiplier();
-                    m_ScoreManager.DisableScoring();
+
+                    if (m_DriftingEnabled)
+                        m_ScoreManager.DisableScoring();
                 }
 
-                m_JumpPenalty = true;
+                // Jumper drifts independant of spark
+                if (m_DriftingEnabled)
+                {
+                    //m_SparkJumper.JumpOffSpark();
+                    m_SparkJumper.SetDriftingEnabled(true);
+
+                    m_DriftingWire = wire;
+                    m_DriftRoutine = StartCoroutine(AutoJumpRoutine());
+
+                    // We end here as we will deactivate the drifting wire later
+                    return;
+                }
+                else
+                {
+                    JumpToClosestWire(wire);
+
+                    if (PlayerJumpedOffWire != null)
+                        PlayerJumpedOffWire.Invoke(true);
+                }         
             }
-            else
+
+            DeactivateWire(wire);
+        }
+
+        /// <summary>
+        /// Deactivates given wire (and wires spark), returning both to pool
+        /// </summary>
+        /// <param name="wire">Wire to deactivate</param>
+        private void DeactivateWire(Wire wire)
+        {
+            if (wire)
             {
+                Spark spark = wire.spark;
 
                 wire.DeactivateWire();
                 wire.transform.position = disabledSpot;
-                spark.transform.position = disabledSpot;
-
-                m_Sparks.DeactivateObject(spark);
                 m_Wires.DeactivateObject(wire);
+
+                if (spark)
+                {
+                    spark.transform.position = disabledSpot;
+                    m_Sparks.DeactivateObject(spark);
+                }
             }
         }
 
@@ -394,22 +473,9 @@ namespace TO5.Wires
         /// </summary>
         private void DeactivateDriftingWire()
         {
-            if (m_DriftingWire)
-            {
-                Wire wire = m_DriftingWire;
-                Spark spark = wire.spark;
-
-                m_DriftingWire = null;
-
-                wire.DeactivateWire();
-                wire.transform.position = disabledSpot;
-                spark.transform.position = disabledSpot;
-
-                m_Sparks.DeactivateObject(spark);
-                m_Wires.DeactivateObject(wire);
-
-                m_DriftingWire = null;
-            }
+            DeactivateWire(m_DriftingWire);
+            m_DriftingWire = null;
+            m_DriftRoutine = null;
         }
 
         /// <summary>
@@ -450,16 +516,19 @@ namespace TO5.Wires
         /// </summary>
         /// <param name="minOffset">Min offset of random distance</param>
         /// <returns>Random offset</returns>
-        public Vector2 GetRandomSpawnCircleOffset(float minOffset)
+        public Vector2 GetRandomSpawnCircleOffset(float minOffset, float maxOffset = -1)
         {
             WireStageProperties wireProps = GetStageWireProperties();
+
+            if (maxOffset <= 0f)
+                maxOffset = wireProps.m_OuterSpawnRadius;
 
             // This has a super teny tiny chance of looping forever
             Vector2 direction = Random.insideUnitCircle.normalized;
             while (Vector2.Dot(direction, Vector2.down) > wireProps.m_BottomCircleCutoff)
                 direction = Random.insideUnitCircle.normalized;
    
-            return direction * Random.Range(minOffset, wireProps.m_OuterSpawnRadius);
+            return direction * Random.Range(minOffset, maxOffset);
         }
 
         /// <summary>
@@ -560,7 +629,7 @@ namespace TO5.Wires
         /// Get a random wire factory from array of factories
         /// </summary>
         /// <returns>Random factory or null if empty</returns>
-        private WireFactory GetRandomWireFactory()
+        public WireFactory GetRandomWireFactory()
         {
             if (m_Factories != null && m_Factories.Length > 0)
             {
@@ -647,7 +716,7 @@ namespace TO5.Wires
                     Assert.IsNotNull(closest);
                 }
 
-                m_JumpPenalty = true;
+                m_WireFailed = true;
                 m_SparkJumper.JumpToSpark(closest.spark, true);
             }
         }
@@ -737,6 +806,25 @@ namespace TO5.Wires
             m_ActiveWireProperties = GetWireProperties(stage);
             return m_ActiveWireProperties;
         }
+        
+        /// <summary>
+        /// Overrides the current wire stage properties
+        /// </summary>
+        /// <param name="wireProps">Wire properties</param>
+        public void OverrideStageProperties(WireStageProperties wireProps)
+        {
+            if (wireProps != null)
+                m_ActiveWireProperties = wireProps;
+        }
+
+        /// <summary>
+        /// Refreshes the wire stage properties being used
+        /// </summary>
+        public void RefreshStageProperties()
+        {
+            if (m_ScoreManager)
+                m_ActiveWireProperties = GetWireProperties(m_ScoreManager.multiplierStage);
+        }
 
         /// <summary>
         /// Routine for generating wires
@@ -773,14 +861,10 @@ namespace TO5.Wires
         {
             yield return new WaitForSeconds(m_MaxDriftTime);
 
-            // We cache wire here as deactivate nullifies it
-            Wire wire = m_DriftingWire;
+            // Jumping first is important (we need drifting wire to be valid in JumpToSpark callback)
+            JumpToClosestWire(m_DriftingWire);
+
             DeactivateDriftingWire();
-
-            JumpToClosestWire(wire);
-
-            if (m_ScoreManager)
-                m_ScoreManager.EnableScoring(false);
         }
 
         /// <summary>
@@ -790,21 +874,29 @@ namespace TO5.Wires
         {
             if (finished)
             {
-                if (!m_JumpPenalty)
+                if (!m_WireFailed)
                     m_ScoreManager.AwardJumpPoints();
 
-                m_JumpPenalty = false;
+                m_WireFailed = false;
             }
             else
             {
                 // Drifting wire will be valid if player is jumping while drifting (without drift time running out)
+                // We check this instead of WireFailed as the player auto jumps when drifting is disabled (in which WireFailed will also be true)
                 if (m_DriftingWire)
                 {
+                    Assert.IsTrue(m_WireFailed);
+
                     StopCoroutine(m_DriftRoutine);
                     DeactivateDriftingWire();
 
-                    if (m_ScoreManager)
+                    if (m_ScoreManager && !m_Tutorial)
                         m_ScoreManager.EnableScoring(false);
+                }
+                else if (PlayerJumpedOffWire != null)
+                {
+                    // Player jumped off wire while not drifting
+                    PlayerJumpedOffWire.Invoke(m_WireFailed);
                 }
             }
         }

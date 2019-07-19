@@ -160,6 +160,9 @@ namespace TO5.Wires
         /// <param name="reset">If properties should reset</param>
         public void EnableScoring(bool reset)
         {
+            if (enabled)
+                return;
+
             enabled = true;
 
             if (reset)
@@ -183,6 +186,9 @@ namespace TO5.Wires
         /// </summary>
         public void DisableScoring()
         {
+            if (!enabled)
+                return;
+
             StopCoroutine(m_MultiplierTick);
             StopCoroutine(m_PacketSpawn);
             m_MultiplierTick = null;
@@ -197,7 +203,8 @@ namespace TO5.Wires
         /// <param name="stages">Stages to increase by</param>
         public void IncreaseMultiplier(int stages = 1)
         {
-            SetMultiplierStage(m_Stage + stages);
+            if (enabled)
+                SetMultiplierStage(m_Stage + stages);
         }
 
         /// <summary>
@@ -206,6 +213,9 @@ namespace TO5.Wires
         /// <param name="stages"></param>
         public void DecreaseMultiplier(int stages = 1)
         {
+            if (!enabled)
+                return;
+
             SetMultiplierStage(m_Stage - stages);
 
             // Reset the multiplier tick routine
@@ -239,6 +249,9 @@ namespace TO5.Wires
         /// <returns>If multiplier was decreased</returns>
         public bool TryDecreaseMultiplier()
         {
+            if (!enabled)
+                return false;
+
             PacketStageProperties packetProps = GetStagePacketProperties();
 
             ++m_StageResets;
@@ -315,7 +328,8 @@ namespace TO5.Wires
         /// </summary>
         public void AwardJumpPoints()
         {
-            m_Score += m_JumpScore * totalMultiplier;
+            if (enabled)
+                m_Score += m_JumpScore * totalMultiplier;
         }
 
         /// <summary>
