@@ -354,6 +354,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7764608039323799743}
     m_Modifications:
+    - target: {fileID: 3629688899988690982, guid: 3e86119e7ee510d43ad63447fa2e18e6,
+        type: 3}
+      propertyPath: m_Name
+      value: Spark Particle
+      objectReference: {fileID: 0}
+    - target: {fileID: 3629688899988690982, guid: 3e86119e7ee510d43ad63447fa2e18e6,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6386639328395818443, guid: 3e86119e7ee510d43ad63447fa2e18e6,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -409,16 +419,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3629688899988690982, guid: 3e86119e7ee510d43ad63447fa2e18e6,
-        type: 3}
-      propertyPath: m_Name
-      value: Spark Particle
-      objectReference: {fileID: 0}
-    - target: {fileID: 3629688899988690982, guid: 3e86119e7ee510d43ad63447fa2e18e6,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6228584958879962053, guid: 3e86119e7ee510d43ad63447fa2e18e6,
         type: 3}
       propertyPath: InitialModule.startLifetime.scalar
@@ -428,6 +428,11 @@ PrefabInstance:
         type: 3}
       propertyPath: EmissionModule.rateOverTime.scalar
       value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 6228584958879962053, guid: 3e86119e7ee510d43ad63447fa2e18e6,
+        type: 3}
+      propertyPath: InitialModule.gravityModifier.scalar
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3e86119e7ee510d43ad63447fa2e18e6, type: 3}
