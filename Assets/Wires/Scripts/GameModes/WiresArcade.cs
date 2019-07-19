@@ -14,7 +14,7 @@ namespace TO5.Wires
 
         [Header("Tutorial")]
         [SerializeField] private bool m_EnableTutorial = true;                  // If tutorial is enabled (at start of game)
-        [SerializeField] private int m_TutorialInitialSegments = 30;            // Segments of the initial wire in tutorial mode
+        [SerializeField] private int m_TutorialInitialSegments = 20;            // Segments of the initial wire in tutorial mode
         [SerializeField] private int m_TutorialWireSegments = 20;               // Segments per wire in tutorial mode
         [SerializeField] private float m_TutorialWireRadius = 5f;               // Spawn radius of wires in tutorial mode
         [SerializeField] private float m_TutorialSparkSpeed = 1f;               // Spark speed in tutorial mode

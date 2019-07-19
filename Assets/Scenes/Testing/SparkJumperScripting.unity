@@ -112,6 +112,12 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!223 &291607679 stripped
+Canvas:
+  m_CorrespondingSourceObject: {fileID: 4188151413034487832, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
+    type: 3}
+  m_PrefabInstance: {fileID: 8646348427722513404}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &488109418
 GameObject:
   m_ObjectHideFlags: 0
@@ -1799,6 +1805,16 @@ PrefabInstance:
       propertyPath: m_TutorialSparkSpeed
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3395505406176328842, guid: 9a8c4600bb7ba224baddce08e9afd423,
+        type: 3}
+      propertyPath: m_TutorialDisplay
+      value: 
+      objectReference: {fileID: 291607679}
+    - target: {fileID: 3395505406176328842, guid: 9a8c4600bb7ba224baddce08e9afd423,
+        type: 3}
+      propertyPath: m_TutorialInitialSegments
+      value: 20
+      objectReference: {fileID: 0}
     - target: {fileID: 3395505406176328835, guid: 9a8c4600bb7ba224baddce08e9afd423,
         type: 3}
       propertyPath: m_ParticleVelocities.Array.size
@@ -2029,6 +2045,16 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3992764446930506522, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1586822839576311502, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6197877622448570946, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
         type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
