@@ -3,13 +3,8 @@
     Properties
     {
         _Color ("Color", Color) = (1,1,1,1)
-		_Speed ("Speed", Range(-10, 10)) = -5
-        _Frequency ("Frequency", Range(0, 1000)) = 10
-		_Amplitude ("Amplitude", Range(0, 5)) = 0.1
-		_FallOff("Fall Off", Range(1, 8)) = 4
-		_Distortion ("Distortion", Range(0.1, 2)) = 1
-		_InfluenceSpeed ("Influence Speed", Range(0, 10)) = 0.5
-		_InfluenceVector ("Influence Vector", Vector) = (5, 0, 0, 0)		
+		_Speed ("Speed", Float) = -10
+        _Extent ("Extent", Float) = 0.1
     }
     SubShader
 	{
@@ -25,17 +20,11 @@
 
 			fixed4 _Color;
 			fixed _Speed;
-			fixed _Frequency;
-			fixed _Amplitude;
-			fixed _FallOff;
-			fixed _Distortion;
-			fixed _InfluenceSpeed;
-			fixed4 _InfluenceVector;
+			fixed _Extent;
 
 			struct appdata
 			{
 				float4 vertex : POSITION;
-				float3 normal : NORMAL;
 			};
 
 			struct v2f
@@ -45,34 +34,24 @@
 
 			v2f vert(appdata v)
 			{
-				// Models world position
-				fixed4 center = unity_WorldToObject[3];
-				fixed4 worldInf = center + _InfluenceVector;
+				fixed3 center = mul(unity_ObjectToWorld, fixed4(0, 0, 0, 1)).xyz;
+				fixed3 vertex = mul(unity_ObjectToWorld, v.vertex).xyz;
 
-				fixed4 pos = mul(unity_ObjectToWorld, v.vertex);
-				fixed4 dir = normalize(center - _InfluenceVector);
-				fixed4 origin = _InfluenceVector + dir;// *(_Time.x * _InfluenceSpeed);
-				
-				fixed dis = distance(pos, origin);
-				dis = pow(dis, _FallOff);
-				dis = max(dis, _Distortion);
+				fixed3 dir = normalize(vertex - center);
 
-				
-				fixed4 worldDir = mul(unity_ObjectToWorld, dir);
+				vertex += dir * (_Extent * sin(_Time.y * _Speed));
 
-				fixed axis = worldInf + dot((v.vertex - worldInf), worldDir);
-
-				fixed3 objectPos = v.vertex.xyz + v.normal * sin((axis * _Frequency) /*+ (_Time.x * _Speed)*/) * _Amplitude * (1 / dis);
+				fixed4 object = mul(unity_WorldToObject, fixed4(vertex, 1.f));
 
 				v2f o;
-				o.vertex = UnityObjectToClipPos(fixed4(objectPos, 1));
+				o.vertex = UnityObjectToClipPos(object);
 				return o;
 			}
 
 			fixed4 frag(v2f i) : SV_Target
 			{
 				fixed4 col;
-				col.rgb = _Color.rgb;
+				col.rgb = _Color.rgb * lerp(0.8f, 1.2f, abs(_CosTime.w));
 				col.a = 1.f;
 				return col;
 			}

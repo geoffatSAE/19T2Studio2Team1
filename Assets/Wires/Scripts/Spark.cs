@@ -13,6 +13,9 @@ namespace TO5.Wires
         // If player can jump to this spark
         public bool canJumpTo { get { return m_CanJumpTo; } }
 
+        // If spark is switching states
+        public bool isSwitching { get { return m_SwitchRoutine != null; } }
+
         // Player on this spark
         public SparkJumper sparkJumper { get { return m_SparkJumper; } }
 
@@ -26,6 +29,7 @@ namespace TO5.Wires
 
         private Wire m_Wire;                        // Wire this spark is on
         private bool m_CanJumpTo = true;            // If player can jump to this spark
+        private Vector3 m_OnTargetScale;            // Scale spark should be at when on
         private SparkJumper m_SparkJumper;          // Player on this spark
         private SphereCollider m_Collider;          // Collider for this spark
         private Coroutine m_SwitchRoutine;          // Switch coroutine that is running
@@ -36,11 +40,6 @@ namespace TO5.Wires
                 m_Renderer = GetComponentInChildren<Renderer>();
 
             m_Collider = GetComponent<SphereCollider>();
-        }
-
-        void Update()
-        {
-            m_Renderer.material.SetVector("_InfluenceVector", transform.position + new Vector3(5, 0, 0));
         }
 
         /// <summary>
@@ -74,6 +73,7 @@ namespace TO5.Wires
 
             m_Wire = wire;
             transform.position = wire.transform.position;
+            m_OnTargetScale = m_OnScale;
             m_Collider.enabled = m_CanJumpTo;
         }
 
@@ -87,6 +87,23 @@ namespace TO5.Wires
 
             m_CanJumpTo = false;
             gameObject.SetActive(false);
+        }
+
+        /// <summary>
+        /// Tick this spark, updating aesthetic details
+        /// </summary>
+        /// <param name="step">Step this frame</param>
+        /// <param name="progress">Progress along wire</param>
+        public void TickSpark(float step, float progress)
+        {
+            // InQuint easing function
+            // See https://easings.net/en
+            float ease = progress * progress * progress * progress * progress;
+
+            m_OnTargetScale = Vector3.Lerp(m_OnScale, m_OffScale, ease);
+
+            if (!isSwitching)
+                transform.localScale = m_OnTargetScale;
         }
 
         /// <summary>
@@ -132,6 +149,7 @@ namespace TO5.Wires
             while (!m_SparkJumper)
             {
                 yield return new WaitForSeconds(m_SwitchInterval);
+
                 m_CanJumpTo = !m_CanJumpTo;
                 m_Collider.enabled = m_CanJumpTo;
 
@@ -153,12 +171,16 @@ namespace TO5.Wires
             }
         }
 
+        /// <summary>
+        /// Blends the sparks color and size based on progress
+        /// </summary>
+        /// <param name="progress">Progress of blend</param>
         private void BlendSwitchStatus(float progress)
         {
             if (m_Renderer)
                 m_Renderer.material.color = Color.Lerp(m_OffColor, m_OnColor, progress);
 
-            transform.localScale = Vector3.Lerp(m_OffScale, m_OnScale, progress);
+            transform.localScale = Vector3.Lerp(m_OffScale, m_OnTargetScale, progress);
         }
 
         /// <summary>

@@ -110,6 +110,8 @@ namespace TO5.Wires
                 progress = Mathf.Clamp01((Mathf.Abs(sparkTransform.position.z - transform.position.z) + step) / m_WireDistance);
                 sparkTransform.position = transform.position + (WireManager.WirePlane * (m_WireDistance * progress));
 
+                m_Spark.TickSpark(step, progress);
+
                 // Move the player with the spark if attached
                 SparkJumper sparkJumper = m_Spark.sparkJumper;
                 if (sparkJumper != null && !sparkJumper.isJumping)
