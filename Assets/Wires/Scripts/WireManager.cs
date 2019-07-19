@@ -122,8 +122,8 @@ namespace TO5.Wires
         [SerializeField] private Text m_DebugText;              // Text for writing debug data
         #endif
 
-        public bool m_Tutorial;         // Temp bool for when tutorial mode is active   
-
+        private bool m_Tutorial = false;                 // If tutorial mode is active
+        
         void Awake()
         {
             if (m_ScoreManager)
@@ -138,7 +138,7 @@ namespace TO5.Wires
             float step = 0f;
 
             // Don't tick when player is jumping
-            if (m_TickWhenJumping || !m_SparkJumper.isJumping)         
+            if (m_TickWhenJumping || !m_SparkJumper.isJumping)
             {
                 WireStageProperties wireProps = GetStageWireProperties();
 
@@ -187,33 +187,79 @@ namespace TO5.Wires
         }
 
         /// <summary>
-        /// Starts spawning wires, setting player to be on initial spark
+        /// Initializes constants and hooks up events
         /// </summary>
-        public void StartWires()
+        /// <returns>If no errors were encountered</returns>
+        private bool Initialize()
+        {
+            if (!m_SparkJumper)
+            {
+                Debug.LogError("Failed to intialize wire manager as spark jumper is null");
+                return false;
+            }
+
+            // Cache constants
+            {
+                m_CachedSegmentDistance = CalculateSegmentDistance();
+            }
+
+            // Hook events
+            {
+                m_SparkJumper.OnJumpToSpark += JumpToSpark;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Starts wires in tutorial mode. Any wire generation must be handled manually (calling GenerateRandomSpark is allowed).
+        /// Generates the default wire and spark for player to jump onto
+        /// </summary>
+        /// <param name="wireProps">Wire properties to use for tutorial mode</param>
+        public void StartTutorial(WireStageProperties wireProps)
         {
             if (!m_Running)
             {
-                if (!m_SparkJumper)
-                {
-                    Debug.LogError("Unable to start wires as no spark jumper has been assigned");
+                if (!Initialize())
                     return;
-                }
 
-                // Hook events
-                {
-                    m_SparkJumper.OnJumpToSpark += JumpToSpark;
-                }
-
-                m_CachedSegmentDistance = CalculateSegmentDistance();
+                m_ActiveWireProperties = wireProps;
 
                 // Attach player to initial wire
                 {
+                    int segments = Random.Range(wireProps.m_MinSegments, wireProps.m_MaxSegments + 1);
+
                     WireFactory factory = GetRandomWireFactory();
-                    Wire spawnWire = GenerateWire(transform.position, m_InitialSegments, 0, 0, factory);
+                    Wire spawnWire = GenerateWire(transform.position, segments, 0, 0, factory);
 
                     Assert.IsNotNull(spawnWire.spark);
+                }
 
-                    //m_SparkJumper.InstantJumpToSpark(spawnWire.spark);
+                m_Running = true;
+                m_Tutorial = true;
+                enabled = true;
+            }
+        }
+
+        /// <summary>
+        /// Starts spawning wires. Can be used by default or after calling StartTutorial.
+        /// </summary>
+        public void StartWires()
+        {
+            if (!m_Running || m_Tutorial) 
+            {
+                if (!m_Running)
+                {
+                    if (!Initialize())
+                        return;
+
+                    // Attach player to initial wire
+                    {
+                        WireFactory factory = GetRandomWireFactory();
+                        Wire spawnWire = GenerateWire(transform.position, m_InitialSegments, 0, 0, factory);
+
+                        Assert.IsNotNull(spawnWire.spark);
+                    }
                 }
 
                 // Start spawning wires
@@ -224,49 +270,10 @@ namespace TO5.Wires
                     m_ScoreManager.EnableScoring(true);
                     m_ActiveWireProperties = GetWireProperties(m_ScoreManager.multiplierStage);
                 }
-
-                enabled = true;
+       
                 m_Running = true;
-            }
-        }
-
-        public void StartWiresManual(int initialSegments, WireStageProperties defaultProperties)
-        {
-            if (!m_Running)
-            {
-                if (!m_SparkJumper)
-                {
-                    Debug.LogError("Unable to start wires as no spark jumper has been assigned");
-                    return;
-                }
-
-                // Hook events
-                {
-                    m_SparkJumper.OnJumpToSpark += JumpToSpark;
-                }
-
-                m_CachedSegmentDistance = CalculateSegmentDistance();
-
-                // Attach player to initial wire
-                {
-                    WireFactory factory = GetRandomWireFactory();
-                    Wire spawnWire = GenerateWire(transform.position, initialSegments, 0, 0, factory);
-
-                    Assert.IsNotNull(spawnWire.spark);
-
-                    //m_SparkJumper.InstantJumpToSpark(spawnWire.spark);
-                }
-
-                // Start spawning wires
-                StartCoroutine(WireSpawnRoutine());
-
-                if (defaultProperties != null)
-                    m_ActiveWireProperties = defaultProperties;
-                else
-                    m_ActiveWireProperties = GetStageWireProperties();
-
+                m_Tutorial = false;
                 enabled = true;
-                m_Running = true;
             }
         }
 
@@ -287,6 +294,7 @@ namespace TO5.Wires
                 //m_Wires.Clear(true);
 
                 enabled = false;
+                m_Tutorial = false;
                 m_Running = false;
             }
         }
@@ -296,7 +304,7 @@ namespace TO5.Wires
         /// </summary>
         /// <param name="instantSpark">If spark should generate with wire</param>
         /// <returns>Randomly generated wire or null</returns>
-        private Wire GenerateRandomWire(bool instantSpark)
+        public Wire GenerateRandomWire(bool instantSpark)
         {
             const int maxAttempts = 5;
             Vector3 spawnCenter = GetSpawnCircleCenter();
@@ -414,7 +422,8 @@ namespace TO5.Wires
 
                 spark.DetachJumper();
 
-                if (m_ScoreManager)
+                // Scoring is disabled in tutorial mode
+                if (!m_Tutorial && m_ScoreManager)
                 {
                     m_ScoreManager.TryDecreaseMultiplier();
 
@@ -422,10 +431,10 @@ namespace TO5.Wires
                         m_ScoreManager.DisableScoring();
                 }
 
-                // Jumper drifts independant of spark
-                if (m_DriftingEnabled)
+                // Drifting is disabled in tutorial mode
+                if (!m_Tutorial && m_DriftingEnabled)
                 {
-                    //m_SparkJumper.JumpOffSpark();
+                    // Jumper drifts independant of spark
                     m_SparkJumper.SetDriftingEnabled(true);
 
                     m_DriftingWire = wire;
@@ -437,9 +446,6 @@ namespace TO5.Wires
                 else
                 {
                     JumpToClosestWire(wire);
-
-                    if (PlayerJumpedOffWire != null)
-                        PlayerJumpedOffWire.Invoke(true);
                 }         
             }
 
@@ -890,6 +896,7 @@ namespace TO5.Wires
                     StopCoroutine(m_DriftRoutine);
                     DeactivateDriftingWire();
 
+                    // Scoring is disabled in tutorial mode
                     if (m_ScoreManager && !m_Tutorial)
                         m_ScoreManager.EnableScoring(false);
                 }

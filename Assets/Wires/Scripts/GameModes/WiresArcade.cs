@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,29 +13,28 @@ namespace TO5.Wires
         [SerializeField] private float m_GameTime = 480f;       // How long the game lasts for (in seconds)
 
         [Header("Tutorial")]
-        [SerializeField] private bool m_EnableTutorial = true;                                              // If tutorial is enabled (at start of game)
-        [SerializeField] private WireStageProperties m_TutorialSettings = new WireStageProperties();        // Settings for tutorials
+        [SerializeField] private bool m_EnableTutorial = true;                  // If tutorial is enabled (at start of game)
+        [SerializeField] private int m_TutorialWireSegments = 20;               // Segments per wire in tutorial mode
+        [SerializeField] private float m_TutorialWireRadius = 5f;               // Spawn radius of wires in tutorial mode
+        [SerializeField] private float m_TutorialSparkSpeed = 1f;               // Spark speed in tutorial mode
+        [SerializeField] private float m_TutorialJumpTime = 1.5f;               // Jump time in tutorial mode
 
         #if UNITY_EDITOR
         [Header("Debug")]
         [SerializeField] private Text m_DebugText;      // Text for writing debug data
-#endif
-
-        private bool m_TutActive = false;
+        #endif
 
         #if UNITY_EDITOR
         void Update()
         {
-            if (true)//m_GameStart != -1f)
+            if (m_GameStart != -1f)
             {
                 if (m_DebugText)
                 {
                     int playersSegment = m_WireManager.GetPositionSegment(WireManager.WirePlane * m_WireManager.sparkJumper.wireDistanceTravelled);
 
-                    //m_DebugText.text = string.Format("Game Time: {0}\nSegments Travelled: {1}\nPlayer SegmentsTravelled: {2}\nGame Can Finish: {3}\nGame Finished: {4}",
-                    //    Mathf.FloorToInt(Time.time - m_GameStart), m_WireManager.GetJumpersSegment(), playersSegment, m_GameCanFinish, m_GameFinished);        
-
-                    m_DebugText.text = string.Format("Tutorial Active: {0}", m_TutActive);
+                    m_DebugText.text = string.Format("Game Time: {0}\nSegments Travelled: {1}\nPlayer SegmentsTravelled: {2}",
+                        Mathf.FloorToInt(Time.time - m_GameStart), m_WireManager.GetJumpersSegment(), playersSegment);        
                 }
             }
         }
@@ -52,6 +50,8 @@ namespace TO5.Wires
 
             if (m_WorldTheme)
                 m_WorldTheme.Initialize(m_WireManager);
+
+            m_GameStart = Time.time;
         }
 
         // WireGameMode interface
@@ -62,40 +62,44 @@ namespace TO5.Wires
             StopCoroutine("GameTimerRoutine");
         }
 
+        /// <summary>
+        /// Starts game in tutorial mode
+        /// </summary>
         private void StartTutorial()
         {
             m_WireManager.PlayerJumpedOffWire += TutorialJumpedOffWire;
-            m_WireManager.StartWiresManual(10, m_TutorialSettings);
 
-            m_TutActive = true;
-            m_WireManager.m_Tutorial = true;
+            // Custom properties (we can ignore intervals as we will handle it)
+            WireStageProperties tutorialProps = new WireStageProperties();
+            tutorialProps.m_InnerSpawnRadius = m_TutorialWireRadius;
+            tutorialProps.m_OuterSpawnRadius = m_TutorialWireRadius;
+            tutorialProps.m_BottomCircleCutoff = 0f;
+            tutorialProps.m_MinSegments = m_TutorialWireSegments;
+            tutorialProps.m_MaxSegments = m_TutorialWireSegments;
+            tutorialProps.m_SpawnSegmentRange = 0;
+            tutorialProps.m_DefectiveWireChance = 0f;
+            tutorialProps.m_SparkSpeed = m_TutorialSparkSpeed;
+            tutorialProps.m_JumpTime = m_TutorialJumpTime;
+
+            m_WireManager.StartTutorial(tutorialProps);
+
+            // Initial wire to spawn for player (others will spawn if they failed to jump of current one)
+            StartCoroutine(TutorialWireSpawnRoutine());
         }
 
+        /// <summary>
+        /// Cleans up any values set for tutorial mode
+        /// </summary>
         private void EndTutorial()
         {
-            m_WireManager.m_Tutorial = false;
-
             m_WireManager.PlayerJumpedOffWire -= TutorialJumpedOffWire;
-            StartArcade();
 
-            m_TutActive = false;
+            StartArcade();
         }
 
         private void StartArcade()
         {
-            if (!m_WireManager.isRunning)
-            {
-                m_WireManager.StartWires();
-            }
-            else
-            {
-                ScoreManager scoreManager = m_WireManager.scoreManager;
-                if (scoreManager)
-                    scoreManager.EnableScoring(true);
-
-                m_WireManager.RefreshStageProperties();
-            }
-
+            m_WireManager.StartWires();
             StartCoroutine(GameTimerRoutine());
         }
 
@@ -109,6 +113,16 @@ namespace TO5.Wires
         }
 
         /// <summary>
+        /// Routine for generating initial wire player can jump to
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerator TutorialWireSpawnRoutine()
+        {
+            yield return new WaitForSegment(m_WireManager, m_TutorialWireSegments / 2);
+            m_WireManager.GenerateRandomWire(true);
+        }
+
+        /// <summary>
         /// Notify that player has jumped off a wire during the tutorial
         /// </summary>
         /// <param name="failed">If player failed to jump off wire</param>
@@ -116,6 +130,8 @@ namespace TO5.Wires
         {
             if (!failed)
                 EndTutorial();
+            else
+                m_WireManager.GenerateRandomWire(true);
         }
     }
 }
