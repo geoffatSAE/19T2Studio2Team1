@@ -13,9 +13,6 @@ namespace TO5.Wires
         // If player can jump to this spark
         public bool canJumpTo { get { return m_CanJumpTo; } }
 
-        // If spark is switching states
-        public bool isSwitching { get { return m_SwitchRoutine != null; } }
-
         // Player on this spark
         public SparkJumper sparkJumper { get { return m_SparkJumper; } }
 
@@ -30,6 +27,7 @@ namespace TO5.Wires
         private Wire m_Wire;                        // Wire this spark is on
         private bool m_CanJumpTo = true;            // If player can jump to this spark
         private Vector3 m_OnTargetScale;            // Scale spark should be at when on
+        private bool m_IsSwitching = false;         // If spark is switching states
         private SparkJumper m_SparkJumper;          // Player on this spark
         private SphereCollider m_Collider;          // Collider for this spark
         private Coroutine m_SwitchRoutine;          // Switch coroutine that is running
@@ -68,6 +66,7 @@ namespace TO5.Wires
                 m_CanJumpTo = true;
                 BlendSwitchStatus(1f);
 
+                m_IsSwitching = false;
                 m_SwitchRoutine = null;
             }
 
@@ -102,7 +101,8 @@ namespace TO5.Wires
 
             m_OnTargetScale = Vector3.Lerp(m_OnScale, m_OffScale, ease);
 
-            if (!isSwitching)
+            // We don't want to override defective spark
+            if (!m_IsSwitching && canJumpTo)
                 transform.localScale = m_OnTargetScale;
         }
 
@@ -148,10 +148,12 @@ namespace TO5.Wires
         {
             while (!m_SparkJumper)
             {
+                m_IsSwitching = false;
                 yield return new WaitForSeconds(m_SwitchInterval);
+                m_IsSwitching = true;
 
                 m_CanJumpTo = !m_CanJumpTo;
-                m_Collider.enabled = m_CanJumpTo;
+                m_Collider.enabled = m_CanJumpTo;               
 
                 // Blend between on and off
                 {
