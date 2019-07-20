@@ -67,7 +67,6 @@ MonoBehaviour:
   m_OnScale: {x: 1, y: 1, z: 1}
   m_OffScale: {x: 0.3, y: 0.3, z: 0.3}
   m_Renderer: {fileID: 3065728797395294410}
-  m_SelectedSound: {fileID: 8300000, guid: e8dde9f8ee1cbac47b7f5c762c47556b, type: 3}
 --- !u!1001 &2537466179596559712
 PrefabInstance:
   m_ObjectHideFlags: 0
