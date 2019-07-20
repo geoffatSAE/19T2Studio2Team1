@@ -54,6 +54,12 @@ namespace TO5.Wires
             // Right mouse
             if (Input.GetMouseButtonDown(1))
                 ActivateBoost();
+
+            #if UNITY_EDITOR
+            // Pause in editor
+            if (Input.GetKeyDown(KeyCode.B))
+                Debug.Break();
+            #endif
         }
     }
 }
