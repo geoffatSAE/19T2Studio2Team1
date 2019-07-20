@@ -29,8 +29,12 @@ namespace TO5.Wires
         public AudioSource m_MultiplierAudioSource;                             // Audio source to play multiplier sounds with
         public AudioClip m_MultiplierIncreaseClip;                              // Sound to play when multiplier increases
         public AudioClip m_MultiplierDecreaseClip;                              // Sound to play when multiplier decreases
+        public ParticleSystem m_MultiplierIncreaseParticles;                    // Root particle system to all increase particles (longest system should be root)
+        public ParticleSystem m_MultiplierDecreaseParticles;                    // Root particle system to all decrease particles (longest system should be root)
 
         private int m_StageResets = 0;                                              // How many times current stage has been reset
+        private ParticleSystem m_MultiplierParticles;                               // Current particle system being played
+        private Spark m_MultiplierParticlesSource;                                  // Spark multiplier particles are attached to (we move manually to avoid scaling issues)
         [System.Obsolete] private Dictionary<int, int> m_StageHandicapCounts;       // Count for resets per multiplier stage
 
         [Header("Packets")]
@@ -121,6 +125,17 @@ namespace TO5.Wires
                 {
                     DataPacket packet = m_DataPackets.GetObject(i);
                     packet.TickPacket(step);
+                }
+            }
+
+            // Move multiplier system
+            if (m_MultiplierParticles && m_MultiplierParticles.IsAlive())
+            {
+                if (m_MultiplierParticlesSource)
+                {
+                    // Spark might be disabled (we only move if it's enabled to avoid moving to the disabled spot)
+                    if (m_MultiplierParticlesSource.enabled)
+                        m_MultiplierParticles.transform.position = m_MultiplierParticlesSource.transform.position;
                 }
             }
 
@@ -651,6 +666,19 @@ namespace TO5.Wires
                 {
                     m_MultiplierAudioSource.clip = clip;
                     m_MultiplierAudioSource.Play();
+                }
+
+                m_MultiplierParticles = increase ? m_MultiplierIncreaseParticles : m_MultiplierDecreaseParticles;
+                if (m_MultiplierParticles)
+                {
+                    if (m_SparkJumper && m_SparkJumper.spark)
+                    {
+                        m_MultiplierParticlesSource = m_SparkJumper.spark;
+                        m_MultiplierParticles.transform.position = m_MultiplierParticlesSource.transform.position;
+                    }
+
+                    m_MultiplierParticles.gameObject.SetActive(true);
+                    m_MultiplierParticles.Play(true);
                 }
             }
         }
