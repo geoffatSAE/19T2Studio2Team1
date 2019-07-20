@@ -73,9 +73,9 @@ namespace TO5.Wires
         /// Jumps to given spark
         /// </summary>
         /// <param name="spark">Spark to jump to</param>
-        public void JumpToSpark(Spark spark, bool bForce = false)
+        public void JumpToSpark(Spark spark, bool force = false)
         {
-            if (!spark || m_IsJumping || !spark.canJumpTo && !bForce)
+            if (!spark || m_IsJumping || !spark.canJumpTo && !force)
                 return;
 
             if (m_Spark)

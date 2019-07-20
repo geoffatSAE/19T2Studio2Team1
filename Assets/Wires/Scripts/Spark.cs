@@ -74,6 +74,8 @@ namespace TO5.Wires
             transform.position = wire.transform.position;
             m_OnTargetScale = m_OnScale;
             m_Collider.enabled = m_CanJumpTo;
+
+            StartCoroutine(RotateRoutine());
         }
 
         /// <summary>
@@ -83,6 +85,8 @@ namespace TO5.Wires
         {
             if (m_SwitchRoutine != null)
                 StopCoroutine(m_SwitchRoutine);
+
+            StopCoroutine("SwitchRoutine");
 
             m_CanJumpTo = false;
             gameObject.SetActive(false);
@@ -102,7 +106,7 @@ namespace TO5.Wires
             m_OnTargetScale = Vector3.Lerp(m_OnScale, m_OffScale, ease);
 
             // We don't want to override defective spark
-            if (!m_IsSwitching && canJumpTo)
+            if (!m_IsSwitching && (canJumpTo || m_SparkJumper != null))
                 transform.localScale = m_OnTargetScale;
         }
 
@@ -111,8 +115,8 @@ namespace TO5.Wires
         /// </summary>
         public void FreezeSwitching()
         {
-            if (m_SwitchRoutine != null)
-                StopCoroutine(m_SwitchRoutine);
+            StopAllCoroutines();
+            m_SwitchRoutine = null;
 
             m_CanJumpTo = true;
             BlendSwitchStatus(1f);
@@ -169,6 +173,31 @@ namespace TO5.Wires
                         BlendSwitchStatus(alpha);
                         yield return null;
                     }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Routine for rotating the sparks model round and round
+        /// </summary>
+        private IEnumerator RotateRoutine()
+        {
+            if (!m_Renderer)
+                yield break;
+
+            while (enabled)
+            {
+                Quaternion from = m_Renderer.transform.rotation;
+                Quaternion target = Random.rotation;
+                float end = Time.time + 1f;
+                
+                while (enabled && Time.time <= end)
+                {
+                    // We reverse target and from as alpha is also reversed
+                    float alpha = Mathf.Clamp01(end - Time.time);
+                    m_Renderer.transform.rotation = Quaternion.Slerp(target, from, alpha);
+
+                    yield return null;
                 }
             }
         }

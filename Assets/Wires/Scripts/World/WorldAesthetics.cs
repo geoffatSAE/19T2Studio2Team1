@@ -19,6 +19,8 @@ namespace TO5.Wires
         [SerializeField] private float[] m_ParticleSimulationSpeeds;    // Velocity of particles for eahc multiplier stage
         private Color m_ParticleColor = Color.white;                    // Color of particles before blending
 
+        [SerializeField] private Transform m_WarningPivot;              // Pivot for the end of wire sign
+
         private Wire m_ActiveWire;                              // Wire player is either on or travelling to
         private bool m_HaveSwitched = false;                    // If blend has switched (from old to new)
 
@@ -158,6 +160,13 @@ namespace TO5.Wires
                 m_BorderPivot.position = m_ActiveWire.transform.position;
             }
 
+            // Place warning
+            if (m_WarningPivot)
+            {
+                m_WarningPivot.gameObject.SetActive(true);
+                m_WarningPivot.position = m_ActiveWire.end;
+            }
+
             WireFactory factory = m_ActiveWire.factory;
             if (!factory)
                 return;
@@ -174,7 +183,11 @@ namespace TO5.Wires
 
             m_HaveSwitched = true;
         }
-
+        
+        /// <summary>
+        /// Sets the color for the border particles
+        /// </summary>
+        /// <param name="color">Color to use</param>
         private void SetParticleColors(Color color)
         {
             if (m_BorderParticles)
@@ -186,6 +199,12 @@ namespace TO5.Wires
                 trails.colorOverLifetime = new ParticleSystem.MinMaxGradient(color);
                 trails.colorOverTrail = new ParticleSystem.MinMaxGradient(color);
             }
+        }
+
+        public void SetWarningSignEnabled(bool enable)
+        {
+            if (m_WarningPivot)
+                m_WarningPivot.gameObject.SetActive(enable);
         }
     }
 }

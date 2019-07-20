@@ -530,12 +530,9 @@ namespace TO5.Wires
         /// </summary>
         /// <param name="minOffset">Min offset of random distance</param>
         /// <returns>Random offset</returns>
-        public Vector2 GetRandomSpawnCircleOffset(float minOffset, float maxOffset = -1)
+        public Vector2 GetRandomSpawnCircleOffset(float minOffset, float maxOffset)
         {
             WireStageProperties wireProps = GetStageWireProperties();
-
-            if (maxOffset <= 0f)
-                maxOffset = wireProps.m_OuterSpawnRadius;
 
             // This has a super teny tiny chance of looping forever
             Vector2 direction = Random.insideUnitCircle.normalized;
@@ -992,6 +989,10 @@ namespace TO5.Wires
                         Gizmos.DrawLine(center, center + dir * wireProps.m_OuterSpawnRadius);
                     }
                 }
+
+                // Draw score systems
+                if (m_ScoreManager)
+                    m_ScoreManager.DrawDebugGizmos(center, wireProps.m_BottomCircleCutoff);
 
                 // Draw Wires
                 Gizmos.color = Color.red;

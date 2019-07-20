@@ -39,7 +39,8 @@
 
 				fixed3 dir = normalize(vertex - center);
 
-				vertex += dir * (_Extent * sin(_Time.y * _Speed));
+				// Scale extent by models scale
+				vertex += mul((fixed3x3)unity_ObjectToWorld, dir * (_Extent * sin(_Time.y * _Speed)));
 
 				fixed4 object = mul(unity_WorldToObject, fixed4(vertex, 1.f));
 

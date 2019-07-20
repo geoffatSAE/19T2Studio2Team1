@@ -100,9 +100,16 @@ namespace TO5.Wires
             }
         }
 
+        /// <summary>
+        /// Notify from player that they have either started/stopped drifting
+        /// </summary>
+        /// <param name="isEnabled"></param>
         private void DriftingUpdated(bool isEnabled)
         {
             m_WorldColor.SetGrayscaleEnabled(isEnabled);
+
+            if (isEnabled)
+                m_WorldAesthetics.SetWarningSignEnabled(false);
         }
         
         /// <summary>
