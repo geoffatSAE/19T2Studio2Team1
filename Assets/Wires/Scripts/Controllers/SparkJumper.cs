@@ -39,6 +39,8 @@ namespace TO5.Wires
         [SerializeField] private LayerMask m_InteractiveLayer = Physics.AllLayers;          // Layer for interactives
         public CompanionUI m_Companion;                                                     // Players companion
 
+        public AudioSource m_SelectionAudioSource;          // Audio source for playing selection sounds
+
         // If the player is allowed to request a jump
         public bool canJump { get { return !m_IsJumping; } }
 
@@ -251,6 +253,20 @@ namespace TO5.Wires
                     OnJumpToSpark.Invoke(m_Spark, true);
 
                 m_IsJumping = false;
+            }
+        }
+
+        /// <summary>
+        /// Plays audio clip as a selection sound
+        /// </summary>
+        /// <param name="clip">Clip to play</param>
+        public void PlaySelectionSound(AudioClip clip)
+        {
+            if (m_SelectionAudioSource && clip)
+            {
+                m_SelectionAudioSource.clip = clip;
+                m_SelectionAudioSource.pitch = Random.Range(0.8f, 1.2f);
+                m_SelectionAudioSource.Play();
             }
         }
 

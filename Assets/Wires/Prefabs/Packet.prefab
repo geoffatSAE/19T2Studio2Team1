@@ -59,7 +59,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_FloatingMovement: {fileID: 8968387822590747005}
-  m_Ambience: {fileID: 0}
+  m_SelectedSound: {fileID: 8300000, guid: 049f2f891bdbf0d4fa72abfe73fb98c1, type: 3}
 --- !u!1 &2973213069632387506
 GameObject:
   m_ObjectHideFlags: 0

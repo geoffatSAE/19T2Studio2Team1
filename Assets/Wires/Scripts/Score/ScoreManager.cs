@@ -26,6 +26,9 @@ namespace TO5.Wires
 
         [Header("Multiplier")]
         [SerializeField, Range(0, 32)] private int m_MultiplierStages = 2;      // The amount of stages for the multiplier
+        public AudioSource m_MultiplierAudioSource;                             // Audio source to play multiplier sounds with
+        public AudioClip m_MultiplierIncreaseClip;                              // Sound to play when multiplier increases
+        public AudioClip m_MultiplierDecreaseClip;                              // Sound to play when multiplier decreases
 
         private int m_StageResets = 0;                                              // How many times current stage has been reset
         [System.Obsolete] private Dictionary<int, int> m_StageHandicapCounts;       // Count for resets per multiplier stage
@@ -205,7 +208,8 @@ namespace TO5.Wires
         public void IncreaseMultiplier(int stages = 1)
         {
             if (enabled)
-                SetMultiplierStage(m_Stage + stages);
+                if (SetMultiplierStage(m_Stage + stages))
+                    PlayMultiplierAesthetics(true);
         }
 
         /// <summary>
@@ -217,9 +221,10 @@ namespace TO5.Wires
             if (!enabled)
                 return;
 
-            SetMultiplierStage(m_Stage - stages);
+            if (SetMultiplierStage(m_Stage - stages))
+                PlayMultiplierAesthetics(false);
 
-            // Reset the multiplier tick routine
+            // Reset the multiplier tick routine (resets regardless of if stage actually changed)
             StopCoroutine(m_MultiplierTick);
             m_MultiplierTick = StartCoroutine(MultiplierTickRoutine());
         }
@@ -228,11 +233,13 @@ namespace TO5.Wires
         /// Sets the multiplier stage, updates multiplier value
         /// </summary>
         /// <param name="stage">Stage to set</param>
-        private void SetMultiplierStage(int stage)
+        /// <returns>If stage has changed</returns>
+        private bool SetMultiplierStage(int stage)
         {
+            stage = Mathf.Clamp(stage, 0, m_MultiplierStages);
             if (stage != m_Stage)
             {
-                m_Stage = Mathf.Clamp(stage, 0, m_MultiplierStages);
+                m_Stage = stage;
                 m_Multiplier = 1 << m_Stage;
 
                 m_StageResets = 0;
@@ -241,7 +248,11 @@ namespace TO5.Wires
 
                 if (OnMultiplierUpdated != null)
                     OnMultiplierUpdated.Invoke(m_Multiplier, m_Stage);
+
+                return true;
             }
+
+            return false;
         }
 
         /// <summary>
@@ -625,6 +636,23 @@ namespace TO5.Wires
                 return m_DataPackets.GetObject(index);
 
             return null;
+        }
+
+        /// <summary>
+        /// Plays aesthetics for when multiplier either increases/decreases
+        /// </summary>
+        /// <param name="increase">If to play increase aethetics</param>
+        private void PlayMultiplierAesthetics(bool increase)
+        {
+            if (m_MultiplierAudioSource)
+            {
+                AudioClip clip = increase ? m_MultiplierIncreaseClip : m_MultiplierDecreaseClip;
+                if (clip)
+                {
+                    m_MultiplierAudioSource.clip = clip;
+                    m_MultiplierAudioSource.Play();
+                }
+            }
         }
 
         #if UNITY_EDITOR

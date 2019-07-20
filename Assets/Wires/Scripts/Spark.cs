@@ -23,6 +23,7 @@ namespace TO5.Wires
         public Vector3 m_OnScale = Vector3.one;                             // Scale to use when on
         public Vector3 m_OffScale = new Vector3(0.5f, 0.5f, 0.5f);          // Scale to use when off
         [SerializeField] private Renderer m_Renderer;                       // Sparks renderer
+        public AudioClip m_SelectedSound;                                   // Sound to play when selected
 
         private Wire m_Wire;                        // Wire this spark is on
         private bool m_CanJumpTo = true;            // If player can jump to this spark
@@ -233,6 +234,7 @@ namespace TO5.Wires
         public void OnInteract(SparkJumper jumper)
         {
             jumper.JumpToSpark(this);
+            jumper.PlaySelectionSound(m_SelectedSound);
         }
     }
 }

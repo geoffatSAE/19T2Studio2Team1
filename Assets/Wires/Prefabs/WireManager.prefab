@@ -30,6 +30,133 @@ Transform:
   m_Father: {fileID: 7946252058374095656}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3265974735791973197
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2558519003805673749}
+  - component: {fileID: 4692482073915151728}
+  m_Layer: 0
+  m_Name: MultiplierSoundSource
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2558519003805673749
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3265974735791973197}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 1.947298, y: 4.4760833, z: -1.5208416}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 7946252058374095656}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!82 &4692482073915151728
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3265974735791973197}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &7946252058374095702
 GameObject:
   m_ObjectHideFlags: 0
@@ -60,6 +187,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 7927552244697839908}
+  - {fileID: 2558519003805673749}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -79,12 +207,14 @@ MonoBehaviour:
   m_SparkPrefab: {fileID: 7764608039323799731, guid: 630a43b9f7b365f4db327f062cc13540,
     type: 3}
   m_InitialSegments: 20
+  m_WireAnimator: {fileID: 0}
   m_Factories:
   - {fileID: 11400000, guid: 7503fa6e476d74148be8d6db326b6477, type: 2}
   - {fileID: 11400000, guid: 7bee21f78d023f1408627f6cfe3092f5, type: 2}
   - {fileID: 11400000, guid: 83edc1a72b7667e4ab8d4cc017ef1b60, type: 2}
   - {fileID: 11400000, guid: c2de25d8b4bac2d40a177e6c8be5a710, type: 2}
-  m_WireAnimator: {fileID: 0}
+  m_DriftingEnabled: 1
+  m_MaxDriftTime: 5
   m_WirePrefab: {fileID: 4698685643518956546, guid: 1f8155c3339076843a6198e146cab368,
     type: 3}
   m_WireProperties:
@@ -95,12 +225,14 @@ MonoBehaviour:
     m_MaxSegments: 40
     m_MinSpawnInterval: 2
     m_MaxSpawnInterval: 3
-    m_SparkSpawnSegmentOffset: 4
-    m_SparkSpawnSegmentRange: 3
+    m_SpawnSegmentOffset: 5
+    m_SpawnSegmentRange: 3
     m_SparkSpawnSegmentDelay: 2
     m_DefectiveWireChance: 0.05
     m_SparkSpeed: 2.75
+    m_SparkDriftScale: 0.2
     m_SparkSwitchInterval: 0.3
+    m_JumpTime: 0.75
   - m_InnerSpawnRadius: 5
     m_OuterSpawnRadius: 20
     m_BottomCircleCutoff: 0.7
@@ -108,12 +240,14 @@ MonoBehaviour:
     m_MaxSegments: 50
     m_MinSpawnInterval: 1.5
     m_MaxSpawnInterval: 2.5
-    m_SparkSpawnSegmentOffset: 5
-    m_SparkSpawnSegmentRange: 3
+    m_SpawnSegmentOffset: 5
+    m_SpawnSegmentRange: 3
     m_SparkSpawnSegmentDelay: 3
     m_DefectiveWireChance: 0.075
     m_SparkSpeed: 3
+    m_SparkDriftScale: 0.2
     m_SparkSwitchInterval: 0.45
+    m_JumpTime: 0.75
   - m_InnerSpawnRadius: 5
     m_OuterSpawnRadius: 20
     m_BottomCircleCutoff: 0.7
@@ -121,12 +255,14 @@ MonoBehaviour:
     m_MaxSegments: 60
     m_MinSpawnInterval: 1
     m_MaxSpawnInterval: 2
-    m_SparkSpawnSegmentOffset: 5
-    m_SparkSpawnSegmentRange: 3
+    m_SpawnSegmentOffset: 5
+    m_SpawnSegmentRange: 3
     m_SparkSpawnSegmentDelay: 3
     m_DefectiveWireChance: 0.1
     m_SparkSpeed: 3.25
+    m_SparkDriftScale: 0.2
     m_SparkSwitchInterval: 0.45
+    m_JumpTime: 0.75
   - m_InnerSpawnRadius: 5
     m_OuterSpawnRadius: 20
     m_BottomCircleCutoff: 0.7
@@ -134,17 +270,18 @@ MonoBehaviour:
     m_MaxSegments: 70
     m_MinSpawnInterval: 0.5
     m_MaxSpawnInterval: 1
-    m_SparkSpawnSegmentOffset: 5
-    m_SparkSpawnSegmentRange: 3
+    m_SpawnSegmentOffset: 5
+    m_SpawnSegmentRange: 3
     m_SparkSpawnSegmentDelay: 3
     m_DefectiveWireChance: 0.125
     m_SparkSpeed: 3.5
+    m_SparkDriftScale: 0.2
     m_SparkSwitchInterval: 0.45
+    m_JumpTime: 0.75
   m_WirePropertiesStagePreview: 0
   m_DisabledSpot: {fileID: 7927552244697839908}
   m_ScoreManager: {fileID: 7946252058374095657}
   m_TickWhenJumping: 0
-  m_JumpFailResetsMultiplier: 0
   m_Debug: 1
   m_DrawSegmentPlanes: 0
   m_UseDebugMesh: 0
@@ -166,41 +303,74 @@ MonoBehaviour:
   m_JumpScore: 100
   m_PacketScore: 250
   m_MultiplierStages: 3
-  m_MultiplierIncreaseInterval: 10
+  m_MultiplierAudioSource: {fileID: 4692482073915151728}
+  m_MultiplierIncreaseClip: {fileID: 8300000, guid: f527fd6abefcab4489423637e6346fd9,
+    type: 3}
+  m_MultiplierDecreaseClip: {fileID: 8300000, guid: 4df8d8cddb15ec941a07179ccde48f1a,
+    type: 3}
   m_PacketPrefab: {fileID: 1671077178524130716, guid: 9d6ee2c3a0b241145bd4019fd34cfc5c,
     type: 3}
-  m_MinPacketSpawnOffset: 70
   m_PacketSpace: 5
+  m_MaxPacketSpawnRadius: 15
   m_PacketProperties:
-  - m_MinSpawnInterval: 3
+  - m_MinSpawnOffset: 20
+    m_MinSpawnInterval: 3
     m_MaxSpawnInterval: 4
     m_MinSpeed: 8
     m_MaxSpeed: 12
     m_Lifetime: 10
-  - m_MinSpawnInterval: 2
+    m_ClusterChance: 0.1
+    m_MinPacketsPerCluster: 3
+    m_MaxPacketsPerCluster: 6
+    m_ClusterRate: 5
+    m_ClusterSpawnRange: 2
+    m_MultiplierIncreaseInterval: 15
+    m_HandicapMultiplierIncreaseInterval: 10
+    m_ResetsTillHandicap: 3
+  - m_MinSpawnOffset: 20
+    m_MinSpawnInterval: 2
     m_MaxSpawnInterval: 3
     m_MinSpeed: 5
     m_MaxSpeed: 9
     m_Lifetime: 20
-  - m_MinSpawnInterval: 2
+    m_ClusterChance: 0.1
+    m_MinPacketsPerCluster: 3
+    m_MaxPacketsPerCluster: 6
+    m_ClusterRate: 5
+    m_ClusterSpawnRange: 2
+    m_MultiplierIncreaseInterval: 15
+    m_HandicapMultiplierIncreaseInterval: 10
+    m_ResetsTillHandicap: 3
+  - m_MinSpawnOffset: 20
+    m_MinSpawnInterval: 2
     m_MaxSpawnInterval: 2.5
     m_MinSpeed: 3
     m_MaxSpeed: 7
     m_Lifetime: 20
-  - m_MinSpawnInterval: 1.5
+    m_ClusterChance: 0.1
+    m_MinPacketsPerCluster: 3
+    m_MaxPacketsPerCluster: 6
+    m_ClusterRate: 5
+    m_ClusterSpawnRange: 2
+    m_MultiplierIncreaseInterval: 15
+    m_HandicapMultiplierIncreaseInterval: 10
+    m_ResetsTillHandicap: 3
+  - m_MinSpawnOffset: 20
+    m_MinSpawnInterval: 1.5
     m_MaxSpawnInterval: 2
     m_MinSpeed: 2
     m_MaxSpeed: 5
     m_Lifetime: 20
-  m_PacketClusterChance: 0.15
-  m_MinPacketsPerCluster: 5
-  m_MaxPacketsPerCluster: 9
-  m_PacketClusterRate: 5
-  m_PacketClusterSpawnRange: 2
+    m_ClusterChance: 0.1
+    m_MinPacketsPerCluster: 3
+    m_MaxPacketsPerCluster: 6
+    m_ClusterRate: 5
+    m_ClusterSpawnRange: 2
+    m_MultiplierIncreaseInterval: 15
+    m_HandicapMultiplierIncreaseInterval: 10
+    m_ResetsTillHandicap: 3
   m_BoostChargeRate: 0.83
   m_BoostDepletionRate: 20
   m_BoostMultiplier: 2
   m_BoostPerPacket: 5
-  m_ScoreText: {fileID: 0}
-  m_MultiplierText: {fileID: 0}
   m_DebugText: {fileID: 0}

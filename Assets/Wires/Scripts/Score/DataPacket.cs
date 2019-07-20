@@ -17,7 +17,7 @@ namespace TO5.Wires
         public PacketCollected OnExpired;       // Event for when this packet expires
 
         [SerializeField] private FloatingMovement m_FloatingMovement;       // Movement component (calls Move during Tick)
-        [SerializeField] private AudioSource m_Ambience;
+        public AudioClip m_SelectedSound;                                   // Sound to play when selected
 
         private float m_Speed;          // The speed of this packet
         
@@ -41,9 +41,6 @@ namespace TO5.Wires
             transform.position = position;
             m_Speed = speed;
 
-            if (m_Ambience)
-                m_Ambience.Play();
-
             StartCoroutine(ExpireRoutine(lifetime));
         }
 
@@ -53,9 +50,6 @@ namespace TO5.Wires
         public void Deactivate()
         {
             StopCoroutine("ExpireRoutine");
-
-            if (m_Ambience)
-                m_Ambience.Stop();
 
             gameObject.SetActive(false);
         }
@@ -97,6 +91,8 @@ namespace TO5.Wires
         {
             if (OnCollected != null)
                 OnCollected.Invoke(this);
+
+            jumper.PlaySelectionSound(m_SelectedSound);
         }
     }
 }
