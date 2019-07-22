@@ -19,6 +19,8 @@ namespace TO5.Wires
 
         public MultiplierStageUpdated OnMultiplierUpdated;      // Event for when multiplier has changed
 
+        private bool m_IsRunning = false;       // If scoring is enabled (including packet generation)
+
         [Header("Score")]
         [SerializeField] private float m_ScorePerSecond = 1f;           // Score player earns per second
         [SerializeField] private float m_JumpScore = 100f;              // Score player earns when jumping (not when forced to jump)
@@ -39,6 +41,7 @@ namespace TO5.Wires
         [Header("Packets")]
         [SerializeField] private DataPacket m_PacketPrefab;                         // Prefab for data packets
         [SerializeField] private float m_PacketSpace = 2f;                          // The space packet should have (avoid overlap)
+        [SerializeField] private float m_MinPacketSpawnRadius = 4f;                 // Min radius from active wire packets should spawn
         [SerializeField] private float m_MaxPacketSpawnRadius = 15f;                // Max radius from active wire packets should spawn                      
         [SerializeField] private PacketStageProperties[] m_PacketProperties;        // Properties for packet behavior for each multiplier stage
 
@@ -48,12 +51,6 @@ namespace TO5.Wires
         [SerializeField] private float m_BoostMultiplier = 2f;                      // Multipler all score is scaled by when boost is active
         [SerializeField] private float m_BoostPerPacket = 5f;                       // Boost player earns when collecting a packet
 
-        // Space required for packets
-        public float packetSpace { get { return m_PacketSpace; } }
-
-        // Amount of packets active
-        public int activePackets { get { return m_DataPackets.activeCount; } }
-
         private ObjectPool<DataPacket> m_DataPackets = new ObjectPool<DataPacket>();    // Packets being managed
         private PacketStageProperties m_ActivePacketProperties;                         // Properties for current stage
         private int m_PacketSpawnsSinceLastCluster = 0;                                 // Amount of random packets spawn attempts since the last packet cluster
@@ -61,6 +58,9 @@ namespace TO5.Wires
         #if UNITY_EDITOR
         [SerializeField] private Text m_DebugText;      // Text for writing debug data
         #endif
+
+        // If scoring is enabled
+        public bool isRunning { get { return m_IsRunning; } }
 
         // Current score
         public float score { get { return m_Score; } }
@@ -83,6 +83,12 @@ namespace TO5.Wires
         // Current boost built up (in percentage)
         public float boost { get { return m_Boost / 100f; } }
 
+        // Space required for packets
+        public float packetSpace { get { return m_PacketSpace; } }
+
+        // Amount of packets active
+        public int activePackets { get { return m_DataPackets.activeCount; } }
+
         private WireManager m_WireManager;              // Manager for wires
         private SparkJumper m_SparkJumper;              // Players spark jumper
         private float m_Score;                          // Players score
@@ -95,35 +101,38 @@ namespace TO5.Wires
 
         void Awake()
         {
-            enabled = false;
+            m_IsRunning = false;
         }
 
         void Update()
         {
-            m_Score += m_ScorePerSecond * totalMultiplier * Time.deltaTime;
-
-            // Tick boost
-            if (m_SparkJumper)
+            if (m_IsRunning)
             {
-                if (m_BoostActive)
-                {
-                    m_Boost = Mathf.Max(0, m_Boost - (m_BoostDepletionRate * Time.deltaTime));
-                    m_BoostActive = m_Boost > 0f;
-                }
-                else if (!m_SparkJumper.isDrifting)
-                {
-                    m_Boost = Mathf.Min(100, m_Boost + (m_BoostChargeRate * Time.deltaTime));
-                }
-            }
+                m_Score += m_ScorePerSecond * totalMultiplier * Time.deltaTime;
 
-            // Tick packets
-            {
-                float step = Time.deltaTime;
-
-                for (int i = 0; i < m_DataPackets.activeCount; ++i)
+                // Tick boost
+                if (m_SparkJumper)
                 {
-                    DataPacket packet = m_DataPackets.GetObject(i);
-                    packet.TickPacket(step);
+                    if (m_BoostActive)
+                    {
+                        m_Boost = Mathf.Max(0, m_Boost - (m_BoostDepletionRate * Time.deltaTime));
+                        m_BoostActive = m_Boost > 0f;
+                    }
+                    else if (!m_SparkJumper.isDrifting)
+                    {
+                        m_Boost = Mathf.Min(100, m_Boost + (m_BoostChargeRate * Time.deltaTime));
+                    }
+                }
+
+                // Tick packets
+                {
+                    float step = Time.deltaTime;
+
+                    for (int i = 0; i < m_DataPackets.activeCount; ++i)
+                    {
+                        DataPacket packet = m_DataPackets.GetObject(i);
+                        packet.TickPacket(step);
+                    }
                 }
             }
 
@@ -174,10 +183,10 @@ namespace TO5.Wires
         /// <param name="reset">If properties should reset</param>
         public void EnableScoring(bool reset)
         {
-            if (enabled)
+            if (m_IsRunning)
                 return;
 
-            enabled = true;
+            m_IsRunning = true;
 
             if (reset)
             {
@@ -200,7 +209,7 @@ namespace TO5.Wires
         /// </summary>
         public void DisableScoring()
         {
-            if (!enabled)
+            if (!m_IsRunning)
                 return;
 
             StopCoroutine(m_MultiplierTick);
@@ -208,7 +217,7 @@ namespace TO5.Wires
             m_MultiplierTick = null;
             m_PacketSpawn = null;
 
-            enabled = false;
+            m_IsRunning = false;
         }
 
         /// <summary>
@@ -217,7 +226,7 @@ namespace TO5.Wires
         /// <param name="stages">Stages to increase by</param>
         public void IncreaseMultiplier(int stages = 1)
         {
-            if (enabled)
+            if (m_IsRunning)
                 if (SetMultiplierStage(m_Stage + stages))
                     PlayMultiplierAesthetics(true);
         }
@@ -228,7 +237,7 @@ namespace TO5.Wires
         /// <param name="stages"></param>
         public void DecreaseMultiplier(int stages = 1)
         {
-            if (!enabled)
+            if (!m_IsRunning)
                 return;
 
             if (SetMultiplierStage(m_Stage - stages))
@@ -271,7 +280,7 @@ namespace TO5.Wires
         /// <returns>If multiplier was decreased</returns>
         public bool TryDecreaseMultiplier()
         {
-            if (!enabled)
+            if (!m_IsRunning)
                 return false;
 
             PacketStageProperties packetProps = GetStagePacketProperties();
@@ -350,7 +359,7 @@ namespace TO5.Wires
         /// </summary>
         public void AwardJumpPoints()
         {
-            if (enabled)
+            if (m_IsRunning)
                 m_Score += m_JumpScore * totalMultiplier;
         }
 
@@ -360,7 +369,7 @@ namespace TO5.Wires
         /// <returns></returns>
         private IEnumerator MultiplierTickRoutine()
         {
-            while (enabled)
+            while (m_IsRunning)
             {
                 PacketStageProperties packetProps = GetStagePacketProperties();
                 float interval = packetProps.m_MultiplierIncreaseInterval;
@@ -413,7 +422,7 @@ namespace TO5.Wires
             int attempts = 0;
             while (++attempts <= maxAttempts)
             {
-                Vector2 circleOffset = m_WireManager.GetRandomSpawnCircleOffset(m_PacketSpace, m_MaxPacketSpawnRadius);
+                Vector2 circleOffset = m_WireManager.GetRandomSpawnCircleOffset(m_MinPacketSpawnRadius, m_MaxPacketSpawnRadius);
                 position = spawnCenter + new Vector3(circleOffset.x, circleOffset.y, 0f);
 
                 // We expect to spawn far in front of wires
@@ -488,7 +497,7 @@ namespace TO5.Wires
                     Vector3 planeOffset = WireManager.WirePlane * (m_WireManager.segmentLength * randomSegmentOffset);
 
                     // Offset inside circle
-                    Vector2 circleOffset = m_WireManager.GetRandomSpawnCircleOffset(m_PacketSpace, m_MaxPacketSpawnRadius);
+                    Vector2 circleOffset = m_WireManager.GetRandomSpawnCircleOffset(m_MinPacketSpawnRadius, m_MaxPacketSpawnRadius);
 
                     position = spawnCenter + planeOffset + new Vector3(circleOffset.x, circleOffset.y, 0f);
 
@@ -623,7 +632,7 @@ namespace TO5.Wires
         /// </summary>
         private IEnumerator PacketSpawnRoutine()
         {
-            while (enabled)
+            while (m_IsRunning)
             {
                 PacketStageProperties packetProps = GetStagePacketProperties();
                 float delay = Random.Range(packetProps.m_MinSpawnInterval, packetProps.m_MaxSpawnInterval);
@@ -662,16 +671,16 @@ namespace TO5.Wires
                     m_MultiplierAudioSource.clip = clip;
                     m_MultiplierAudioSource.Play();
                 }
+            }
 
-                m_MultiplierParticles = increase ? m_MultiplierIncreaseParticles : m_MultiplierDecreaseParticles;
-                if (m_MultiplierParticles)
-                {
-                    if (m_SparkJumper && m_SparkJumper.m_Companion)
-                        m_MultiplierParticles.transform.position = m_SparkJumper.m_Companion.transform.position;
+            m_MultiplierParticles = increase ? m_MultiplierIncreaseParticles : m_MultiplierDecreaseParticles;
+            if (m_MultiplierParticles)
+            {
+                if (m_SparkJumper && m_SparkJumper.m_Companion)
+                    m_MultiplierParticles.transform.position = m_SparkJumper.m_Companion.transform.position;
 
-                    m_MultiplierParticles.gameObject.SetActive(true);
-                    m_MultiplierParticles.Play(true);
-                }
+                m_MultiplierParticles.gameObject.SetActive(true);
+                m_MultiplierParticles.Play(true);
             }
         }
 
@@ -695,8 +704,8 @@ namespace TO5.Wires
 
                 // Inner border
                 {
-                    Vector3 start = center + cdir * m_PacketSpace;
-                    Vector3 end = center + ndir * m_PacketSpace;
+                    Vector3 start = center + cdir * m_MinPacketSpawnRadius;
+                    Vector3 end = center + ndir * m_MinPacketSpawnRadius;
                     Gizmos.DrawLine(start, end);
                 }
 

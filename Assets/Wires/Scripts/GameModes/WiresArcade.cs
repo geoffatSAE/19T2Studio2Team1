@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 namespace TO5.Wires
 {
@@ -11,6 +12,8 @@ namespace TO5.Wires
     {
         [Header("Arcade")]
         [SerializeField] private float m_GameTime = 480f;       // How long the game lasts for (in seconds)
+
+        private Wire m_FinalWire;           // The final wire (exit wire)
 
         [Header("Tutorial")]
         [SerializeField] private bool m_EnableTutorial = true;                  // If tutorial is enabled (at start of game)
@@ -61,9 +64,8 @@ namespace TO5.Wires
         // WireGameMode interface
         protected override void EndGame()
         {
-            base.EndGame();
-
             StopCoroutine("GameTimerRoutine");
+            StartCoroutine(SpawnEndingWireRoutine());
         }
 
         /// <summary>
@@ -156,12 +158,62 @@ namespace TO5.Wires
         /// <summary>
         /// Routine for generating initial wire player can jump to
         /// </summary>
-        /// <returns></returns>
         private IEnumerator TutorialWireSpawnRoutine()
         {
             yield return new WaitForSegment(m_WireManager, m_TutorialWireSegments / 2);
             m_WireManager.GenerateRandomWire(true);
         }
+
+        /// <summary>
+        /// Routine for generating the final wire the player can jump onto
+        /// </summary>
+        private IEnumerator SpawnEndingWireRoutine()
+        {
+            while (true)
+            {
+                m_FinalWire = m_WireManager.GenerateRandomFixedWire(10000, true, false);
+                if (!m_FinalWire)
+                    yield return null;
+                else
+                    break;
+            }
+
+            Debug.Log("Final Wire spawned");
+
+            // We need to listen for when player actually jumps to this wire
+            if (m_WireManager.sparkJumper)
+                m_WireManager.sparkJumper.OnJumpToSpark += FinaleJumpToSpark;
+
+            m_WireManager.SetWireGenerationEnabled(false);
+
+            // TODO: Disable packet generation
+            // if (m_WireManager.scoreManager)
+            //    m_WireManager.scoreManager
+        }
+
+        /// <summary>
+        /// Routine for handling the end game (displaying score and exiting)
+        /// </summary>
+        private IEnumerator DisplayStatsAndExitRoutine()
+        {
+            if (m_WireManager.scoreManager)
+                m_WireManager.scoreManager.DisableScoring();
+
+            if (m_WireManager.sparkJumper)
+            {
+                SparkJumper sparkJumper = m_WireManager.sparkJumper;
+                sparkJumper.m_JumpingEnabled = false;
+                sparkJumper.OnJumpToSpark -= FinaleJumpToSpark;
+            }
+
+            Debug.Log("Starting finale");
+
+            yield return new WaitForSeconds(5f);
+
+            // for now
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+
 
         /// <summary>
         /// Notify that player has jumped off a wire during the tutorial
@@ -173,6 +225,17 @@ namespace TO5.Wires
                 EndTutorial();
             else
                 m_WireManager.GenerateRandomWire(true);
+        }
+
+        /// <summary>
+        /// Notify that player has jumped to a new spark during end game
+        /// </summary>
+        /// <param name="spark">Spark player jumped to</param>
+        /// <param name="finished">If jump just finished</param>
+        private void FinaleJumpToSpark(Spark spark, bool finished)
+        {
+            if (m_FinalWire && spark.GetWire() == m_FinalWire)
+                StartCoroutine(DisplayStatsAndExitRoutine());
         }
     }
 }

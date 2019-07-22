@@ -22,6 +22,7 @@ namespace TO5.Wires
         public Color m_OffColor = Color.red;                                // Color to use when off
         public Vector3 m_OnScale = Vector3.one;                             // Scale to use when on
         public Vector3 m_OffScale = new Vector3(0.5f, 0.5f, 0.5f);          // Scale to use when off
+        [Min(0.1f)] public float m_RotationTime = 0.5f;                     // Time it takes for spark to rotate
         [SerializeField] private Renderer m_Renderer;                       // Sparks renderer
         public AudioClip m_SelectedSound;                                   // Sound to play when selected
 
@@ -116,8 +117,11 @@ namespace TO5.Wires
         /// </summary>
         public void FreezeSwitching()
         {
-            StopAllCoroutines();
-            m_SwitchRoutine = null;
+            if (m_SwitchRoutine != null)
+            {
+                StopCoroutine(m_SwitchRoutine);
+                m_SwitchRoutine = null;
+            }
 
             m_CanJumpTo = true;
             BlendSwitchStatus(1f);
@@ -190,13 +194,13 @@ namespace TO5.Wires
             {
                 Quaternion from = m_Renderer.transform.rotation;
                 Quaternion target = Random.rotation;
-                float end = Time.time + 1f;
+                float end = Time.time + m_RotationTime;
                 
                 while (enabled && Time.time <= end)
                 {
                     // We reverse target and from as alpha is also reversed
-                    float alpha = Mathf.Clamp01(end - Time.time);
-                    m_Renderer.transform.rotation = Quaternion.Slerp(target, from, alpha);
+                    float alpha = Mathf.Clamp01((end - Time.time) / m_RotationTime);
+                    m_Renderer.transform.rotation = Quaternion.Slerp(target, from, alpha);           
 
                     yield return null;
                 }

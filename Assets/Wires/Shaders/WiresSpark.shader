@@ -34,7 +34,7 @@
 
 			v2f vert(appdata v)
 			{
-				fixed3 center = mul(unity_ObjectToWorld, fixed4(0, 0, 0, 1)).xyz;
+				/*fixed3 center = mul(unity_ObjectToWorld, fixed4(0, 0, 0, 1)).xyz;
 				fixed3 vertex = mul(unity_ObjectToWorld, v.vertex).xyz;
 
 				fixed3 dir = normalize(vertex - center);
@@ -42,10 +42,10 @@
 				// Scale extent by models scale
 				vertex += mul((fixed3x3)unity_ObjectToWorld, dir * (_Extent * sin(_Time.y * _Speed)));
 
-				fixed4 object = mul(unity_WorldToObject, fixed4(vertex, 1.f));
+				fixed4 object = mul(unity_WorldToObject, fixed4(vertex, 1.f));*/
 
 				v2f o;
-				o.vertex = UnityObjectToClipPos(object);
+				o.vertex = UnityObjectToClipPos(v.vertex);//object);
 				return o;
 			}
 

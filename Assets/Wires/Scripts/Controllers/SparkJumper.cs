@@ -34,6 +34,7 @@ namespace TO5.Wires
         public TryActivateBoost OnActivateBoost;        // Event for when attempting boost activation
 
         public Transform m_Anchor;                                                          // Anchor to move instead of gameObject
+        public bool m_JumpingEnabled = true;                                                // If player is allowed to jump
         public float m_JumpTime = 0.75f;                                                    // Transition time between sparks
         [SerializeField, Min(0.1f)] protected float m_TraceRadius = 0.5f;                   // Radius of sphere cast
         [SerializeField] private LayerMask m_InteractiveLayer = Physics.AllLayers;          // Layer for interactives
@@ -42,7 +43,7 @@ namespace TO5.Wires
         public AudioSource m_SelectionAudioSource;          // Audio source for playing selection sounds
 
         // If the player is allowed to request a jump
-        public bool canJump { get { return !m_IsJumping; } }
+        public bool canJump { get { return m_JumpingEnabled && !m_IsJumping; } }
 
         // If the player is drifting in space
         public bool isDrifting { get { return m_IsDrifting; } }
