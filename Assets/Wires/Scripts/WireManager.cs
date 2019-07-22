@@ -82,7 +82,8 @@ namespace TO5.Wires
         public Wire m_WirePrefab;
 
         [Header("Generation")]
-        [SerializeField] private WireStageProperties[] m_WireProperties;                // Properties for wire behavior for each multiplier stage
+        [SerializeField] private float m_WireSpace = 4f;                        // Space needed for wires to spawn
+        [SerializeField] private WireStageProperties[] m_WireProperties;        // Properties for wire behavior for each multiplier stage
 
         #if UNITY_EDITOR
         public int m_WirePropertiesStagePreview = 0;            // Preview properties for wire stage at index
@@ -534,10 +535,15 @@ namespace TO5.Wires
         {
             WireStageProperties wireProps = GetStageWireProperties();
 
-            // This has a super teny tiny chance of looping forever
-            Vector2 direction = Random.insideUnitCircle.normalized;
+            float rad = Random.Range(0f, Mathf.PI * 2f);
+            Vector2 direction = new Vector2(Mathf.Sin(rad), Mathf.Cos(rad));
+
+            // This has a super teeny tiny chance of looping forever
             while (Vector2.Dot(direction, Vector2.down) > wireProps.m_BottomCircleCutoff)
-                direction = Random.insideUnitCircle.normalized;
+            {
+                rad = Random.Range(0f, Mathf.PI * 2f);
+                direction.Set(Mathf.Sin(rad), Mathf.Cos(rad));
+            }
    
             return direction * Random.Range(minOffset, maxOffset);
         }
@@ -741,7 +747,7 @@ namespace TO5.Wires
         public bool HasSpaceAtLocation(Vector3 position, bool ignoreZ)
         {
             WireStageProperties wireProps = GetStageWireProperties();
-            float sqrMinDistance = wireProps.m_InnerSpawnRadius * wireProps.m_InnerSpawnRadius;
+            float sqrMinDistance = m_WireSpace * m_WireSpace;
 
             // Chance we might need this
             int start = GetPositionSegment(position);
@@ -988,11 +994,11 @@ namespace TO5.Wires
 
                         Gizmos.DrawLine(center, center + dir * wireProps.m_OuterSpawnRadius);
                     }
-                }
 
-                // Draw score systems
-                if (m_ScoreManager)
-                    m_ScoreManager.DrawDebugGizmos(center, wireProps.m_BottomCircleCutoff);
+                    // Draw score systems
+                    if (m_ScoreManager)
+                        m_ScoreManager.DrawDebugGizmos(center, wireProps.m_BottomCircleCutoff);
+                }
 
                 // Draw Wires
                 Gizmos.color = Color.red;
