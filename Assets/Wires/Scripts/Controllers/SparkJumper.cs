@@ -40,6 +40,7 @@ namespace TO5.Wires
         [SerializeField] private LayerMask m_InteractiveLayer = Physics.AllLayers;          // Layer for interactives
         public CompanionUI m_Companion;                                                     // Players companion
 
+        public ScreenFade m_ScreenFade;                     // Screen fade for game transitions
         public AudioSource m_SelectionAudioSource;          // Audio source for playing selection sounds
 
         // If the player is allowed to request a jump

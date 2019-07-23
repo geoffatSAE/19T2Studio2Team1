@@ -95,9 +95,12 @@ namespace TO5.Wires
                 if (m_TutorialDisplay)
                     m_TutorialDisplay.gameObject.SetActive(true);
 
-                SparkJumper sparkJumper = m_WireManager.sparkJumper;
+                SparkJumper sparkJumper = m_WireManager.sparkJumper;             
                 if (sparkJumper.m_Companion)
                     sparkJumper.m_Companion.SetRenderHUD(false);
+
+                if (sparkJumper.m_ScreenFade)
+                    sparkJumper.m_ScreenFade.FadeIn();
 
                 m_TutorialActive = true;
             }
@@ -118,6 +121,9 @@ namespace TO5.Wires
                 SparkJumper sparkJumper = m_WireManager.sparkJumper;
                 if (sparkJumper.m_Companion)
                     sparkJumper.m_Companion.SetRenderHUD(true);
+
+                if (sparkJumper.m_ScreenFade)
+                    sparkJumper.m_ScreenFade.ClearFade();
 
                 m_TutorialActive = false;
 
@@ -178,8 +184,6 @@ namespace TO5.Wires
                     break;
             }
 
-            Debug.Log("Final Wire spawned");
-
             // We need to listen for when player actually jumps to this wire
             if (m_WireManager.sparkJumper)
                 m_WireManager.sparkJumper.OnJumpToSpark += FinaleJumpToSpark;
@@ -199,19 +203,28 @@ namespace TO5.Wires
             if (m_WireManager.scoreManager)
                 m_WireManager.scoreManager.DisableScoring();
 
-            if (m_WireManager.sparkJumper)
+            SparkJumper sparkJumper = m_WireManager.sparkJumper;
+            if (sparkJumper)
             {
-                SparkJumper sparkJumper = m_WireManager.sparkJumper;
                 sparkJumper.m_JumpingEnabled = false;
                 sparkJumper.OnJumpToSpark -= FinaleJumpToSpark;
-            }
 
-            Debug.Log("Starting finale");
+                // TODO: Display score and whatnot
+            }
 
             yield return new WaitForSeconds(5f);
 
-            // for now
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            if (sparkJumper && sparkJumper.m_ScreenFade)
+            {
+                ScreenFade screenFade = sparkJumper.m_ScreenFade;
+                screenFade.OnFadeFinished += FinaleFadeFinished;
+                screenFade.FadeOut();
+            }
+            else
+            {
+                // Pretent screen instantly faded out
+                FinaleFadeFinished(1f);
+            }
         }
 
 
@@ -236,6 +249,16 @@ namespace TO5.Wires
         {
             if (m_FinalWire && spark.GetWire() == m_FinalWire)
                 StartCoroutine(DisplayStatsAndExitRoutine());
+        }
+
+        /// <summary>
+        /// Notify that screen fade out has finished
+        /// </summary>
+        /// <param name="endAlpha">Last alpha of screen fade</param>
+        private void FinaleFadeFinished(float endAlpha)
+        {
+            // for now
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
     }
 }

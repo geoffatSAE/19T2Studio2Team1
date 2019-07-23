@@ -54,6 +54,6 @@ namespace TO5.Wires
 
         public float m_MultiplierIncreaseInterval = 15f;                // Time to reach next stage   
         public float m_HandicapMultiplierIncreaseInterval = 10f;        // Time to reach next stage after failing X times
-        public int m_ResetsTillHandicap = 3;                            // Resets until handicap interval is used
+        [Obsolete] public int m_ResetsTillHandicap = 3;                 // Resets until handicap interval is used
     }
 }

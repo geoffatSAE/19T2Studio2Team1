@@ -28,15 +28,16 @@ namespace TO5.Wires
 
         [Header("Multiplier")]
         [SerializeField, Range(0, 32)] private int m_MultiplierStages = 2;      // The amount of stages for the multiplier
+        [SerializeField, Min(1)] private int m_StageLives = 4;                  // Amount of 'lives' player has per stage for multiplier decrease
+        [SerializeField] private int m_StageHandicap = 2;                       // Handicap is applied when lives is less or equal to this
         public AudioSource m_MultiplierAudioSource;                             // Audio source to play multiplier sounds with
         public AudioClip m_MultiplierIncreaseClip;                              // Sound to play when multiplier increases
         public AudioClip m_MultiplierDecreaseClip;                              // Sound to play when multiplier decreases
         public ParticleSystem m_MultiplierIncreaseParticles;                    // Root particle system to all increase particles (longest system should be root)
         public ParticleSystem m_MultiplierDecreaseParticles;                    // Root particle system to all decrease particles (longest system should be root)
 
-        private int m_StageResets = 0;                                              // How many times current stage has been reset
+        private int m_RemainingLives = 0;                                           // Lives remaining in current stage
         private ParticleSystem m_MultiplierParticles;                               // Current particle system being played
-        [System.Obsolete] private Dictionary<int, int> m_StageHandicapCounts;       // Count for resets per multiplier stage
 
         [Header("Packets")]
         [SerializeField] private DataPacket m_PacketPrefab;                         // Prefab for data packets
@@ -147,8 +148,8 @@ namespace TO5.Wires
             // Debug text
             if (m_DebugText)
             {
-                m_DebugText.text = string.Format("Score: {0}\nMultiplier: {1}\nMultiplier Stage: {2}\nPackets Pool Size: {3}\nPackets Active: {4}\nBoost Meter: {5}\nBoost Active: {6}\nHandicap Count: {7}\nResets Till Handicap: {8}",
-                    Mathf.FloorToInt(m_Score), m_Multiplier, m_Stage, m_DataPackets.Count, m_DataPackets.activeCount, Mathf.FloorToInt(m_Boost), m_BoostActive, m_StageResets, Mathf.Max(0, m_ActivePacketProperties.m_ResetsTillHandicap - m_StageResets));
+                m_DebugText.text = string.Format("Score: {0}\nMultiplier: {1}\nMultiplier Stage: {2}\nPackets Pool Size: {3}\nPackets Active: {4}\nBoost Meter: {5}\nBoost Active: {6}\nRemaining Lives: {7}\nHandicap Active: {8}",
+                    Mathf.FloorToInt(m_Score), m_Multiplier, m_Stage, m_DataPackets.Count, m_DataPackets.activeCount, Mathf.FloorToInt(m_Boost), m_BoostActive, m_RemainingLives, m_RemainingLives <= m_StageHandicap);
             }
             #endif
         }
@@ -192,7 +193,7 @@ namespace TO5.Wires
             {
                 m_Score = 0f;
                 m_Multiplier = 1f;
-                m_StageResets = 0;
+                m_RemainingLives = m_StageLives;
 
                 m_Score = 0;
 
@@ -261,7 +262,7 @@ namespace TO5.Wires
                 m_Stage = stage;
                 m_Multiplier = 1 << m_Stage;
 
-                m_StageResets = 0;
+                m_RemainingLives = m_StageLives;
 
                 m_ActivePacketProperties = GetPacketProperties(m_Stage);
 
@@ -283,10 +284,11 @@ namespace TO5.Wires
             if (!m_IsRunning)
                 return false;
 
-            PacketStageProperties packetProps = GetStagePacketProperties();
+            // Multiplier can never decrease while boost is active
+            bool keepStage = m_BoostActive || m_Stage <= 0;
+            m_RemainingLives = Mathf.Max(keepStage ? 1 : 0, m_RemainingLives - 1);
 
-            ++m_StageResets;
-            if (!boostActive && m_StageResets >= packetProps.m_ResetsTillHandicap * 2)
+            if (m_RemainingLives <= 0)
             {
                 DecreaseMultiplier(1);
                 return true;
@@ -299,59 +301,11 @@ namespace TO5.Wires
         /// Resets the multiplier stage
         /// </summary>
         /// <param name="resetHandicaps">If handicaps should also be reset</param>
-        public void ResetMultiplier(bool resetHandicaps = false)
+        public void ResetMultiplier()
         {
             m_Multiplier = 1f;
             m_Stage = 0;
-            m_StageResets = 0;
-
-            //if (resetHandicaps)
-            //    m_StageHandicapCounts.Clear();
-        }
-
-        /// <summary>
-        /// Increases the handicap stage for given stage
-        /// </summary>
-        /// <param name="stage">Stage for handicap</param>
-        /// <param name="amount">Amount of increase count by</param>
-        [System.Obsolete("Please use TryDecreaseMultiplier", true)]
-        private void IncreaseHandicap(int stage, int amount = 1)
-        {
-            if (stage >= 0 && stage < m_MultiplierStages)
-            {
-                if (m_StageHandicapCounts.ContainsKey(stage))
-                    m_StageHandicapCounts[stage] += amount;
-                else
-                    m_StageHandicapCounts.Add(stage, amount);       
-            }
-        }
-
-        /// <summary>
-        /// Resets handicap stage for stage
-        /// </summary>
-        /// <param name="stage">Stage for handicap</param>
-        [System.Obsolete("Please use TryDecreaseMultiplier", true)]
-        private void ResetHandicap(int stage)
-        {
-            if (stage >= 0 && stage < m_MultiplierStages)
-                m_StageHandicapCounts.Remove(stage);
-        }
-
-        /// <summary>
-        /// Get the handicap count for stage
-        /// </summary>
-        /// <param name="stage">Stage for handicap</param>
-        /// <returns>Count for stage or 0</returns>
-        [System.Obsolete("Please use TryDecreaseMultiplier", true)]
-        private int GetHandicapCount(int stage)
-        {
-            if (stage >= 0 && stage < m_MultiplierStages)
-            {
-                if (m_StageHandicapCounts.ContainsKey(stage))
-                    return m_StageHandicapCounts[stage];
-            }
-
-            return 0;
+            m_RemainingLives = m_StageLives;
         }
 
         /// <summary>
@@ -375,7 +329,7 @@ namespace TO5.Wires
                 float interval = packetProps.m_MultiplierIncreaseInterval;
 
                 // Handicap
-                if (m_StageResets >= packetProps.m_ResetsTillHandicap)
+                if (m_RemainingLives <= m_StageHandicap)
                     interval = packetProps.m_HandicapMultiplierIncreaseInterval;
 
                 yield return new WaitForSeconds(interval);
