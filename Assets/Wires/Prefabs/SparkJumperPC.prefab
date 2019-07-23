@@ -206,14 +206,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Anchor: {fileID: 8646348427193185105}
+  m_JumpingEnabled: 1
   m_JumpTime: 0.5
-  m_TraceRadius: 0.4
+  m_TraceRadius: 0.6
   m_InteractiveLayer:
     serializedVersion: 2
     m_Bits: 4294967295
   m_Companion: {fileID: 240138024243195650}
   m_SelectionAudioSource: {fileID: 4957492248197227485}
-  m_Sensitivity: 1.45
+  m_Sensitivity: 2.1
   m_InvertPitch: 0
   m_Camera: {fileID: 8646348428977238135}
 --- !u!1 &8646348428977238133
@@ -359,6 +360,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8646348427193185105}
     m_Modifications:
+    - target: {fileID: 3763885994031084875, guid: a5a33f51ce935c547bd9d87b27f3a6a2,
+        type: 3}
+      propertyPath: m_SparkJumper
+      value: 
+      objectReference: {fileID: 8646348428308405757}
     - target: {fileID: 6653541786956647586, guid: a5a33f51ce935c547bd9d87b27f3a6a2,
         type: 3}
       propertyPath: m_Name
@@ -419,11 +425,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3763885994031084875, guid: a5a33f51ce935c547bd9d87b27f3a6a2,
-        type: 3}
-      propertyPath: m_SparkJumper
-      value: 
-      objectReference: {fileID: 8646348428308405757}
     - target: {fileID: 1111755091, guid: a5a33f51ce935c547bd9d87b27f3a6a2, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -464,11 +465,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8646348427193185105}
     m_Modifications:
-    - target: {fileID: 8910129730801368223, guid: 63d94be21e8b39a4f97e9f6c380700a7,
-        type: 3}
-      propertyPath: m_Name
-      value: ZoomParticles
-      objectReference: {fileID: 0}
     - target: {fileID: 8910129730801368194, guid: 63d94be21e8b39a4f97e9f6c380700a7,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -523,6 +519,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8910129730801368223, guid: 63d94be21e8b39a4f97e9f6c380700a7,
+        type: 3}
+      propertyPath: m_Name
+      value: ZoomParticles
       objectReference: {fileID: 0}
     - target: {fileID: 8910129730801368193, guid: 63d94be21e8b39a4f97e9f6c380700a7,
         type: 3}
