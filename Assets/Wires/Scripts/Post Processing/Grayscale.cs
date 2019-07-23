@@ -21,10 +21,17 @@ namespace TO5.Wires
 
     public sealed class GrayscaleRenderer : PostProcessEffectRenderer<Grayscale>
     {
+        private Shader m_Shader;            // Cached grayscale shader
+
+        public GrayscaleRenderer() : base()
+        {
+            m_Shader = Shader.Find("Wires/PostProcess/Grayscale");
+        }
+
         // PostProcessEffectRenderer Interface
         public override void Render(PostProcessRenderContext context)
         {
-            PropertySheet sheet = context.propertySheets.Get(Shader.Find("Wires/PostProcess/Grayscale"));
+            PropertySheet sheet = context.propertySheets.Get(m_Shader);
             sheet.properties.SetFloat("_Blend", settings.blend);
 
             context.command.BlitFullscreenTriangle(context.source, context.destination, sheet, 0);
