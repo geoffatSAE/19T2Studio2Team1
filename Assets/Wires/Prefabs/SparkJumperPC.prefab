@@ -213,6 +213,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   m_Companion: {fileID: 240138024243195650}
+  m_ScreenFade: {fileID: 2834916492695278432}
   m_SelectionAudioSource: {fileID: 4957492248197227485}
   m_Sensitivity: 2.1
   m_InvertPitch: 0
@@ -228,6 +229,7 @@ GameObject:
   - component: {fileID: 8646348428977238134}
   - component: {fileID: 8646348428977238135}
   - component: {fileID: 1349524693}
+  - component: {fileID: 2834916492695278432}
   m_Layer: 0
   m_Name: Camera
   m_TagString: MainCamera
@@ -353,6 +355,21 @@ MonoBehaviour:
   m_AfterStackBundles:
   - assemblyQualifiedName: TO5.Wires.Grayscale, Assembly-CSharp, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
+--- !u!114 &2834916492695278432
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8646348428977238133}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa9fe1938576f00479810e7fb3368e35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_FadeTime: 2
+  m_FadeColor: {r: 0, g: 0, b: 0, a: 1}
+  m_FadeAudio: 1
 --- !u!1001 &3992764447975152201
 PrefabInstance:
   m_ObjectHideFlags: 0

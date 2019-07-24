@@ -6,7 +6,8 @@ using UnityEngine.UI;
 namespace TO5.Wires
 {
     /// <summary>
-    /// Specialized class designed to handle screen fades
+    /// Specialized class designed to handle screen fades. 
+    /// Should ideally be attached to the camera of the player (to avoid culling)
     /// </summary>
     public class ScreenFade : MonoBehaviour
     {
@@ -183,10 +184,10 @@ namespace TO5.Wires
             {
                 Vector3[] vertices = new Vector3[4] 
                 {
-                    new Vector3(-1, -1, 0), 
-                    new Vector3( 1, -1, 0), 
-                    new Vector3( 1, 1, 0), 
-                    new Vector3( -1, 1, 0)
+                    new Vector3(-1, -1, 1), 
+                    new Vector3( 1, -1, 1), 
+                    new Vector3( 1, 1, 1), 
+                    new Vector3( -1, 1, 1)
                 };
 
                 int[] indices = new int[6]
@@ -197,9 +198,6 @@ namespace TO5.Wires
 
                 mesh.vertices = vertices;
                 mesh.triangles = indices;
-
-                // We increase the bounds so mesh is already rendered (tends to be frustumed culled when looking away)
-                mesh.bounds = new Bounds(transform.position, new Vector3(1000f, 1000f, 1000f));
             }
         }
     }

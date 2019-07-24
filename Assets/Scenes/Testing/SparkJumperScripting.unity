@@ -6222,7 +6222,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1644498117
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6296,16 +6296,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 452517639}
     m_Modifications:
-    - target: {fileID: 3407895253892799131, guid: 7b8a50863b4feec4a8798085a230fd28,
-        type: 3}
-      propertyPath: m_Name
-      value: P_MultiplierIncrease
-      objectReference: {fileID: 0}
-    - target: {fileID: 3407895253892799131, guid: 7b8a50863b4feec4a8798085a230fd28,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 8687792912284865238, guid: 7b8a50863b4feec4a8798085a230fd28,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -6375,6 +6365,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3407895253892799131, guid: 7b8a50863b4feec4a8798085a230fd28,
+        type: 3}
+      propertyPath: m_Name
+      value: P_MultiplierIncrease
+      objectReference: {fileID: 0}
+    - target: {fileID: 3407895253892799131, guid: 7b8a50863b4feec4a8798085a230fd28,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7b8a50863b4feec4a8798085a230fd28, type: 3}
@@ -6499,31 +6499,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: ArcadeGameMode
       objectReference: {fileID: 0}
-    - target: {fileID: 3395505406176328842, guid: 9a8c4600bb7ba224baddce08e9afd423,
-        type: 3}
-      propertyPath: m_WireManager
-      value: 
-      objectReference: {fileID: 1444838668}
-    - target: {fileID: 3395505406176328842, guid: 9a8c4600bb7ba224baddce08e9afd423,
-        type: 3}
-      propertyPath: m_TutorialDisplay
-      value: 
-      objectReference: {fileID: 291607679}
-    - target: {fileID: 3395505406176328842, guid: 9a8c4600bb7ba224baddce08e9afd423,
-        type: 3}
-      propertyPath: m_DebugText
-      value: 
-      objectReference: {fileID: 1331242939}
-    - target: {fileID: 3395505406176328842, guid: 9a8c4600bb7ba224baddce08e9afd423,
-        type: 3}
-      propertyPath: m_GameTime
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 3395505406176328842, guid: 9a8c4600bb7ba224baddce08e9afd423,
-        type: 3}
-      propertyPath: m_EnableTutorial
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 3395505406176328845, guid: 9a8c4600bb7ba224baddce08e9afd423,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -6578,6 +6553,31 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3395505406176328842, guid: 9a8c4600bb7ba224baddce08e9afd423,
+        type: 3}
+      propertyPath: m_WireManager
+      value: 
+      objectReference: {fileID: 1444838668}
+    - target: {fileID: 3395505406176328842, guid: 9a8c4600bb7ba224baddce08e9afd423,
+        type: 3}
+      propertyPath: m_TutorialDisplay
+      value: 
+      objectReference: {fileID: 291607679}
+    - target: {fileID: 3395505406176328842, guid: 9a8c4600bb7ba224baddce08e9afd423,
+        type: 3}
+      propertyPath: m_DebugText
+      value: 
+      objectReference: {fileID: 1331242939}
+    - target: {fileID: 3395505406176328842, guid: 9a8c4600bb7ba224baddce08e9afd423,
+        type: 3}
+      propertyPath: m_GameTime
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3395505406176328842, guid: 9a8c4600bb7ba224baddce08e9afd423,
+        type: 3}
+      propertyPath: m_EnableTutorial
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3395505406176328835, guid: 9a8c4600bb7ba224baddce08e9afd423,
         type: 3}
