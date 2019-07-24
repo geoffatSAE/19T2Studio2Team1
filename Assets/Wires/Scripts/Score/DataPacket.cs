@@ -17,6 +17,7 @@ namespace TO5.Wires
         public PacketCollected OnExpired;       // Event for when this packet expires
 
         [SerializeField] private FloatingMovement m_FloatingMovement;       // Movement component (calls Move during Tick)
+        [SerializeField] private Animator m_Animator;                       // Packets animator
         public AudioClip m_SelectedSound;                                   // Sound to play when selected
 
         private float m_Speed;          // The speed of this packet

@@ -24,7 +24,8 @@ namespace TO5.Wires
         [Range(0, 1)] public float m_DefectiveWireChance = 0.1f;        // Chance of wire be defective (0 for never, 1 for always)
         [Min(0)] public float m_SparkSpeed = 1f;                        // Speed of sparks  
         [Range(0, 1)] public float m_SparkDriftScale = 0.2f;            // Percentage of sparks speed to use when player is drifting (player drifts at same speed)
-        [Min(0)] public float m_SparkSwitchInterval = 1.5f;             // Interval for sparks switching on and off (0 for always on)
+        [Min(0)] public float m_SparkOnSwitchInterval = 2f;             // Interval for sparks remaining on (0 means always on)
+        [Min(0)] public float m_SparkOffSwitchInterval = 0.5f;          // Interval for sparks remaining off (0 means always off)
 
         // This is the easiest place to put these for now
 

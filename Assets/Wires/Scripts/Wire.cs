@@ -87,11 +87,12 @@ namespace TO5.Wires
         /// Sets and activates the spark on this wire
         /// </summary>
         /// <param name="spark">Spark for this wire</param>
-        /// <param name="interval">Interval for spark switching jump state</param>
-        public void ActivateSpark(Spark spark, float interval)
+        /// <param name="onInterval">Interval for spark remaining on on state</param>
+        /// <param name="offInterval">Interval for spark remaining on off state</param>
+        public void ActivateSpark(Spark spark, float onInterval, float offInterval)
         {
             m_Spark = spark;
-            m_Spark.ActivateSpark(this, interval);
+            m_Spark.ActivateSpark(this, onInterval, offInterval);
         }
 
         /// <summary>

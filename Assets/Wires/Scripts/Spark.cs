@@ -16,13 +16,14 @@ namespace TO5.Wires
         // Player on this spark
         public SparkJumper sparkJumper { get { return m_SparkJumper; } }
 
-        public float m_SwitchInterval = 2f;                                 // Interval for switching between on and off
+        public float m_OnSwitchInterval = 2f;                               // Interval spark will remain on
+        public float m_OffSwitchInterval = 0.5f;                            // Interval spark will remain off
         [Min(0.1f)] public float m_SwitchBlendDuration = 0.5f;              // Time for blending between on and off (visually)
         public Color m_OnColor = Color.yellow;                              // Color to use when on
         public Color m_OffColor = Color.red;                                // Color to use when off
         public Vector3 m_OnScale = Vector3.one;                             // Scale to use when on
         public Vector3 m_OffScale = new Vector3(0.5f, 0.5f, 0.5f);          // Scale to use when off
-        [Min(0.1f)] public float m_RotationTime = 0.5f;                     // Time it takes for spark to rotate
+        [Min(0.1f)] public float m_RotationTime = 0.5f;                     // Time it takes for spark to rotate   
         [SerializeField] private Renderer m_Renderer;                       // Sparks renderer
         public AudioClip m_SelectedSound;                                   // Sound to play when selected
 
@@ -47,14 +48,15 @@ namespace TO5.Wires
         /// </summary>
         /// <param name="wire">Wire we are attached to</param>
         /// <param name="interval">Interval for switching jump states</param>
-        public void ActivateSpark(Wire wire, float interval)
+        public void ActivateSpark(Wire wire, float onInterval, float offInterval)
         {
             gameObject.SetActive(true);
 
-            m_SwitchInterval = interval;
+            m_OnSwitchInterval = onInterval;
+            m_OffSwitchInterval = offInterval;
 
             // Start switch routine only if interval is set
-            if (interval > 0f)
+            if (m_OnSwitchInterval > 0f && m_OffSwitchInterval > 0f)
             {
                 m_CanJumpTo = (Random.Range(0, 10) & 1) == 1;
 
@@ -158,7 +160,7 @@ namespace TO5.Wires
             while (!m_SparkJumper)
             {
                 m_IsSwitching = false;
-                yield return new WaitForSeconds(m_SwitchInterval);
+                yield return new WaitForSeconds(m_CanJumpTo ? m_OnSwitchInterval : m_OffSwitchInterval);
                 m_IsSwitching = true;
 
                 m_CanJumpTo = !m_CanJumpTo;

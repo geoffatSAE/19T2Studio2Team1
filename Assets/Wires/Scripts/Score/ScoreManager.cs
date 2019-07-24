@@ -46,6 +46,8 @@ namespace TO5.Wires
         [SerializeField] private float m_MaxPacketSpawnRadius = 15f;                // Max radius from active wire packets should spawn                      
         [SerializeField] private PacketStageProperties[] m_PacketProperties;        // Properties for packet behavior for each multiplier stage
 
+        public AudioSource m_PacketAudioSource;                                     // Audio source for packets (moves depending on players location)
+
         [Header("Boost")]
         [SerializeField] private float m_BoostChargeRate = 0.83f;                   // Boost player earns per second
         [SerializeField] private float m_BoostDepletionRate = 10f;                  // Boost player consumes per second (when active)
@@ -134,7 +136,7 @@ namespace TO5.Wires
                         DataPacket packet = m_DataPackets.GetObject(i);
                         packet.TickPacket(step);
                     }
-                }
+                }  
             }
 
             // Move multiplier system
@@ -143,6 +145,8 @@ namespace TO5.Wires
                 if (m_SparkJumper && m_SparkJumper.m_Companion)
                         m_MultiplierParticles.transform.position = m_SparkJumper.m_Companion.transform.position;
             }
+
+            UpdatePacketAudioSource();
 
             #if UNITY_EDITOR
             // Debug text
@@ -416,6 +420,9 @@ namespace TO5.Wires
 
             packet.Activate(position, speed, lifetime);
 
+            if (m_PacketAudioSource && !m_PacketAudioSource.isPlaying)
+                m_PacketAudioSource.Play();
+
             return packet;
         }
 
@@ -564,6 +571,10 @@ namespace TO5.Wires
         {
             packet.Deactivate();
             m_DataPackets.DeactivateObject(packet);
+
+            if (m_DataPackets.activeCount == 0)
+                if (m_PacketAudioSource)
+                    m_PacketAudioSource.Stop();
         }
 
         /// <summary>
@@ -635,6 +646,45 @@ namespace TO5.Wires
 
                 m_MultiplierParticles.gameObject.SetActive(true);
                 m_MultiplierParticles.Play(true);
+            }
+        }
+
+        /// <summary>
+        /// Updates the position of the packet audio source to match position of packet closest to players vicew
+        /// </summary>
+        // TODO: Could move along tick to prevent another for loop
+        private void UpdatePacketAudioSource()
+        {
+            if (!m_WireManager || !m_WireManager.sparkJumper)
+                return;
+
+            if (m_PacketAudioSource)
+            {
+                // We only need to move if packets are active
+                if (m_DataPackets.activeCount > 0)
+                {
+                    Vector3 center = m_WireManager.sparkJumper.GetPlayerPosition();
+
+                    float closest = float.MaxValue;
+                    DataPacket closestPacket = null;
+
+                    // Move source to closest
+                    for (int i = 0; i < m_DataPackets.activeCount; ++i)
+                    {
+                        DataPacket packet = m_DataPackets.GetObject(i);
+
+                        float distance = (packet.transform.position - center).sqrMagnitude;
+
+                        if (distance < closest)
+                        {
+                            closest = distance;
+                            closestPacket = packet;
+                        }
+                    }
+
+                    if (closestPacket)
+                        m_PacketAudioSource.transform.position = closestPacket.transform.position;
+                }
             }
         }
 

@@ -61,5 +61,14 @@ namespace TO5.Wires
                 Debug.Break();
             #endif
         }
+
+        // SparkJumper Interface
+        public override Vector3 GetPlayerPosition()
+        {
+            if (m_Camera)
+                return m_Camera.transform.position;
+
+            return base.GetPlayerPosition();
+        }
     }
 }

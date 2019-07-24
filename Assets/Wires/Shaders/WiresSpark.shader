@@ -45,7 +45,7 @@
 				fixed4 object = mul(unity_WorldToObject, fixed4(vertex, 1.f));*/
 
 				v2f o;
-				o.vertex = UnityObjectToClipPos(v.vertex);//object);
+				o.vertex = UnityObjectToClipPos(v.vertex);// object);
 				return o;
 			}
 

@@ -50,6 +50,10 @@ namespace TO5.Wires
 
                 Destroy(m_Filter);
             }
+
+            // Restore faded audio
+            if (m_FadeAudio)
+                AudioListener.volume = 1f;
         }
 
         /// <summary>

@@ -215,6 +215,15 @@ namespace TO5.Wires
         }
 
         /// <summary>
+        /// Get the players actual position in the world
+        /// </summary>
+        /// <returns>Position of player</returns>
+        public virtual Vector3 GetPlayerPosition()
+        {
+            return GetPosition();
+        }
+
+        /// <summary>
         /// Routine for jumping between sparks
         /// </summary>
         private IEnumerator JumpRoutine()

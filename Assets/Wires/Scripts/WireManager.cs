@@ -232,7 +232,7 @@ namespace TO5.Wires
                 // Attach player to initial wire
                 {
                     WireFactory factory = GetRandomWireFactory();
-                    Wire spawnWire = GenerateWire(transform.position, initialSegments, 0, 0, factory);
+                    Wire spawnWire = GenerateWire(transform.position, initialSegments, 0, 0f, 0f, factory);
 
                     Assert.IsNotNull(spawnWire.spark);
                 }
@@ -263,7 +263,7 @@ namespace TO5.Wires
                     // Attach player to initial wire
                     {
                         WireFactory factory = GetRandomWireFactory();
-                        Wire spawnWire = GenerateWire(transform.position, m_InitialSegments, 0, 0, factory);
+                        Wire spawnWire = GenerateWire(transform.position, m_InitialSegments, 0, 0f, 0f, factory);
 
                         Assert.IsNotNull(spawnWire.spark);
                     }
@@ -377,19 +377,23 @@ namespace TO5.Wires
             int sparkDelay = instantSpark ? 0 : Random.Range(0, wireProps.m_SparkSpawnSegmentDelay + 1);
 
             // Wires can never be defective if switch interval is zero
-            float sparkInterval = wireProps.m_SparkSwitchInterval;
-            if (sparkInterval > 0f)
-            {              
+            float onInterval = 0f;
+            float offInterval = 0f;
+            if (wireProps.m_SparkOnSwitchInterval > 0f && wireProps.m_SparkOffSwitchInterval > 0f)
+            {
                 float defectiveChance = wireProps.m_DefectiveWireChance;
 
                 // Wire is defective if scaled chance is less than random number
                 bool defective = defectiveChance > 0f ? Random.Range(0f, 100f) < (defectiveChance * 100f) : false;
-                if (!defective)
-                    sparkInterval = 0f;
+                if (defective)
+                {
+                    onInterval = wireProps.m_SparkOnSwitchInterval;
+                    offInterval = wireProps.m_SparkOffSwitchInterval;
+                }
             }
 
             WireFactory factory = GetRandomWireFactory();
-            return GenerateWire(start, segments, sparkDelay, sparkInterval, factory);
+            return GenerateWire(start, segments, sparkDelay, onInterval, offInterval, factory);
         }
 
         /// <summary>
@@ -433,19 +437,23 @@ namespace TO5.Wires
             int sparkDelay = instantSpark ? 0 : Random.Range(0, wireProps.m_SparkSpawnSegmentDelay + 1);
 
             // Wires can never be defective if switch interval is zero
-            float sparkInterval = 0f;
-            if (tryDefective && wireProps.m_SparkSwitchInterval > 0f)
+            float onInterval = 0f;
+            float offInterval = 0f;
+            if (tryDefective && wireProps.m_SparkOnSwitchInterval > 0f && wireProps.m_SparkOffSwitchInterval > 0f)
             {    
                 float defectiveChance = wireProps.m_DefectiveWireChance;
 
                 // Wire is defective if scaled chance is less than random number
                 bool defective = defectiveChance > 0f ? Random.Range(0f, 100f) < (defectiveChance * 100f) : false;
                 if (defective)
-                    sparkInterval = wireProps.m_SparkSwitchInterval;
+                {
+                    onInterval = wireProps.m_SparkOnSwitchInterval;
+                    offInterval = wireProps.m_SparkOffSwitchInterval;
+                }
             }
 
             WireFactory factory = GetRandomWireFactory();
-            return GenerateWire(start, segments, sparkDelay, sparkInterval, factory);
+            return GenerateWire(start, segments, sparkDelay, onInterval, offInterval, factory);
         }
 
         /// <summary>
@@ -454,10 +462,11 @@ namespace TO5.Wires
         /// <param name="start">Start position of the wire</param>
         /// <param name="segments">Segments of the wire</param>
         /// <param name="sparkDelay">Delay before spawning spark</param>
-        /// <param name="sparkInterval">Interval for spark switching status</param>
+        /// <param name="onInterval">Interval for spark switching status being on</param>
+        /// <param name="offInterval">Interval for spark switching status being off</param>
         /// <param name="factory">Factory for wires aesthetics</param>
         /// <returns>Wire with properties or null</returns>
-        public Wire GenerateWire(Vector3 start, int segments, int sparkDelay, float sparkInterval, WireFactory factory)
+        public Wire GenerateWire(Vector3 start, int segments, int sparkDelay, float onInterval, float offInterval, WireFactory factory)
         {
             Wire wire = GetWire();
             if (!wire)
@@ -466,9 +475,9 @@ namespace TO5.Wires
             wire.ActivateWire(start, segments, m_CachedSegmentDistance, factory);
 
             if (sparkDelay > 0)
-                StartCoroutine(DelaySparkActivation(sparkDelay, wire, sparkInterval));
+                StartCoroutine(DelaySparkActivation(sparkDelay, wire, onInterval, offInterval));
             else
-                GenerateSpark(wire, sparkInterval);
+                GenerateSpark(wire, onInterval, offInterval);
 
             return wire;
         }
@@ -477,15 +486,15 @@ namespace TO5.Wires
         /// Generates a spark, will move it to keep in line with segment planes
         /// </summary>
         /// <param name="wire">Wire to attach spark to</param>
-        /// <param name="interval">Interval for wire switching between on and off</param>
+        /// <param name="onInterval">Interval for wire switching between on and off</param>
         /// <returns>Spark with properties or null</returns>
-        private Spark GenerateSpark(Wire wire, float interval)
+        private Spark GenerateSpark(Wire wire, float onInterval, float offInterval)
         {
             Spark spark = GetSpark();
             if (!spark)
                 return null;
 
-            wire.ActivateSpark(spark, interval);
+            wire.ActivateSpark(spark, onInterval, offInterval);
 
             Vector3 position = m_SparkJumper.GetPosition();
             float distance = Mathf.Abs(position.z - transform.position.z);
@@ -949,11 +958,12 @@ namespace TO5.Wires
         /// </summary>
         /// <param name="delay">Segments to pass before activating</param>
         /// <param name="wire">Wire to activate</param>
-        /// <param name="interval">Interval for spark status change</param>
-        private IEnumerator DelaySparkActivation(int delay, Wire wire, float interval)
+        /// <param name="onInterval">Interval for spark status remaining on</param>
+        /// <param name="offInterval">Interval for spark status remaining off</param>
+        private IEnumerator DelaySparkActivation(int delay, Wire wire, float onInterval, float offInterval)
         {
             yield return new WaitForSegment(this, GetJumpersSegment() + delay);
-            GenerateSpark(wire, interval);
+            GenerateSpark(wire, onInterval, offInterval);
         }
 
         /// <summary>

@@ -13,6 +13,7 @@ namespace TO5.Wires
         public static OVRInput.Controller ControllerType = OVRInput.Controller.RTrackedRemote;
 
         public Transform m_ControllerOrigin;        // Override transform for controllers origin
+        public Transform m_HeadOrigin;              // Origin of players head (headset)
 
         void Update()
         {
@@ -39,12 +40,25 @@ namespace TO5.Wires
             #endif
         }
 
+        /// <summary>
+        /// Get the position of the players controller
+        /// </summary>
+        /// <returns>Position of controller in world space</returns>
         private Vector3 GetControllerPosition()
         {
             if (m_ControllerOrigin)
                 return m_ControllerOrigin.TransformPoint(OVRInput.GetLocalControllerPosition(ControllerType));
             else
                 return transform.TransformPoint(OVRInput.GetLocalControllerPosition(ControllerType));
+        }
+
+        // SparkJumper Interface
+        public override Vector3 GetPlayerPosition()
+        {
+            if (m_HeadOrigin)
+                return m_HeadOrigin.position;
+
+            return base.GetPlayerPosition();
         }
     }
 }
