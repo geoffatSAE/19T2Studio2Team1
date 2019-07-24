@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Color: {r: 0.7638054, g: 0, b: 1, a: 0}
   m_SkyboxColor: {r: 0.88328743, g: 0, b: 1, a: 0}
-  m_ParticleColor: {r: 0.9160466, g: 0, b: 1, a: 0}
+  m_ParticleColor: {r: 0.9160466, g: 0, b: 1, a: 0.49019608}
   m_BorderTexture: {fileID: 2800000, guid: deff90eebe787eb4baf1deb26e423804, type: 3}
   m_Music:
   - {fileID: 8300000, guid: 66ebfa39e2c776f4ba8a7594117b9715, type: 3}
