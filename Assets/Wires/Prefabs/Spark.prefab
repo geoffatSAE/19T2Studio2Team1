@@ -60,7 +60,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 546c75ecc8ad61e4186d904488b66f9c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_SwitchInterval: 2
+  m_OnSwitchInterval: 2
+  m_OffSwitchInterval: 0.5
   m_SwitchBlendDuration: 0.5
   m_OnColor: {r: 0.9622642, g: 0.92992175, b: 0.6036846, a: 1}
   m_OffColor: {r: 1, g: 0, b: 0, a: 1}
@@ -434,7 +435,7 @@ PrefabInstance:
     - target: {fileID: 6228584958879962053, guid: 3e86119e7ee510d43ad63447fa2e18e6,
         type: 3}
       propertyPath: EmissionModule.rateOverTime.scalar
-      value: 100
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 6228584958879962053, guid: 3e86119e7ee510d43ad63447fa2e18e6,
         type: 3}
