@@ -22,11 +22,12 @@ namespace TO5.Wires
         // The texture for the outer wire
         public Texture2D borderTexture { get { return m_BorderTexture; } }
 
-        [SerializeField] private Color m_Color;                     // Wires color
-        [SerializeField] private Color m_SkyboxColor;               // Skyboxes color
-        [SerializeField] private Color m_ParticleColor;             // Particles color
-        [SerializeField] private Texture2D m_BorderTexture;         // Texture for outer border
-        [SerializeField] private AudioClip[] m_Music;               // Wires music tracks (for each intensity)
+        [SerializeField] private Color m_Color;                                     // Wires color
+        [SerializeField] private Color m_SkyboxColor;                               // Skyboxes color
+        [SerializeField] private Color m_ParticleColor;                             // Particles color
+        [SerializeField] private ParticleSystem.MinMaxGradient m_BoostGradient;
+        [SerializeField] private Texture2D m_BorderTexture;                         // Texture for outer border
+        [SerializeField] private AudioClip[] m_Music;                               // Wires music tracks (for each intensity)
 
         /// <summary>
         /// Get music at index
