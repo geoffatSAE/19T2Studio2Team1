@@ -44,7 +44,7 @@ namespace TO5.Wires
             AudioSource activeSource = m_Source1Active ? m_MusicSource1 : m_MusicSource2;
             activeSource.enabled = true;
 
-            float time = activeSource.time;
+            float time = Mathf.Repeat(activeSource.time, audioClip.length);
 
             activeSource.clip = audioClip;
             activeSource.volume = 1f;
@@ -76,7 +76,7 @@ namespace TO5.Wires
             fadingSource.volume = 1f;
  
             activeSource.Play();
-            activeSource.time = fadingSource.time;
+            activeSource.time = Mathf.Repeat(fadingSource.time, audioClip.length);
 
             m_Source1Active = !m_Source1Active;
         }

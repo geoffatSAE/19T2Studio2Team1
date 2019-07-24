@@ -35,6 +35,7 @@ namespace TO5.Wires
         void OnDestroy()
         {
             RuntimeUtilities.DestroyVolume(m_Volume, true, false);
+            Destroy(m_Grayscale);
         }
 
         /// <summary>
@@ -59,6 +60,10 @@ namespace TO5.Wires
                 m_Skybox.color = Color.Lerp(m_BlendFrom, m_BlendTo, progress);
         }
 
+        /// <summary>
+        /// Set if grayscale post process effect should be enabled
+        /// </summary>
+        /// <param name="enable">Post poss process effect</param>
         public void SetGrayscaleEnabled(bool enable)
         {
             if (m_PulseEnabled != enable)

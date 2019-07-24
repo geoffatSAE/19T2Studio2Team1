@@ -229,6 +229,9 @@ namespace TO5.Wires
 
                 m_ActiveWireProperties = wireProps;
 
+                if (m_SparkJumper)
+                    m_SparkJumper.m_JumpTime = m_ActiveWireProperties.m_JumpTime;
+
                 // Attach player to initial wire
                 {
                     WireFactory factory = GetRandomWireFactory();
@@ -275,6 +278,9 @@ namespace TO5.Wires
                 {
                     m_ScoreManager.EnableScoring(true);
                     m_ActiveWireProperties = GetWireProperties(m_ScoreManager.multiplierStage);
+
+                    if (m_SparkJumper)
+                        m_SparkJumper.m_JumpTime = m_ActiveWireProperties.m_JumpTime;
                 }
 
                 // We set this after to use the correct wire properties

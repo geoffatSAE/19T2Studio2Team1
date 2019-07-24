@@ -19,13 +19,16 @@ namespace TO5.Wires
         // The color for the outer wires particles
         public Color particleColor { get { return m_ParticleColor; } }
 
+        // The color for the boosts particles
+        public ParticleSystem.MinMaxGradient boostColor { get { return m_BoostColor; } }
+
         // The texture for the outer wire
         public Texture2D borderTexture { get { return m_BorderTexture; } }
 
         [SerializeField] private Color m_Color;                                     // Wires color
         [SerializeField] private Color m_SkyboxColor;                               // Skyboxes color
         [SerializeField] private Color m_ParticleColor;                             // Particles color
-        [SerializeField] private ParticleSystem.MinMaxGradient m_BoostGradient;
+        [SerializeField] private ParticleSystem.MinMaxGradient m_BoostColor;        // Boost color
         [SerializeField] private Texture2D m_BorderTexture;                         // Texture for outer border
         [SerializeField] private AudioClip[] m_Music;                               // Wires music tracks (for each intensity)
 
@@ -42,7 +45,5 @@ namespace TO5.Wires
             index = Mathf.Clamp(index, 0, m_Music.Length - 1); ;
             return m_Music[index];
         }
-            
-        //private MaterialPropertyBlock m_WireMaterialProperties;
     }
 }

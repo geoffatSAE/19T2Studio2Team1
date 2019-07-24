@@ -16,7 +16,9 @@ namespace TO5.Wires
         private WorldAesthetics m_WorldAesthetics;      // Handler for games aesthetics
         private Wire m_CurrentWire;                     // Current wire player is on
 
+        private bool m_IsJumping;               // If player is jumping
         private int m_MultiplierStage;          // Stage of multiplier
+        private bool m_BoostActive;             // If boost is active
 
         void Awake()
         {
@@ -32,7 +34,9 @@ namespace TO5.Wires
         public void Initialize(WireManager wireManager)
         {
             m_WireManager = wireManager;
+            m_IsJumping = false;
             m_MultiplierStage = 0;
+            m_BoostActive = false;
 
             if (m_WireManager)
             {
@@ -41,7 +45,10 @@ namespace TO5.Wires
                 if (scoreManager)
                 {
                     scoreManager.OnMultiplierUpdated += MultiplierUpdated;
+                    scoreManager.OnBoostModeUpdated += BoostModeUpdated;
+
                     m_MultiplierStage = scoreManager.multiplierStage;
+                    m_BoostActive = scoreManager.boostActive;
                 }
 
                 // We listen for when the player jumps to handle aesthetic changes
@@ -69,6 +76,8 @@ namespace TO5.Wires
                         BlendThemes(1f);
                     }
                 }
+
+                m_WorldAesthetics.SetBoostParticlesEnabled(m_BoostActive);
             }
         }
 
@@ -77,8 +86,14 @@ namespace TO5.Wires
         /// </summary>
         private void JumpToSpark(Spark spark, bool finished)
         {
+            m_IsJumping = !finished;
+
             if (finished)
             {
+                // Drifting can disable the boost particles even while active
+                if (m_BoostActive)
+                    m_WorldAesthetics.SetBoostParticlesEnabled(true);
+
                 StopCoroutine("BlendThemesRoutine");
                 BlendThemes(1f);        
             }
@@ -87,6 +102,7 @@ namespace TO5.Wires
                 m_CurrentWire = spark.GetWire();
 
                 m_WorldAesthetics.SetPendingAethetics(m_CurrentWire);
+                m_WorldAesthetics.SetBoostParticlesEnabled(false);
 
                 WireFactory factory = m_CurrentWire.factory;
                 if (factory)
@@ -109,7 +125,10 @@ namespace TO5.Wires
             m_WorldColor.SetGrayscaleEnabled(isEnabled);
 
             if (isEnabled)
+            {
                 m_WorldAesthetics.SetWarningSignEnabled(false);
+                m_WorldAesthetics.SetBoostParticlesEnabled(false);
+            }
         }
         
         /// <summary>
@@ -127,6 +146,18 @@ namespace TO5.Wires
 
                 m_WorldAesthetics.SetIntensity(m_MultiplierStage);
             } 
+        }
+
+        /// <summary>
+        /// Notify that boost mode has been switched on or off
+        /// </summary>
+        /// <param name="active">If boost is active</param>
+        private void BoostModeUpdated(bool active)
+        {
+            m_BoostActive = active;
+
+            if (!m_IsJumping)
+                m_WorldAesthetics.SetBoostParticlesEnabled(active);          
         }
 
         /// <summary>

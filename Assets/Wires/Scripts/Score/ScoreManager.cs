@@ -17,7 +17,14 @@ namespace TO5.Wires
         /// <param name="stage">New stage</param>
         public delegate void MultiplierStageUpdated(float multiplier, int stage);
 
+        /// <summary>
+        /// Delegate to notify when boost has either been activated or depleted
+        /// </summary>
+        /// <param name="active">If boost mode is active</param>
+        public delegate void BoostModeUpdated(bool active);
+
         public MultiplierStageUpdated OnMultiplierUpdated;      // Event for when multiplier has changed
+        public BoostModeUpdated OnBoostModeUpdated;             // Event for when boost mode has changed
 
         private bool m_IsRunning = false;       // If scoring is enabled (including packet generation)
 
@@ -120,6 +127,13 @@ namespace TO5.Wires
                     {
                         m_Boost = Mathf.Max(0, m_Boost - (m_BoostDepletionRate * Time.deltaTime));
                         m_BoostActive = m_Boost > 0f;
+
+                        // Was boost just depleted?
+                        if (!m_BoostActive)
+                        {
+                            if (OnBoostModeUpdated != null)
+                                OnBoostModeUpdated.Invoke(false);
+                        }
                     }
                     else if (!m_SparkJumper.isDrifting)
                     {
@@ -586,6 +600,10 @@ namespace TO5.Wires
             if (!m_BoostActive && boostReady)
             {
                 m_BoostActive = true;
+
+                if (OnBoostModeUpdated != null)
+                    OnBoostModeUpdated.Invoke(true);
+
                 return true;
             }
 

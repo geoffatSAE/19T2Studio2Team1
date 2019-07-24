@@ -21,6 +21,9 @@ namespace TO5.Wires
 
         [SerializeField] private Transform m_WarningPivot;              // Pivot for the end of wire sign
 
+        [SerializeField] private ParticleSystem m_BoostParticles;       // Particle system to play when boost is active
+        private bool m_UpdateBoostParticles = false;                    // If boost particles need to be updated
+
         private Wire m_ActiveWire;                              // Wire player is either on or travelling to
         private bool m_HaveSwitched = false;                    // If blend has switched (from old to new)
 
@@ -181,9 +184,12 @@ namespace TO5.Wires
             if (particleColor)
                 SetParticleColors(factory.particleColor);
 
+            if (m_UpdateBoostParticles)
+                SetBoostColor(factory.boostColor);
+
             m_HaveSwitched = true;
         }
-        
+
         /// <summary>
         /// Sets the color for the border particles
         /// </summary>
@@ -193,18 +199,78 @@ namespace TO5.Wires
             if (m_BorderParticles)
             {
                 ParticleSystem.MainModule main = m_BorderParticles.main;
-                main.startColor = new ParticleSystem.MinMaxGradient(color);
+                main.startColor = color;
 
                 ParticleSystem.TrailModule trails = m_BorderParticles.trails;
-                trails.colorOverLifetime = new ParticleSystem.MinMaxGradient(color);
-                trails.colorOverTrail = new ParticleSystem.MinMaxGradient(color);
+                trails.colorOverLifetime = color;
+                trails.colorOverTrail = color;
             }
         }
 
+        /// <summary>
+        /// Set if warning sign should be displayed
+        /// </summary>
+        /// <param name="enable">Display sign</param>
         public void SetWarningSignEnabled(bool enable)
         {
             if (m_WarningPivot)
                 m_WarningPivot.gameObject.SetActive(enable);
+        }
+
+        /// <summary>
+        /// Set if particles for boost should be enabled
+        /// </summary>
+        /// <param name="enable">Enable particles</param>
+        public void SetBoostParticlesEnabled(bool enable)
+        {
+            if (m_UpdateBoostParticles != enable)
+            {
+                m_UpdateBoostParticles = enable;
+
+                if (m_BoostParticles)
+                {
+                    if (m_UpdateBoostParticles)
+                    {
+                        WireFactory factory = m_ActiveWire.factory;
+                        if (!factory)
+                            return;
+
+                        // for now
+                        {
+                            ParticleSystem.MainModule main = m_BoostParticles.main;
+                            main.simulationSpeed = 2f;
+                        }
+
+                        ParticleSystem.TrailModule trails = m_BoostParticles.trails;
+                        trails.colorOverLifetime = factory.boostColor;
+
+                        m_BoostParticles.Play();
+                    }
+                    else
+                    {
+                        // for now
+                        {
+                            ParticleSystem.MainModule main = m_BoostParticles.main;
+                            main.simulationSpeed = 15f;
+                        }
+
+                        m_BoostParticles.Stop();
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Sets the color for the boost particles
+        /// </summary>
+        /// <param name="color">Color to use</param>
+        private void SetBoostColor(ParticleSystem.MinMaxGradient color)
+        {
+            if (m_BoostParticles)
+            {
+                ParticleSystem.TrailModule trails = m_BoostParticles.trails;
+                trails.colorOverLifetime = color;
+            }
         }
     }
 }

@@ -66,7 +66,7 @@ namespace TO5.Wires
             transform.position -= WireManager.WirePlane * step;
 
             if (m_FloatingMovement)
-                m_FloatingMovement.Move(Time.deltaTime);
+                m_FloatingMovement.Move(step);
         }
 
         /// <summary>
