@@ -9,22 +9,27 @@ namespace TO5.Wires
     /// </summary>
     public class WorldAesthetics : MonoBehaviour
     {
+        [Header("Border")]
         [SerializeField] private Transform m_BorderPivot;               // Pivot for the outer wires border
         [SerializeField] private Renderer m_BorderRenderer;             // Renderer for the outer wires border
         [SerializeField] private Vector2[] m_BorderPanningSpeeds;       // Panning speeds for outer borders material for each multiplier stage
         private Material m_BorderMaterial;                              // Material of the outer wires border (expects _Color, _MainTex, _PanningSpeed and _AlphaScale)
         private float m_CachedBorderSize = 1f;                          // Cached size of border when starting
 
+        [Header("Zoom")]
         [SerializeField] private ParticleSystem m_BorderParticles;      // Particle system for the outer wires particles
         [SerializeField] private float[] m_ParticleSimulationSpeeds;    // Velocity of particles for eahc multiplier stage
         private Color m_ParticleColor = Color.white;                    // Color of particles before blending
 
+        [Header("Warning")]
         [SerializeField] private Transform m_WarningPivot;              // Pivot for the end of wire sign
 
-        [SerializeField] private ParticleSystem m_BoostParticles;       // Particle system to play when boost is active
-        public float m_BoostParticlesSpeed = 2f;                        // Speed of boost particles
-        public float m_BoostDissapateSpeed = 15f;                       // Speed at which boost particles disappear (when stopping due to jumping/drifting)
-        private bool m_UpdateBoostParticles = false;                    // If boost particles need to be updated
+        [Header("Boost")]
+        [SerializeField] private ParticleSystem m_BoostActivationParticles;     // Particle system to play when boost is activated
+        [SerializeField] private ParticleSystem m_BoostParticles;               // Particle system to play during boost     
+        public float m_BoostParticlesSpeed = 2f;                                // Speed of boost particles
+        public float m_BoostDissapateSpeed = 15f;                               // Speed at which boost particles disappear (when stopping due to jumping/drifting)
+        private bool m_UpdateBoostParticles = false;                            // If boost particles need to be updated
 
         private Wire m_ActiveWire;                              // Wire player is either on or travelling to
         private bool m_HaveSwitched = false;                    // If blend has switched (from old to new)
@@ -230,6 +235,26 @@ namespace TO5.Wires
             {
                 m_UpdateBoostParticles = enable;
 
+                // These play upon activation
+                if (m_BoostActivationParticles)
+                {
+                    if (m_BoostActivationParticles.IsAlive())
+                        m_BoostActivationParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+
+                    if (m_UpdateBoostParticles)
+                    {
+                        WireFactory factory = m_ActiveWire ? m_ActiveWire.factory : null;
+                        if (factory)
+                        {
+                            ParticleSystem.TrailModule trails = m_BoostActivationParticles.trails;
+                            trails.colorOverLifetime = factory.boostColor;
+                        }
+
+                        m_BoostActivationParticles.Play();
+                    }
+                }
+
+                // These play continuously
                 if (m_BoostParticles)
                 {
                     ParticleSystem.MainModule main = m_BoostParticles.main;
@@ -237,12 +262,12 @@ namespace TO5.Wires
 
                     if (m_UpdateBoostParticles)
                     {
-                        WireFactory factory = m_ActiveWire.factory;
-                        if (!factory)
-                            return;         
-
-                        ParticleSystem.TrailModule trails = m_BoostParticles.trails;
-                        trails.colorOverLifetime = factory.boostColor;
+                        WireFactory factory = m_ActiveWire ? m_ActiveWire.factory : null;
+                        if (factory)
+                        {
+                            ParticleSystem.TrailModule trails = m_BoostParticles.trails;
+                            trails.colorOverLifetime = factory.boostColor;
+                        }
 
                         m_BoostParticles.Play();
                     }

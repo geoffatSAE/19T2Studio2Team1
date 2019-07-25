@@ -57,10 +57,11 @@ namespace TO5.Wires
         public AudioSource m_PacketAudioSource;                                     // Audio source for packets (moves depending on players location)
 
         [Header("Boost")]
-        [SerializeField] private float m_BoostChargeRate = 0.83f;                   // Boost player earns per second
-        [SerializeField] private float m_BoostDepletionRate = 10f;                  // Boost player consumes per second (when active)
-        [SerializeField] private float m_BoostMultiplier = 2f;                      // Multipler all score is scaled by when boost is active
-        [SerializeField] private float m_BoostPerPacket = 5f;                       // Boost player earns when collecting a packet
+        [SerializeField] private float m_BoostChargeRate = 0.83f;           // Boost player earns per second
+        [SerializeField] private float m_BoostDepletionRate = 10f;          // Boost player consumes per second (when active)
+        [SerializeField] private float m_BoostMultiplier = 2f;              // Multipler all score is scaled by when boost is active
+        [SerializeField] private float m_BoostPerPacket = 5f;               // Boost player earns when collecting a packet
+        public ParticleSystem m_BoostReadyParticles;                        // Particles to play when boost is ready
 
         private ObjectPool<DataPacket> m_DataPackets = new ObjectPool<DataPacket>();    // Packets being managed
         private PacketStageProperties m_ActivePacketProperties;                         // Properties for current stage
@@ -141,7 +142,7 @@ namespace TO5.Wires
                     }
                     else if (!m_SparkJumper.isDrifting)
                     {
-                        m_Boost = Mathf.Min(100, m_Boost + (m_BoostChargeRate * Time.deltaTime));
+                        AddBoost(m_BoostChargeRate * Time.deltaTime);
                     }
                 }
 
@@ -574,15 +575,29 @@ namespace TO5.Wires
         }
 
         /// <summary>
+        /// Adds to current boost count (if allowed)
+        /// </summary>
+        /// <param name="amount">Amount to add</param>
+        private void AddBoost(float amount)
+        {
+            if (!m_BoostActive && m_Boost < 100f)
+            {
+                m_Boost = Mathf.Min(100f, m_Boost + amount);
+                if (m_Boost >= 100f)
+                {
+                    if (m_BoostReadyParticles)
+                        m_BoostReadyParticles.Play();
+                }
+            }
+        }
+
+        /// <summary>
         /// Notify that player has collected given packet
         /// </summary>
         private void PacketCollected(DataPacket packet)
         {
             m_Score += m_PacketScore * totalMultiplier;
-
-            // Only give boost when not active
-            if (!m_BoostActive)
-                m_Boost = Mathf.Clamp(m_Boost + m_BoostPerPacket, 0, 100f);
+            AddBoost(m_BoostPerPacket);
 
             PacketExpired(packet);
         }
@@ -609,6 +624,9 @@ namespace TO5.Wires
             if (!m_BoostActive && boostReady)
             {
                 m_BoostActive = true;
+
+                if (m_BoostReadyParticles)
+                    m_BoostReadyParticles.Stop();
 
                 if (OnBoostModeUpdated != null)
                     OnBoostModeUpdated.Invoke(true);
@@ -671,7 +689,6 @@ namespace TO5.Wires
                 if (m_SparkJumper && m_SparkJumper.m_Companion)
                     m_MultiplierParticles.transform.position = m_SparkJumper.m_Companion.transform.position;
 
-                m_MultiplierParticles.gameObject.SetActive(true);
                 m_MultiplierParticles.Play(true);
             }
         }

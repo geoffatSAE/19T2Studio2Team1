@@ -25,7 +25,8 @@ namespace TO5.Wires
         public Vector3 m_OffScale = new Vector3(0.5f, 0.5f, 0.5f);          // Scale to use when off
         [Min(0.1f)] public float m_RotationTime = 0.5f;                     // Time it takes for spark to rotate   
         [SerializeField] private Renderer m_Renderer;                       // Sparks renderer
-        public AudioClip m_SelectedSound;                                   // Sound to play when selected
+        public AudioClip m_OnSelectedSound;                                 // Sound to play when selected while on
+        public AudioClip m_OffSelectedSound;                                // Sound to play when selected while off
 
         private Wire m_Wire;                        // Wire this spark is on
         private bool m_CanJumpTo = true;            // If player can jump to this spark
@@ -77,7 +78,7 @@ namespace TO5.Wires
             m_Wire = wire;
             transform.position = wire.transform.position;
             m_OnTargetScale = m_OnScale;
-            m_Collider.enabled = m_CanJumpTo;
+            m_Collider.enabled = true;// m_CanJumpTo;
 
             StartCoroutine(RotateRoutine());
         }
@@ -164,7 +165,7 @@ namespace TO5.Wires
                 m_IsSwitching = true;
 
                 m_CanJumpTo = !m_CanJumpTo;
-                m_Collider.enabled = m_CanJumpTo;               
+                //m_Collider.enabled = m_CanJumpTo;               
 
                 // Blend between on and off
                 {
@@ -233,14 +234,21 @@ namespace TO5.Wires
         // IInteractive Interface
         public bool CanInteract(SparkJumper jumper)
         {
-            return m_CanJumpTo;
+            return true;
         }
 
         // IInteractive Interface
         public void OnInteract(SparkJumper jumper)
         {
-            jumper.JumpToSpark(this);
-            jumper.PlaySelectionSound(m_SelectedSound);
+            if (m_CanJumpTo)
+            {
+                jumper.JumpToSpark(this);
+                jumper.PlaySelectionSound(m_OnSelectedSound);
+            }
+            else
+            {
+                jumper.PlaySelectionSound(m_OffSelectedSound);
+            }
         }
     }
 }

@@ -334,6 +334,9 @@ MonoBehaviour:
   m_SparkJumper: {fileID: 0}
   m_SparkPrefab: {fileID: 7764608039323799731, guid: 630a43b9f7b365f4db327f062cc13540,
     type: 3}
+  m_SparkSpawnSound: {fileID: 8300000, guid: 2f9b0d5cf9320d24d965a524d29f5211, type: 3}
+  m_SparkDespawnSound: {fileID: 8300000, guid: f3b811549a050574fb9ddee486593c0c, type: 3}
+  m_SpawnSoundGroup: {fileID: 0}
   m_InitialSegments: 20
   m_WireAnimator: {fileID: 0}
   m_Factories:
@@ -579,4 +582,5 @@ MonoBehaviour:
   m_BoostDepletionRate: 15
   m_BoostMultiplier: 2
   m_BoostPerPacket: 5
+  m_BoostReadyParticles: {fileID: 0}
   m_DebugText: {fileID: 0}

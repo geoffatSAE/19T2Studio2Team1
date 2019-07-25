@@ -44,13 +44,14 @@ namespace TO5.Wires
             AudioSource activeSource = m_Source1Active ? m_MusicSource1 : m_MusicSource2;
             activeSource.enabled = true;
 
-            float time = Mathf.Repeat(activeSource.time, audioClip.length);
+            // Not all clips are expected to be the same length
+            float progess = activeSource.clip ? activeSource.time / activeSource.clip.length : 0f;
 
             activeSource.clip = audioClip;
             activeSource.volume = 1f;
 
-            activeSource.Play();
-            activeSource.time = time;
+            activeSource.time = audioClip.length * progess;
+            activeSource.Play();            
         }
 
         /// <summary>
@@ -74,9 +75,12 @@ namespace TO5.Wires
             activeSource.clip = audioClip;
             activeSource.volume = 0f;
             fadingSource.volume = 1f;
- 
-            activeSource.Play();
-            activeSource.time = Mathf.Repeat(fadingSource.time, audioClip.length);
+
+            // Not all clips are expected to be the same length
+            float progress = fadingSource.clip ? fadingSource.time / fadingSource.clip.length : 0f;
+
+            activeSource.time = audioClip.length * progress;
+            activeSource.Play();                
 
             m_Source1Active = !m_Source1Active;
         }

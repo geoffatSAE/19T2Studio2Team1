@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.Assertions;
 using UnityEngine.UI;
 
@@ -67,7 +68,13 @@ namespace TO5.Wires
         [SerializeField] private SparkJumper m_SparkJumper;      // The players spark jumper
 
         [Header("Sparks")]
-        public Spark m_SparkPrefab;                     // The sparks to use
+        public Spark m_SparkPrefab;                         // The sparks to use
+        public AudioClip m_SparkSpawnSound;                 // Audio clip to play when a spark spawns
+        public AudioClip m_SparkDespawnSound;               // Audio clip to play when a spawn despawns
+        public AudioMixerGroup m_SpawnSoundGroup;           // Mixer group for spark sounds
+
+        private AudioSource m_SparkSpawnAudioSource;        // Audio source to play spark spawn sound
+        private AudioSource m_SparkDespawnAudioSource;      // Audio source to play spark despawn sound
 
         [Header("Wires")]
         [SerializeField] private int m_InitialSegments = 10;            // Segments for initial starting wire
@@ -129,6 +136,9 @@ namespace TO5.Wires
         
         void Awake()
         {
+            m_SparkSpawnAudioSource = CreateSparkAudioSource();
+            m_SparkDespawnAudioSource = CreateSparkAudioSource();
+
             if (m_ScoreManager)
             {
                 m_ScoreManager.Initialize(this);
@@ -512,6 +522,8 @@ namespace TO5.Wires
             if (!m_SparkJumper.spark && !m_SparkJumper.isDrifting)
                 m_SparkJumper.InstantJumpToSpark(spark);
 
+            PlayAudioClip(m_SparkSpawnSound, m_SparkSpawnAudioSource);
+
             return spark;
         }
 
@@ -579,6 +591,8 @@ namespace TO5.Wires
                 {
                     spark.transform.position = disabledSpot;
                     m_Sparks.DeactivateObject(spark);
+
+                    PlayAudioClip(m_SparkDespawnSound, m_SparkDespawnAudioSource);
                 }
             }
         }
@@ -1029,6 +1043,33 @@ namespace TO5.Wires
 
             if (m_SparkJumper)
                 m_SparkJumper.m_JumpTime = m_ActiveWireProperties.m_JumpTime;
+        }
+
+        /// <summary>
+        /// Helper function for creating audio sources for sparks
+        /// </summary>
+        /// <returns>Valid audio source</returns>
+        private AudioSource CreateSparkAudioSource()
+        {
+            AudioSource source = gameObject.AddComponent<AudioSource>();
+            source.outputAudioMixerGroup = m_SpawnSoundGroup;
+
+            return source;
+        }
+
+        /// <summary>
+        /// Plays  audio clip for given source (with random pitch)
+        /// </summary>
+        /// <param name="clip">Clip to play</param>
+        /// <param name="source">Source of clip</param>
+        private void PlayAudioClip(AudioClip clip, AudioSource source)
+        {
+            if (clip && source)
+            {
+                source.clip = clip;
+                source.pitch = Random.Range(0.8f, 1.2f);
+                source.Play();
+            }
         }
 
         void OnDrawGizmos()

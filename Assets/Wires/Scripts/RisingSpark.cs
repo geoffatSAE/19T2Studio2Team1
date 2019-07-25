@@ -22,12 +22,15 @@ namespace TO5.Wires
         [SerializeField] private State m_StartingState;                 // State we start at
         [SerializeField] private State m_EndingState;                   // State we end at
         [SerializeField] private Transform m_OverrideAnchor;            // The transform we move locally too (will use parent by default)
-        public float m_RotationSpeed = 90f;                             // Speed at which to rotate
-        public float m_RotationTime = 0.5f;
-        public bool m_Ease = true;
-
         [SerializeField] private WiresGameMode m_GameMode;              // Game mode to sync with
         [SerializeField] private float m_FallbackDuration = 600f;       // Fallback duration to use if game mode has no set game length
+
+        [Min(0.1f)] public float m_RotationInterval = 1.5f;             // Time for a full rotation
+        public Transform m_RotationOverride;                            // Override transform to rotate
+
+        private float m_RotationTime = 0f;      // Time passed of current rotation
+        private Quaternion m_FromOrientation;   // Orientation to rotate from
+        private Quaternion m_ToOrientation;     // Orientation to rotate to
 
         void Awake()
         {
@@ -41,17 +44,33 @@ namespace TO5.Wires
                 m_GameMode.OnGameStarted += OnGameStart;
             else
                 Debug.LogWarning("Rising spark will not play as no game mode has been provided");
+
+            Transform rotationTransform = m_RotationOverride ? m_RotationOverride : transform;
+            m_FromOrientation = rotationTransform.rotation;
+            m_ToOrientation = Random.rotation;
         }
 
-        void Start()
+        void Update()
         {
-            StartCoroutine(RotateRoutine());
-        }
+            Transform rotationTransform = m_RotationOverride ? m_RotationOverride : transform;
 
-        //void Update()
-        //{
-        //    transform.Rotate(Vector3.up, m_RotationSpeed * Time.deltaTime, Space.Self);
-        //}
+            m_RotationTime += Time.deltaTime;
+            if (m_RotationTime > m_RotationInterval)
+            {
+                m_FromOrientation = rotationTransform.rotation;
+                m_ToOrientation = Random.rotation;
+
+                m_RotationTime = Mathf.Repeat(m_RotationTime, m_RotationInterval);
+            }
+
+            float alpha = m_RotationTime / m_RotationInterval;
+
+            // InOutSine
+            // See: https://easings.net/en
+            float ease = -(Mathf.Cos(Mathf.PI * alpha) - 1f) / 2f;
+
+            rotationTransform.rotation = Quaternion.Slerp(m_FromOrientation, m_ToOrientation, ease);
+        }
 
         /// <summary>
         /// Interpolates transform
@@ -110,33 +129,6 @@ namespace TO5.Wires
         private void OnGameFinished()
         {
             StopCoroutine("RiseRoutine");
-        }
-
-        private float Ease(float alpha)
-        {
-            if (m_Ease)
-                return -(Mathf.Cos(Mathf.PI * alpha) - 1f) / 2f;
-            else
-                return alpha;
-        }
-
-        private IEnumerator RotateRoutine()
-        {
-            while (enabled)
-            {
-                Quaternion from = transform.rotation;
-                Quaternion target = Random.rotation;
-                float end = Time.time + m_RotationTime;
-
-                while (enabled && Time.time <= end)
-                {
-                    // We reverse target and from as alpha is also reversed
-                    float alpha = Mathf.Clamp01((end - Time.time) / m_RotationTime);
-                    transform.rotation = Quaternion.Slerp(target, from, Ease(alpha));
-
-                    yield return null;
-                }
-            }
         }
 
         #if UNITY_EDITOR
