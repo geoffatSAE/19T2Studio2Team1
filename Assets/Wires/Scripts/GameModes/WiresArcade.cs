@@ -11,7 +11,7 @@ namespace TO5.Wires
     public class WiresArcade : WiresGameMode
     {
         [Header("Arcade")]
-        [SerializeField] private float m_GameTime = 480f;       // How long the game lasts for (in seconds)
+        [SerializeField] private float m_ArcadeLength = 480f;       // How long the game lasts for (in seconds)
 
         private Wire m_FinalWire;           // The final wire (exit wire)
 
@@ -26,6 +26,9 @@ namespace TO5.Wires
 
         private bool m_TutorialActive = false;              // If tutorial is active
 
+        // The length of the arcade game mode
+        public float arcadeLength { get { return m_ArcadeLength; } }
+
         #if UNITY_EDITOR
         [Header("Debug")]
         [SerializeField] private Text m_DebugText;      // Text for writing debug data
@@ -34,15 +37,12 @@ namespace TO5.Wires
         #if UNITY_EDITOR
         void Update()
         {
-            if (m_GameStart != -1f)
+            if (m_DebugText)
             {
-                if (m_DebugText)
-                {
-                    int playersSegment = m_WireManager.GetPositionSegment(WireManager.WirePlane * m_WireManager.sparkJumper.wireDistanceTravelled);
+                int playersSegment = m_WireManager.GetPositionSegment(WireManager.WirePlane * m_WireManager.sparkJumper.wireDistanceTravelled);
 
-                    m_DebugText.text = string.Format("Game Time: {0}\nSegments Travelled: {1}\nPlayer SegmentsTravelled: {2}",
-                        Mathf.FloorToInt(Time.time - m_GameStart), m_WireManager.GetJumpersSegment(), playersSegment);        
-                }
+                m_DebugText.text = string.Format("Game Time: {0}\nSegments Travelled: {1}\nPlayer SegmentsTravelled: {2}",
+                    Mathf.FloorToInt(gameTime), m_WireManager.GetJumpersSegment(), playersSegment);
             }
         }
         #endif
@@ -57,13 +57,13 @@ namespace TO5.Wires
 
             if (m_WorldTheme)
                 m_WorldTheme.Initialize(m_WireManager);
-
-            m_GameStart = Time.time;
         }
 
         // WireGameMode interface
         protected override void EndGame()
         {
+            base.EndGame();
+
             StopCoroutine("GameTimerRoutine");
             StartCoroutine(SpawnEndingWireRoutine());
         }
@@ -138,6 +138,11 @@ namespace TO5.Wires
         {
             m_WireManager.StartWires();
             StartCoroutine(GameTimerRoutine());
+
+            m_GameStart = Time.time;
+
+            if (OnGameStarted != null)
+                OnGameStarted.Invoke();
         }
 
         /// <summary>
@@ -157,7 +162,7 @@ namespace TO5.Wires
         /// </summary>
         private IEnumerator GameTimerRoutine()
         {
-            yield return new WaitForSeconds(m_GameTime);
+            yield return new WaitForSeconds(m_ArcadeLength);
             EndGame();
         }
 

@@ -9,11 +9,26 @@ namespace TO5.Wires
     /// </summary>
     public abstract class WiresGameMode : MonoBehaviour
     {
+        /// <summary>
+        /// Delegate for when the game state has changed
+        /// </summary>
+        public delegate void GameStateChanged();
+
+        public GameStateChanged OnGameStarted;          // Event for when game starts
+        public GameStateChanged OnGameFinished;         // Event for when game finishes
+
         [SerializeField] protected WireManager m_WireManager;       // Wire manager to interact with
         [SerializeField] protected WorldTheme m_WorldTheme;         // World theme to interact with
         [SerializeField] private bool m_AutoStart = true;           // If game should auto start
         
         protected float m_GameStart = -1f;          // When the game started
+        protected float m_GameLength = -1f;         // Time game lasted for
+
+        // Time that has passed since starting game
+        public float gameTime { get { return m_GameStart >= 0f ? Time.time - m_GameStart : 0f; } }
+
+        // Length of the played match (-1 if game is still in progress)
+        public float gameLength { get { return m_GameLength; } }
 
         void Start()
         {
@@ -32,13 +47,16 @@ namespace TO5.Wires
         /// </summary>
         protected virtual void StartGame()
         {
+            m_GameStart = Time.time;
+            m_GameLength = -1f;
+
             m_WireManager.StartWires();
 
-            // We initialze theme after starting wires as the first wire needs to be generated
             if (m_WorldTheme)
                 m_WorldTheme.Initialize(m_WireManager);
 
-            m_GameStart = Time.time;
+            if (OnGameStarted != null)
+                OnGameStarted.Invoke();
         }
 
         /// <summary>
@@ -46,7 +64,10 @@ namespace TO5.Wires
         /// </summary>
         protected virtual void EndGame()
         {
-            m_WireManager.StopWires();
+            m_GameLength = gameTime;
+
+            if (OnGameFinished != null)
+                OnGameFinished.Invoke();
         }
 
         /// <summary>
