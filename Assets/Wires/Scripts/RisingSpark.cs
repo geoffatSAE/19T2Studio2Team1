@@ -24,6 +24,7 @@ namespace TO5.Wires
         [SerializeField] private Transform m_OverrideAnchor;            // The transform we move locally too (will use parent by default)
         public float m_RotationSpeed = 90f;                             // Speed at which to rotate
         public float m_RotationTime = 0.5f;
+        public bool m_Ease = true;
 
         [SerializeField] private WiresGameMode m_GameMode;              // Game mode to sync with
         [SerializeField] private float m_FallbackDuration = 600f;       // Fallback duration to use if game mode has no set game length
@@ -111,6 +112,14 @@ namespace TO5.Wires
             StopCoroutine("RiseRoutine");
         }
 
+        private float Ease(float alpha)
+        {
+            if (m_Ease)
+                return -(Mathf.Cos(Mathf.PI * alpha) - 1f) / 2f;
+            else
+                return alpha;
+        }
+
         private IEnumerator RotateRoutine()
         {
             while (enabled)
@@ -123,7 +132,7 @@ namespace TO5.Wires
                 {
                     // We reverse target and from as alpha is also reversed
                     float alpha = Mathf.Clamp01((end - Time.time) / m_RotationTime);
-                    transform.rotation = Quaternion.Slerp(target, from, alpha);
+                    transform.rotation = Quaternion.Slerp(target, from, Ease(alpha));
 
                     yield return null;
                 }
