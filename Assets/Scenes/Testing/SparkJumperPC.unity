@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.3088609, g: 0.0010286657, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.30886096, g: 0.0010286698, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -127,7 +127,7 @@ PrefabInstance:
     - target: {fileID: 2566531738595326909, guid: 8c17724e2584b2848a7d96e6df4ab514,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2566531738595326904, guid: 8c17724e2584b2848a7d96e6df4ab514,
         type: 3}
@@ -182,6 +182,11 @@ PrefabInstance:
     - target: {fileID: 2566531738595326904, guid: 8c17724e2584b2848a7d96e6df4ab514,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2566531738595326907, guid: 8c17724e2584b2848a7d96e6df4ab514,
+        type: 3}
+      propertyPath: playOnAwake
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -695,6 +700,11 @@ PrefabInstance:
       propertyPath: m_PacketProperties.Array.data[5].m_HandicapMultiplierIncreaseInterval
       value: 17
       objectReference: {fileID: 0}
+    - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_PacketProperties.Array.data[5].m_MaxPacketsPerCluster
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095656, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -955,6 +965,12 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8646348428308405756, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
     type: 3}
   m_PrefabInstance: {fileID: 8646348427722513404}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &1934178892 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 2566531738595326907, guid: 8c17724e2584b2848a7d96e6df4ab514,
+    type: 3}
+  m_PrefabInstance: {fileID: 147003016}
   m_PrefabAsset: {fileID: 0}
 --- !u!198 &2001106104 stripped
 ParticleSystem:
@@ -1262,6 +1278,11 @@ PrefabInstance:
       propertyPath: m_ParticleSimulationSpeeds.Array.data[6]
       value: 2.5
       objectReference: {fileID: 0}
+    - target: {fileID: 3395505406176328835, guid: 9a8c4600bb7ba224baddce08e9afd423,
+        type: 3}
+      propertyPath: m_BoostParticles
+      value: 
+      objectReference: {fileID: 1934178892}
     - target: {fileID: 3395505406176328846, guid: 9a8c4600bb7ba224baddce08e9afd423,
         type: 3}
       propertyPath: m_GrayscalePulseSpeed
