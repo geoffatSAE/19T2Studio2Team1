@@ -23,6 +23,7 @@ namespace TO5.Wires
         [SerializeField] private State m_EndingState;                   // State we end at
         [SerializeField] private Transform m_OverrideAnchor;            // The transform we move locally too (will use parent by default)
         public float m_RotationSpeed = 90f;                             // Speed at which to rotate
+        public float m_RotationTime = 0.5f;
 
         [SerializeField] private WiresGameMode m_GameMode;              // Game mode to sync with
         [SerializeField] private float m_FallbackDuration = 600f;       // Fallback duration to use if game mode has no set game length
@@ -41,10 +42,15 @@ namespace TO5.Wires
                 Debug.LogWarning("Rising spark will not play as no game mode has been provided");
         }
 
-        void Update()
+        void Start()
         {
-            transform.Rotate(Vector3.up, m_RotationSpeed * Time.deltaTime, Space.Self);
+            StartCoroutine(RotateRoutine());
         }
+
+        //void Update()
+        //{
+        //    transform.Rotate(Vector3.up, m_RotationSpeed * Time.deltaTime, Space.Self);
+        //}
 
         /// <summary>
         /// Interpolates transform
@@ -103,6 +109,25 @@ namespace TO5.Wires
         private void OnGameFinished()
         {
             StopCoroutine("RiseRoutine");
+        }
+
+        private IEnumerator RotateRoutine()
+        {
+            while (enabled)
+            {
+                Quaternion from = transform.rotation;
+                Quaternion target = Random.rotation;
+                float end = Time.time + m_RotationTime;
+
+                while (enabled && Time.time <= end)
+                {
+                    // We reverse target and from as alpha is also reversed
+                    float alpha = Mathf.Clamp01((end - Time.time) / m_RotationTime);
+                    transform.rotation = Quaternion.Slerp(target, from, alpha);
+
+                    yield return null;
+                }
+            }
         }
 
         #if UNITY_EDITOR
