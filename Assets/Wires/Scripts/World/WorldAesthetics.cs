@@ -22,6 +22,8 @@ namespace TO5.Wires
         [SerializeField] private Transform m_WarningPivot;              // Pivot for the end of wire sign
 
         [SerializeField] private ParticleSystem m_BoostParticles;       // Particle system to play when boost is active
+        public float m_BoostParticlesSpeed = 2f;                        // Speed of boost particles
+        public float m_BoostDissapateSpeed = 15f;                       // Speed at which boost particles disappear (when stopping due to jumping/drifting)
         private bool m_UpdateBoostParticles = false;                    // If boost particles need to be updated
 
         private Wire m_ActiveWire;                              // Wire player is either on or travelling to
@@ -221,7 +223,8 @@ namespace TO5.Wires
         /// Set if particles for boost should be enabled
         /// </summary>
         /// <param name="enable">Enable particles</param>
-        public void SetBoostParticlesEnabled(bool enable)
+        /// <param name="speed">Speed of simulation</param>
+        public void SetBoostParticlesEnabled(bool enable, float speed)
         {
             if (m_UpdateBoostParticles != enable)
             {
@@ -229,17 +232,14 @@ namespace TO5.Wires
 
                 if (m_BoostParticles)
                 {
+                    ParticleSystem.MainModule main = m_BoostParticles.main;
+                    main.simulationSpeed = speed;
+
                     if (m_UpdateBoostParticles)
                     {
                         WireFactory factory = m_ActiveWire.factory;
                         if (!factory)
-                            return;
-
-                        // for now
-                        {
-                            ParticleSystem.MainModule main = m_BoostParticles.main;
-                            main.simulationSpeed = 2f;
-                        }
+                            return;         
 
                         ParticleSystem.TrailModule trails = m_BoostParticles.trails;
                         trails.colorOverLifetime = factory.boostColor;
@@ -248,12 +248,6 @@ namespace TO5.Wires
                     }
                     else
                     {
-                        // for now
-                        {
-                            ParticleSystem.MainModule main = m_BoostParticles.main;
-                            main.simulationSpeed = 15f;
-                        }
-
                         m_BoostParticles.Stop();
                     }
                 }

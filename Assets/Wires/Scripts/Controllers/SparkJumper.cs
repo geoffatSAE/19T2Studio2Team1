@@ -169,6 +169,9 @@ namespace TO5.Wires
         /// <returns>If boost was activated</returns>
         public bool ActivateBoost()
         {
+            if (m_IsDrifting)
+                return false;
+
             if (OnActivateBoost != null)
                 return OnActivateBoost.Invoke();
 

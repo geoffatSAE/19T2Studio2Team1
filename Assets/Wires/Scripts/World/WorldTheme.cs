@@ -17,6 +17,7 @@ namespace TO5.Wires
         private Wire m_CurrentWire;                     // Current wire player is on
 
         private bool m_IsJumping;               // If player is jumping
+        private bool m_IsDrifting;              // If player is drifting
         private int m_MultiplierStage;          // Stage of multiplier
         private bool m_BoostActive;             // If boost is active
 
@@ -35,6 +36,7 @@ namespace TO5.Wires
         {
             m_WireManager = wireManager;
             m_IsJumping = false;
+            m_IsDrifting = false;
             m_MultiplierStage = 0;
             m_BoostActive = false;
 
@@ -77,7 +79,7 @@ namespace TO5.Wires
                     }
                 }
 
-                m_WorldAesthetics.SetBoostParticlesEnabled(m_BoostActive);
+                m_WorldAesthetics.SetBoostParticlesEnabled(m_BoostActive, m_WorldAesthetics.m_BoostParticlesSpeed);
             }
         }
 
@@ -92,7 +94,7 @@ namespace TO5.Wires
             {
                 // Drifting can disable the boost particles even while active
                 if (m_BoostActive)
-                    m_WorldAesthetics.SetBoostParticlesEnabled(true);
+                    m_WorldAesthetics.SetBoostParticlesEnabled(true, m_WorldAesthetics.m_BoostParticlesSpeed);
 
                 StopCoroutine("BlendThemesRoutine");
                 BlendThemes(1f);        
@@ -102,7 +104,7 @@ namespace TO5.Wires
                 m_CurrentWire = spark.GetWire();
 
                 m_WorldAesthetics.SetPendingAethetics(m_CurrentWire);
-                m_WorldAesthetics.SetBoostParticlesEnabled(false);
+                m_WorldAesthetics.SetBoostParticlesEnabled(false, m_WorldAesthetics.m_BoostDissapateSpeed);
 
                 WireFactory factory = m_CurrentWire.factory;
                 if (factory)
@@ -122,12 +124,14 @@ namespace TO5.Wires
         /// <param name="isEnabled"></param>
         private void DriftingUpdated(bool isEnabled)
         {
+            m_IsDrifting = isEnabled;
+
             m_WorldColor.SetGrayscaleEnabled(isEnabled);
 
             if (isEnabled)
             {
                 m_WorldAesthetics.SetWarningSignEnabled(false);
-                m_WorldAesthetics.SetBoostParticlesEnabled(false);
+                m_WorldAesthetics.SetBoostParticlesEnabled(false, m_WorldAesthetics.m_BoostDissapateSpeed);
             }
         }
         
@@ -156,8 +160,8 @@ namespace TO5.Wires
         {
             m_BoostActive = active;
 
-            if (!m_IsJumping)
-                m_WorldAesthetics.SetBoostParticlesEnabled(active);          
+            if (!m_IsJumping && !m_IsDrifting)
+                m_WorldAesthetics.SetBoostParticlesEnabled(active, m_WorldAesthetics.m_BoostParticlesSpeed);          
         }
 
         /// <summary>

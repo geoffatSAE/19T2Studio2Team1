@@ -35,16 +35,17 @@ namespace TO5.Wires
 
         [Header("Multiplier")]
         [SerializeField, Range(0, 32)] private int m_MultiplierStages = 2;      // The amount of stages for the multiplier
-        [SerializeField, Min(1)] private int m_StageLives = 4;                  // Amount of 'lives' player has per stage for multiplier decrease
-        [SerializeField] private int m_StageHandicap = 2;                       // Handicap is applied when lives is less or equal to this
+        [SerializeField, Min(1)] private int m_StageLives = 4;                  // Amount of 'lives' player has per stage before multiplier decrease
+        [SerializeField] private int m_StageHandicap = 2;                       // Handicap is applied when stage resets is less or greater to this
         public AudioSource m_MultiplierAudioSource;                             // Audio source to play multiplier sounds with
         public AudioClip m_MultiplierIncreaseClip;                              // Sound to play when multiplier increases
         public AudioClip m_MultiplierDecreaseClip;                              // Sound to play when multiplier decreases
         public ParticleSystem m_MultiplierIncreaseParticles;                    // Root particle system to all increase particles (longest system should be root)
         public ParticleSystem m_MultiplierDecreaseParticles;                    // Root particle system to all decrease particles (longest system should be root)
 
-        private int m_RemainingLives = 0;                                           // Lives remaining in current stage
-        private ParticleSystem m_MultiplierParticles;                               // Current particle system being played
+        private int m_StageResets = 0;                              // Amount of times current stage has been reset
+        private int m_RemainingLives = 0;                           // Lives remaining in current stage
+        private ParticleSystem m_MultiplierParticles;               // Current particle system being played
 
         [Header("Packets")]
         [SerializeField] private DataPacket m_PacketPrefab;                         // Prefab for data packets
@@ -83,6 +84,9 @@ namespace TO5.Wires
 
         // Total multipler (default * boost)
         public float totalMultiplier { get { return m_Multiplier * (m_BoostActive ? m_BoostMultiplier : 1f); } }
+
+        // Lives remaining before stage decrease
+        public int remainingLives { get { return m_RemainingLives; } }
 
         // If boost is ready
         public bool boostReady { get { return m_Boost >= 100f; } }
@@ -167,7 +171,7 @@ namespace TO5.Wires
             if (m_DebugText)
             {
                 m_DebugText.text = string.Format("Score: {0}\nMultiplier: {1}\nMultiplier Stage: {2}\nPackets Pool Size: {3}\nPackets Active: {4}\nBoost Meter: {5}\nBoost Active: {6}\nRemaining Lives: {7}\nHandicap Active: {8}",
-                    Mathf.FloorToInt(m_Score), m_Multiplier, m_Stage, m_DataPackets.Count, m_DataPackets.activeCount, Mathf.FloorToInt(m_Boost), m_BoostActive, m_RemainingLives, m_RemainingLives <= m_StageHandicap);
+                    Mathf.FloorToInt(m_Score), m_Multiplier, m_Stage, m_DataPackets.Count, m_DataPackets.activeCount, Mathf.FloorToInt(m_Boost), m_BoostActive, m_RemainingLives, m_StageResets >= m_StageHandicap);
             }
             #endif
         }
@@ -211,6 +215,7 @@ namespace TO5.Wires
             {
                 m_Score = 0f;
                 m_Multiplier = 1f;
+                m_StageResets = 0;
                 m_RemainingLives = m_StageLives;
 
                 m_Score = 0;
@@ -280,6 +285,7 @@ namespace TO5.Wires
                 m_Stage = stage;
                 m_Multiplier = 1 << m_Stage;
 
+                m_StageResets = 0;
                 m_RemainingLives = m_StageLives;
 
                 m_ActivePacketProperties = GetPacketProperties(m_Stage);
@@ -302,9 +308,11 @@ namespace TO5.Wires
             if (!m_IsRunning)
                 return false;
 
-            // Multiplier can never decrease while boost is active
-            bool keepStage = m_BoostActive || m_Stage <= 0;
-            m_RemainingLives = Mathf.Max(keepStage ? 1 : 0, m_RemainingLives - 1);
+            ++m_StageResets;
+
+            // No lives are lost while boost is active
+            if (!m_BoostActive)
+                --m_RemainingLives;
 
             if (m_RemainingLives <= 0)
             {
@@ -323,7 +331,8 @@ namespace TO5.Wires
         {
             m_Multiplier = 1f;
             m_Stage = 0;
-            m_RemainingLives = m_StageLives;
+            m_StageResets = 0;
+            m_RemainingLives = m_StageLives;      
         }
 
         /// <summary>
@@ -347,7 +356,7 @@ namespace TO5.Wires
                 float interval = packetProps.m_MultiplierIncreaseInterval;
 
                 // Handicap
-                if (m_RemainingLives <= m_StageHandicap)
+                if (m_StageResets >= m_StageHandicap)
                     interval = packetProps.m_HandicapMultiplierIncreaseInterval;
 
                 yield return new WaitForSeconds(interval);
