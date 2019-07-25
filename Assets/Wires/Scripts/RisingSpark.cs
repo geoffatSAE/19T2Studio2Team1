@@ -22,6 +22,7 @@ namespace TO5.Wires
         [SerializeField] private State m_StartingState;                 // State we start at
         [SerializeField] private State m_EndingState;                   // State we end at
         [SerializeField] private Transform m_OverrideAnchor;            // The transform we move locally too (will use parent by default)
+        public float m_RotationSpeed = 90f;                             // Speed at which to rotate
 
         [SerializeField] private WiresGameMode m_GameMode;              // Game mode to sync with
         [SerializeField] private float m_FallbackDuration = 600f;       // Fallback duration to use if game mode has no set game length
@@ -39,7 +40,12 @@ namespace TO5.Wires
             else
                 Debug.LogWarning("Rising spark will not play as no game mode has been provided");
         }
-        
+
+        void Update()
+        {
+            transform.Rotate(Vector3.up, m_RotationSpeed * Time.deltaTime, Space.Self);
+        }
+
         /// <summary>
         /// Interpolates transform
         /// </summary>
