@@ -14,6 +14,7 @@ namespace TO5.Wires
         [SerializeField] private ScoreManager m_ScoreManager;       // Games score manager
 
         public string m_ScoreTextFormat = "Score: {0}";         // Formatting for score text ({0} is required, will be replaced by actual score)
+        public string m_MultiplierTextFormat = "X{0}";          // Formatting for multiplier text ({0} is required, will be replaced by actual multiplier)
 
         [SerializeField] private Canvas m_Canvas;               // Canvas for companions HUD
         [SerializeField] private Text m_ScoreText;              // Text block for writing players score
@@ -31,7 +32,7 @@ namespace TO5.Wires
             if (m_ScoreManager)
             {
                 m_ScoreText.text = string.Format(m_ScoreTextFormat, Mathf.FloorToInt(m_ScoreManager.score));
-                m_MultiplierText.text = string.Format("Multiplier: x{0}", m_ScoreManager.totalMultiplier);
+                m_MultiplierText.text = string.Format(m_MultiplierTextFormat, m_ScoreManager.totalMultiplier);
                 m_BoostSlider.value = m_ScoreManager.boost;
             }
         }

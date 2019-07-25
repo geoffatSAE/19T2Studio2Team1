@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace TO5.Wires
 {
+    /// <summary>
+    /// Script for handling the giant spark in the background. Will interpolate based on game length
+    /// </summary>
     public class RisingSpark : MonoBehaviour
     {
         /// <summary>
@@ -36,13 +39,21 @@ namespace TO5.Wires
             else
                 Debug.LogWarning("Rising spark will not play as no game mode has been provided");
         }
-
+        
+        /// <summary>
+        /// Interpolates transform
+        /// </summary>
+        /// <param name="alpha">Alpha of lerp</param>
         private void Interpolate(float alpha)
         {
             transform.localPosition = Vector3.Lerp(m_StartingState.m_Position, m_EndingState.m_Position, alpha);
             transform.localScale = Vector3.Lerp(m_StartingState.m_Scale, m_EndingState.m_Scale, alpha);
         }
 
+        /// <summary>
+        /// Routine for handling the interpolation of transform
+        /// </summary>
+        /// <param name="duration">Duration of rise</param>
         private IEnumerator RiseRoutine(float duration)
         {
             if (duration > 0f)
@@ -60,6 +71,9 @@ namespace TO5.Wires
             Interpolate(1f);
         }
 
+        /// <summary>
+        /// Notify that the game has started
+        /// </summary>
         private void OnGameStart()
         {
             float duration = m_FallbackDuration;
@@ -77,6 +91,9 @@ namespace TO5.Wires
             StartCoroutine(RiseRoutine(duration));
         }
 
+        /// <summary>
+        /// Notify that the game has finished
+        /// </summary>
         private void OnGameFinished()
         {
             StopCoroutine("RiseRoutine");
