@@ -96,7 +96,7 @@ namespace TO5.Wires
             StartCoroutine(JumpRoutine());
 
             if (OnJumpToSpark != null)
-                OnJumpToSpark(m_Spark, false);           
+                OnJumpToSpark(m_Spark, false);
         }
 
         /// <summary>
@@ -169,7 +169,7 @@ namespace TO5.Wires
         /// <returns>If boost was activated</returns>
         public bool ActivateBoost()
         {
-            if (m_IsDrifting)
+            if (m_IsDrifting || !m_JumpingEnabled)
                 return false;
 
             if (OnActivateBoost != null)
@@ -236,13 +236,14 @@ namespace TO5.Wires
                 m_IsJumping = true;
 
                 Vector3 from = GetPosition();
-                float end = Time.time + m_JumpTime;
+                float start = Time.time;
 
-                while (Time.time < end)
+                while (Time.time < start + m_JumpTime)
                 {       
                     // Possibility that spark was deactivated while jumping to it
                     if (m_Spark)
                     {
+                        float end = start + m_JumpTime;
                         float alpha = 1f - Mathf.Clamp01((end - Time.time) / m_JumpTime);
                         Vector3 position = Vector3.Lerp(from, m_Spark.transform.position, alpha);
 
