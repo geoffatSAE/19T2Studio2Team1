@@ -69,12 +69,7 @@ namespace TO5.Wires
 
         [Header("Sparks")]
         public Spark m_SparkPrefab;                         // The sparks to use
-        public AudioClip m_SparkSpawnSound;                 // Audio clip to play when a spark spawns
-        public AudioClip m_SparkDespawnSound;               // Audio clip to play when a spawn despawns
-        public AudioMixerGroup m_SpawnSoundGroup;           // Mixer group for spark sounds
-
-        private AudioSource m_SparkSpawnAudioSource;        // Audio source to play spark spawn sound
-        private AudioSource m_SparkDespawnAudioSource;      // Audio source to play spark despawn sound
+        public AudioSource m_SparkSpawnAudioSource;         // Audio source to play spark spawn sound
 
         [Header("Wires")]
         [SerializeField] private int m_InitialSegments = 10;            // Segments for initial starting wire
@@ -136,9 +131,6 @@ namespace TO5.Wires
         
         void Awake()
         {
-            m_SparkSpawnAudioSource = CreateSparkAudioSource();
-            m_SparkDespawnAudioSource = CreateSparkAudioSource();
-
             if (m_ScoreManager)
             {
                 m_ScoreManager.Initialize(this);
@@ -522,7 +514,7 @@ namespace TO5.Wires
             if (!m_SparkJumper.spark && !m_SparkJumper.isDrifting)
                 m_SparkJumper.InstantJumpToSpark(spark);
 
-            PlayAudioClip(m_SparkSpawnSound, m_SparkSpawnAudioSource);
+            PlayAudioClip(m_SparkSpawnAudioSource, spark.transform.position);
 
             return spark;
         }
@@ -590,9 +582,7 @@ namespace TO5.Wires
                 if (spark)
                 {
                     spark.transform.position = disabledSpot;
-                    m_Sparks.DeactivateObject(spark);
-
-                    PlayAudioClip(m_SparkDespawnSound, m_SparkDespawnAudioSource);
+                    m_Sparks.DeactivateObject(spark);        
                 }
             }
         }
@@ -1046,28 +1036,19 @@ namespace TO5.Wires
         }
 
         /// <summary>
-        /// Helper function for creating audio sources for sparks
+        /// Plays audio source at location (with random pitch)
         /// </summary>
-        /// <returns>Valid audio source</returns>
-        private AudioSource CreateSparkAudioSource()
+        /// <param name="source">Source of audio</param>
+        /// <param name="position">Position of source</param>
+        private void PlayAudioClip(AudioSource source, Vector3 position)
         {
-            AudioSource source = gameObject.AddComponent<AudioSource>();
-            source.outputAudioMixerGroup = m_SpawnSoundGroup;
-
-            return source;
-        }
-
-        /// <summary>
-        /// Plays  audio clip for given source (with random pitch)
-        /// </summary>
-        /// <param name="clip">Clip to play</param>
-        /// <param name="source">Source of clip</param>
-        private void PlayAudioClip(AudioClip clip, AudioSource source)
-        {
-            if (clip && source)
+            if (source)
             {
-                source.clip = clip;
+                source.transform.position = position;
+
                 source.pitch = Random.Range(0.8f, 1.2f);
+                source.time = 0f;
+
                 source.Play();
             }
         }
