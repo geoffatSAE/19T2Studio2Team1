@@ -46,14 +46,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_StartingState:
-    m_Position: {x: 0, y: 400, z: 700}
-    m_Scale: {x: 350, y: 350, z: 350}
+    m_Position: {x: 0, y: 400, z: -100}
+    m_Scale: {x: 100, y: 100, z: 100}
   m_EndingState:
-    m_Position: {x: 0, y: 200, z: 300}
-    m_Scale: {x: 350, y: 350, z: 350}
+    m_Position: {x: 0, y: 400, z: 500}
+    m_Scale: {x: 100, y: 100, z: 100}
   m_OverrideAnchor: {fileID: 5134141384927370640}
   m_GameMode: {fileID: 0}
-  m_FallbackDuration: 600
+  m_FallbackDuration: 30
   m_RotationInterval: 1.5
   m_RotationOverride: {fileID: 5134141384374063775}
 --- !u!1 &5134141384927370643
@@ -94,11 +94,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5134141384661580594}
     m_Modifications:
-    - target: {fileID: 629665655112169775, guid: c555c9465e0d21544b0c1bdc6aadee06,
-        type: 3}
-      propertyPath: m_Name
-      value: P_Spark2
-      objectReference: {fileID: 0}
     - target: {fileID: 629665655112169772, guid: c555c9465e0d21544b0c1bdc6aadee06,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -168,6 +163,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 629665655112169775, guid: c555c9465e0d21544b0c1bdc6aadee06,
+        type: 3}
+      propertyPath: m_Name
+      value: P_Spark2
       objectReference: {fileID: 0}
     - target: {fileID: 629665655112169773, guid: c555c9465e0d21544b0c1bdc6aadee06,
         type: 3}
@@ -359,14 +359,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5134141384661580594}
     m_Modifications:
-    - target: {fileID: 100000, guid: d410ef23520b14a4e9df547e2466899e, type: 3}
-      propertyPath: m_Name
-      value: SparkModel
-      objectReference: {fileID: 0}
     - target: {fileID: 2300000, guid: d410ef23520b14a4e9df547e2466899e, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: ef9bbbb1a74e65946bd225fc9d33c6e1, type: 2}
+    - target: {fileID: 100000, guid: d410ef23520b14a4e9df547e2466899e, type: 3}
+      propertyPath: m_Name
+      value: SparkModel
+      objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: d410ef23520b14a4e9df547e2466899e, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0
