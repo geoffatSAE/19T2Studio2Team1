@@ -48,7 +48,6 @@ namespace TO5.Wires
     /// <summary>
     /// Manager for the wires and sparks that spawn in. Offers event for listeners
     /// </summary>
-    // TODO: Move score manager from here to WiresGameMode
     public class WireManager : MonoBehaviour
     {
         public static Vector3 WirePlane = Vector3.forward;

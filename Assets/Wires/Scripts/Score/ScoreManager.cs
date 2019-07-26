@@ -18,15 +18,24 @@ namespace TO5.Wires
         public delegate void MultiplierStageUpdated(float multiplier, int stage);
 
         /// <summary>
+        /// Delegate to notify a packet has been despawned
+        /// </summary>
+        /// <param name="packet">Packet that despawned</param>
+        /// <param name="wasCollected">If the packet was collected rather than expired</param>
+        public delegate void PacketDespawned(DataPacket packet, bool wasCollected);
+
+        /// <summary>
         /// Delegate to notify when boost has either been activated or depleted
         /// </summary>
         /// <param name="active">If boost mode is active</param>
         public delegate void BoostModeUpdated(bool active);
 
         public MultiplierStageUpdated OnMultiplierUpdated;      // Event for when multiplier has changed
+        public PacketDespawned OnPacketDespawned;               // Event for when a packet despawns
         public BoostModeUpdated OnBoostModeUpdated;             // Event for when boost mode has changed
 
-        private bool m_IsRunning = false;       // If scoring is enabled (including packet generation)
+        private bool m_IsRunning = false;               // If scoring is enabled (including packet generation)
+        private bool m_GeneratingPackets = false;       // If packets are being generated automatically
 
         [Header("Score")]
         [SerializeField] private float m_ScorePerSecond = 1f;           // Score player earns per second
@@ -117,35 +126,37 @@ namespace TO5.Wires
         private Coroutine m_MultiplierTick;             // Coroutine for multipliers tick
         private Coroutine m_PacketSpawn;                // Coroutine for spawning packets
 
-        void Awake()
-        {
-            m_IsRunning = false;
-        }
+        // If tutorial settings should be used
+        public bool tutorialMode { get; private set; }
 
         void Update()
         {
             if (m_IsRunning)
             {
-                m_Score += m_ScorePerSecond * totalMultiplier * Time.deltaTime;
-
-                // Tick boost
-                if (m_SparkJumper)
+                // Scoring and boost are disabled in tutorial mode
+                if (!tutorialMode)
                 {
-                    if (m_BoostActive)
-                    {
-                        m_Boost = Mathf.Max(0, m_Boost - (m_BoostDepletionRate * Time.deltaTime));
-                        m_BoostActive = m_Boost > 0f;
+                    m_Score += m_ScorePerSecond * totalMultiplier * Time.deltaTime;
 
-                        // Was boost just depleted?
-                        if (!m_BoostActive)
-                        {
-                            if (OnBoostModeUpdated != null)
-                                OnBoostModeUpdated.Invoke(false);
-                        }
-                    }
-                    else if (!m_SparkJumper.isDrifting)
+                    // Tick boost
+                    if (m_SparkJumper)
                     {
-                        AddBoost(m_BoostChargeRate * Time.deltaTime);
+                        if (m_BoostActive)
+                        {
+                            m_Boost = Mathf.Max(0, m_Boost - (m_BoostDepletionRate * Time.deltaTime));
+                            m_BoostActive = m_Boost > 0f;
+
+                            // Was boost just depleted?
+                            if (!m_BoostActive)
+                            {
+                                if (OnBoostModeUpdated != null)
+                                    OnBoostModeUpdated.Invoke(false);
+                            }
+                        }
+                        else if (!m_SparkJumper.isDrifting)
+                        {
+                            AddBoost(m_BoostChargeRate * Time.deltaTime);
+                        }
                     }
                 }
 
@@ -158,19 +169,30 @@ namespace TO5.Wires
                         DataPacket packet = m_DataPackets.GetObject(i);
                         packet.TickPacket(step);
                     }
-                }  
+                }
             }
 
             // Move multiplier system
-            if (m_MultiplierParticles && m_MultiplierParticles.IsAlive())
+            if (m_MultiplierParticles && m_MultiplierParticles.IsAlive(true))
             {
                 if (m_SparkJumper && m_SparkJumper.m_Companion)
-                        m_MultiplierParticles.transform.position = m_SparkJumper.m_Companion.transform.position;
+                    m_MultiplierParticles.transform.position = m_SparkJumper.m_Companion.transform.position;
             }
 
             UpdatePacketAudioSource();
 
             #if UNITY_EDITOR
+            // For testing
+            if (m_IsRunning)
+            {
+                if (Input.GetKeyDown(KeyCode.UpArrow))
+                    IncreaseMultiplier();
+                if (Input.GetKeyDown(KeyCode.DownArrow))
+                    DecreaseMultiplier();
+                if (Input.GetKeyDown(KeyCode.F))
+                    AddBoost(100f);
+            }
+
             // Debug text
             if (m_DebugText)
             {
@@ -247,6 +269,8 @@ namespace TO5.Wires
 
             m_IsRunning = false;
         }
+
+        
 
         /// <summary>
         /// Increases the multiplier by amount of stages
@@ -550,6 +574,24 @@ namespace TO5.Wires
         }
 
         /// <summary>
+        /// Deactivates the given packet
+        /// </summary>
+        /// <param name="packet">Packet to deactivate</param>
+        /// <param name="wasCollected">If packet was collected</param>
+        private void DeactivatePacket(DataPacket packet, bool wasCollected)
+        {
+            packet.Deactivate();
+            m_DataPackets.DeactivateObject(packet);
+
+            if (m_DataPackets.activeCount == 0)
+                if (m_PacketAudioSource)
+                    m_PacketAudioSource.Stop();
+
+            if (OnPacketDespawned != null)
+                OnPacketDespawned.Invoke(packet, wasCollected);
+        }
+
+        /// <summary>
         /// Gets packet generation properties for index. Checks if properties exist for
         /// index, either creating a new set or getting best replacement if it doesn't
         /// </summary>
@@ -600,10 +642,13 @@ namespace TO5.Wires
         /// </summary>
         private void PacketCollected(DataPacket packet)
         {
-            m_Score += m_PacketScore * totalMultiplier;
-            AddBoost(m_BoostPerPacket);
+            if (!tutorialMode)
+            {
+                m_Score += m_PacketScore * totalMultiplier;
+                AddBoost(m_BoostPerPacket);
+            }
 
-            PacketExpired(packet);
+            DeactivatePacket(packet, true);
         }
 
         /// <summary>
@@ -611,12 +656,7 @@ namespace TO5.Wires
         /// </summary>
         private void PacketExpired(DataPacket packet)
         {
-            packet.Deactivate();
-            m_DataPackets.DeactivateObject(packet);
-
-            if (m_DataPackets.activeCount == 0)
-                if (m_PacketAudioSource)
-                    m_PacketAudioSource.Stop();
+            DeactivatePacket(packet, false);
         }
 
         /// <summary>
@@ -693,6 +733,7 @@ namespace TO5.Wires
                 if (m_SparkJumper && m_SparkJumper.m_Companion)
                     m_MultiplierParticles.transform.position = m_SparkJumper.m_Companion.transform.position;
 
+                m_MultiplierParticles.gameObject.SetActive(true);
                 m_MultiplierParticles.Play(true);
             }
         }
