@@ -148,8 +148,8 @@ namespace TO5.Wires
         /// <param name="ray">Ray of the trace</param>
         public void TraceWorld(Ray ray)
         {
-            //if (!canJump)
-            //    return;
+            if (!m_JumpingEnabled)
+                return;
 
             RaycastHit hit;
             if (Physics.SphereCast(ray, m_TraceRadius, out hit, Mathf.Infinity, m_InteractiveLayer))

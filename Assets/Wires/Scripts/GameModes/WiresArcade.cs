@@ -10,6 +10,18 @@ namespace TO5.Wires
     /// </summary>
     public class WiresArcade : WiresGameMode
     {
+        /// <summary>
+        /// Steps of the tutorial
+        /// </summary>
+        private enum TutorialStep
+        {
+            None,
+            Jumping,        
+            Packets,         
+            Boost,
+            Defective
+        }
+
         [Header("Arcade")]
         [SerializeField] private float m_ArcadeLength = 480f;       // How long the game lasts for (in seconds)
 
@@ -21,10 +33,16 @@ namespace TO5.Wires
         [SerializeField] private int m_TutorialWireSegments = 20;               // Segments per wire in tutorial mode
         [SerializeField] private float m_TutorialWireRadius = 5f;               // Spawn radius of wires in tutorial mode
         [SerializeField] private float m_TutorialSparkSpeed = 1f;               // Spark speed in tutorial mode
+        [SerializeField] private float m_TutorialSparkOnInterval = 2f;          // Interval sparks remain on in tutorial mode
+        [SerializeField] private float m_TutorialSparkOffInterval = 1f;         // Interval sparks remain off in tutorial mode
         [SerializeField] private float m_TutorialJumpTime = 1.5f;               // Jump time in tutorial mode
-        [SerializeField] private Canvas m_TutorialDisplay;                      // HUD to display during tutorial mode
+        [SerializeField] private int m_TutorialPacketOffset = 50;               // Offset from player packets spawn in tutorial mode
+        [SerializeField] private float m_TutorialPacketSpeed = 7.5f;            // Packet speed in tutorial mode
+        [SerializeField] private float m_TutorialPacketLifetime = 15f;          // Lifetime of packets in tutorial mode
+        [SerializeField] private TutorialUI m_TutorialUI;                       // UI to display during tutorial mode
 
-        private bool m_TutorialActive = false;              // If tutorial is active
+        private bool m_TutorialActive = false;                          // If tutorial is active
+        private TutorialStep m_TutorialStep = TutorialStep.None;        // Current step of tutorial
 
         // The length of the arcade game mode
         public float arcadeLength { get { return m_ArcadeLength; } }
@@ -84,26 +102,39 @@ namespace TO5.Wires
             tutorialProps.m_MinSegments = m_TutorialWireSegments;
             tutorialProps.m_MaxSegments = m_TutorialWireSegments;
             tutorialProps.m_SpawnSegmentRange = 0;
-            tutorialProps.m_DefectiveWireChance = 0f;
+            tutorialProps.m_DefectiveWireChance = 1f;                   // We manually control if wires are defective or not
             tutorialProps.m_SparkSpeed = m_TutorialSparkSpeed;
             tutorialProps.m_JumpTime = m_TutorialJumpTime;
 
             if (m_WireManager.StartTutorial(tutorialProps, m_TutorialInitialSegments))
             {
-                // Initial wire to spawn for player (others will spawn if they failed to jump of current one)
-                StartCoroutine(TutorialWireSpawnRoutine());
-
-                if (m_TutorialDisplay)
-                    m_TutorialDisplay.gameObject.SetActive(true);
-
-                SparkJumper sparkJumper = m_WireManager.sparkJumper;             
-                if (sparkJumper.m_Companion)
-                    sparkJumper.m_Companion.SetRenderHUD(false);
-
-                if (sparkJumper.m_ScreenFade)
-                    sparkJumper.m_ScreenFade.FadeIn();
-
                 m_TutorialActive = true;
+                m_TutorialStep = TutorialStep.None;
+
+                // Switch to tutorial UI
+                {
+                    if (m_TutorialUI)
+                    {
+                        m_TutorialUI.StartSlides();
+
+                        if (m_TutorialUI.skipButton)
+                            m_TutorialUI.skipButton.onClick.AddListener(SkipTutorial);
+                    }
+
+                    SparkJumper sparkJumper = m_WireManager.sparkJumper;
+                    if (sparkJumper.m_Companion)
+                        sparkJumper.m_Companion.SetRenderHUD(false);
+
+                    if (sparkJumper.m_ScreenFade)
+                        sparkJumper.m_ScreenFade.FadeIn();
+                }
+
+                NextTutorialStep();
+            }
+            else
+            {
+                // Fallback to normal game
+                StartArcade();
             }
         }
 
@@ -114,17 +145,36 @@ namespace TO5.Wires
         {
             if (m_TutorialActive)
             {
+                StopCoroutine("TutorialWireSpawnRoutine");
+
                 m_WireManager.PlayerJumpedOffWire -= TutorialJumpedOffWire;
 
-                if (m_TutorialDisplay)
-                    m_TutorialDisplay.gameObject.SetActive(false);
+                if (m_WireManager.scoreManager)
+                {
+                    ScoreManager scoreManager = m_WireManager.scoreManager;
+                    scoreManager.OnPacketDespawned -= TutorialPacketDespawned;
+                    scoreManager.OnBoostModeUpdated -= TutorialBoostModeUpdated;
+                }
 
-                SparkJumper sparkJumper = m_WireManager.sparkJumper;
-                if (sparkJumper.m_Companion)
-                    sparkJumper.m_Companion.SetRenderHUD(true);
+                // Switch to game UI
+                {
+                    if (m_TutorialUI)
+                    {
+                        m_TutorialUI.EndSlides();
 
-                if (sparkJumper.m_ScreenFade)
-                    sparkJumper.m_ScreenFade.ClearFade();
+                        if (m_TutorialUI.skipButton)
+                            m_TutorialUI.skipButton.onClick.RemoveListener(SkipTutorial);
+
+                        Destroy(m_TutorialUI);
+                    }
+
+                    SparkJumper sparkJumper = m_WireManager.sparkJumper;
+                    if (sparkJumper.m_Companion)
+                        sparkJumper.m_Companion.SetRenderHUD(true);
+
+                    if (sparkJumper.m_ScreenFade)
+                        sparkJumper.m_ScreenFade.ClearFade();
+                }
 
                 m_TutorialActive = false;
 
@@ -152,10 +202,7 @@ namespace TO5.Wires
         public void SkipTutorial()
         {
             if (m_TutorialActive)
-            {
-                StopCoroutine("TutorialWireSpawnRoutine");
                 EndTutorial();
-            }
         }
 
         /// <summary>
@@ -168,12 +215,31 @@ namespace TO5.Wires
         }
 
         /// <summary>
-        /// Routine for generating initial wire player can jump to
+        /// Routine for generating delayed wires during the tutorial
         /// </summary>
-        private IEnumerator TutorialWireSpawnRoutine()
+        private IEnumerator TutorialWireSpawnRoutine(Wire wire)
         {
-            yield return new WaitForSegment(m_WireManager, m_TutorialWireSegments / 2);
-            m_WireManager.GenerateRandomWire(true);
+            if (!wire)
+                yield break;
+
+            while (m_TutorialActive)
+            {
+                if (wire.sparkProgress > 0.5f)
+                {
+                    bool defective = m_TutorialStep == TutorialStep.Defective;
+
+                    // Repeat until a wire is spawned
+                    Wire newWire = m_WireManager.GenerateRandomFixedWire(m_TutorialWireSegments, true, defective);
+                    while (!newWire)
+                        newWire = m_WireManager.GenerateRandomFixedWire(m_TutorialWireSegments, true, defective);
+
+                    yield break;
+                }
+                else
+                {
+                    yield return null;
+                }
+            }
         }
 
         /// <summary>
@@ -196,9 +262,8 @@ namespace TO5.Wires
 
             m_WireManager.SetWireGenerationEnabled(false);
 
-            // TODO: Disable packet generation
-            // if (m_WireManager.scoreManager)
-            //    m_WireManager.scoreManager
+            if (m_WireManager.scoreManager)
+                m_WireManager.scoreManager.SetPacketGenerationEnabled(false);
         }
 
         /// <summary>
@@ -218,12 +283,13 @@ namespace TO5.Wires
                 // TODO: Display score and whatnot
             }
 
-            yield return new WaitForSeconds(5f);
+            yield return new WaitForSeconds(10f);
 
             if (sparkJumper && sparkJumper.m_ScreenFade)
             {
                 ScreenFade screenFade = sparkJumper.m_ScreenFade;
                 screenFade.OnFadeFinished += FinaleFadeFinished;
+                screenFade.m_FadeColor = Color.white;
                 screenFade.FadeOut();
             }
             else
@@ -237,13 +303,53 @@ namespace TO5.Wires
         /// <summary>
         /// Notify that player has jumped off a wire during the tutorial
         /// </summary>
+        /// <param name="wire">Wire player is jumping to</param>
         /// <param name="failed">If player failed to jump off wire</param>
-        private void TutorialJumpedOffWire(bool failed)
+        private void TutorialJumpedOffWire(Wire wire, bool failed)
         {
             if (!failed)
+            {
+                if (m_TutorialStep == TutorialStep.Jumping || m_TutorialStep == TutorialStep.Defective)
+                    NextTutorialStep();
+            }
+
+            // Don't spawn if tutorial is over
+            if (m_TutorialActive)
+                StartCoroutine(TutorialWireSpawnRoutine(wire));
+        }
+
+        /// <summary>
+        /// Notify that a packet had despawned during tutorial mode
+        /// </summary>
+        /// <param name="packet"></param>
+        /// <param name="wasCollected"></param>
+        private void TutorialPacketDespawned(DataPacket packet, bool wasCollected)
+        {
+            ScoreManager scoreManager = m_WireManager.scoreManager;
+            if (!scoreManager)
                 EndTutorial();
+
+            if (wasCollected)
+            {
+                NextTutorialStep();
+            }
             else
-                m_WireManager.GenerateRandomWire(true);
+            {
+                // Repeat until a packet is spawned
+                DataPacket newPacket = scoreManager.GenerateRandomPacket(false);
+                while (!newPacket)
+                    newPacket = scoreManager.GenerateRandomPacket(false);
+            }
+        }
+
+        /// <summary>
+        /// Notify that boost mode has been updated
+        /// </summary>
+        /// <param name="active">If boost is now updated</param>
+        private void TutorialBoostModeUpdated(bool active)
+        {
+            if (!active)
+                NextTutorialStep();
         }
 
         /// <summary>
@@ -263,8 +369,126 @@ namespace TO5.Wires
         /// <param name="endAlpha">Last alpha of screen fade</param>
         private void FinaleFadeFinished(float endAlpha)
         {
+            // @Liminal: This is the last function that executes (after finale and fading out)
+            // You can put whatever you wish here
+
             // for now
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+
+        /// <summary>
+        /// Starts next step of tutorial
+        /// </summary>
+        private void NextTutorialStep()
+        {
+            if (m_TutorialActive)
+            {
+                switch (m_TutorialStep)
+                {
+                    case TutorialStep.None:
+                        StartJumpingTutorial();
+                        break;
+
+                    case TutorialStep.Jumping:
+                        StartPacketTutorial();
+                        break;
+
+                    case TutorialStep.Packets:
+                        StartBoostTutorial();
+                        break;
+
+                    case TutorialStep.Boost:
+                        StartDefectiveTutorial();
+                        break;
+
+                    case TutorialStep.Defective:
+                        EndTutorial();
+                        break;
+                }
+            }
+
+            if (m_TutorialUI)
+                m_TutorialUI.NextSlide();
+        }
+
+        /// <summary>
+        /// Starts the jumping section of the tutorial
+        /// </summary>
+        private void StartJumpingTutorial()
+        {
+            m_TutorialStep = TutorialStep.Jumping;
+
+            // Initial wire to spawn for player (others will spawn if they failed to jump of current one)
+            Wire wire = m_WireManager.sparkJumper.wire;
+            StartCoroutine(TutorialWireSpawnRoutine(wire));
+        }
+
+        /// <summary>
+        /// Starts the packet section of the tutorial
+        /// </summary>
+        private void StartPacketTutorial()
+        {
+            m_TutorialStep = TutorialStep.Packets;
+
+            if (m_WireManager.scoreManager)
+            {
+                ScoreManager scoreManager = m_WireManager.scoreManager;
+
+                // Custom properties (we can ignore intervals as we will handle it)
+                PacketStageProperties tutorialProps = new PacketStageProperties();
+                tutorialProps.m_MinSpawnOffset = m_TutorialPacketOffset;
+                tutorialProps.m_MinSpeed = m_TutorialPacketSpeed;
+                tutorialProps.m_MaxSpeed = m_TutorialPacketSpeed;
+                tutorialProps.m_Lifetime = m_TutorialPacketLifetime;
+                tutorialProps.m_ClusterChance = 0f;
+
+                scoreManager.EnableTutorial(tutorialProps);
+                scoreManager.OnPacketDespawned += TutorialPacketDespawned;
+
+                DataPacket newPacket = scoreManager.GenerateRandomPacket(false);
+                while (!newPacket)
+                    newPacket = scoreManager.GenerateRandomPacket(false);
+            }
+            else
+            {
+                // We can't progress onto next tutorial
+                EndTutorial();
+            }
+        }
+
+        /// <summary>
+        /// Starts the boost section of the tutorial
+        /// </summary>
+        private void StartBoostTutorial()
+        {
+            m_TutorialStep = TutorialStep.Boost;
+
+            if (m_WireManager.scoreManager)
+            {
+                ScoreManager scoreManager = m_WireManager.scoreManager;
+                scoreManager.OnPacketDespawned -= TutorialPacketDespawned;
+                scoreManager.OnBoostModeUpdated += TutorialBoostModeUpdated;
+
+                scoreManager.SetPacketGenerationEnabled(false);
+                scoreManager.AddBoost(100f);
+            }
+            else
+            {
+                // We can't progress onto next tutorial
+                EndTutorial();
+            }
+        }
+
+        /// <summary>
+        /// Starts the defective section of the tutorial
+        /// </summary>
+        private void StartDefectiveTutorial()
+        {
+            m_TutorialStep = TutorialStep.Defective;
+
+            ScoreManager scoreManager = m_WireManager.scoreManager;
+            if (scoreManager)
+                scoreManager.OnBoostModeUpdated -= TutorialBoostModeUpdated;
         }
     }
 }

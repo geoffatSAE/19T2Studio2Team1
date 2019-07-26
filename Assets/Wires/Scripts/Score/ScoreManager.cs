@@ -133,30 +133,26 @@ namespace TO5.Wires
         {
             if (m_IsRunning)
             {
-                // Scoring and boost are disabled in tutorial mode
-                if (!tutorialMode)
+                AddScore(m_ScorePerSecond * Time.deltaTime);
+
+                // Tick boost
+                if (m_SparkJumper)
                 {
-                    m_Score += m_ScorePerSecond * totalMultiplier * Time.deltaTime;
-
-                    // Tick boost
-                    if (m_SparkJumper)
+                    if (m_BoostActive)
                     {
-                        if (m_BoostActive)
-                        {
-                            m_Boost = Mathf.Max(0, m_Boost - (m_BoostDepletionRate * Time.deltaTime));
-                            m_BoostActive = m_Boost > 0f;
+                        m_Boost = Mathf.Max(0, m_Boost - (m_BoostDepletionRate * Time.deltaTime));
+                        m_BoostActive = m_Boost > 0f;
 
-                            // Was boost just depleted?
-                            if (!m_BoostActive)
-                            {
-                                if (OnBoostModeUpdated != null)
-                                    OnBoostModeUpdated.Invoke(false);
-                            }
-                        }
-                        else if (!m_SparkJumper.isDrifting)
+                        // Was boost just depleted?
+                        if (!m_BoostActive)
                         {
-                            AddBoost(m_BoostChargeRate * Time.deltaTime);
+                            if (OnBoostModeUpdated != null)
+                                OnBoostModeUpdated.Invoke(false);
                         }
+                    }
+                    else if (!m_SparkJumper.isDrifting && !tutorialMode)
+                    {
+                        AddBoost(m_BoostChargeRate * Time.deltaTime);
                     }
                 }
 
@@ -227,31 +223,60 @@ namespace TO5.Wires
         }
 
         /// <summary>
+        /// Enables partial scoring functionality (for tutorial purposes)
+        /// </summary>
+        /// <param name="packetProps">Packet properties to use for tutorial mode</param>
+        public void EnableTutorial(PacketStageProperties packetProps)
+        {
+            if (!m_IsRunning)
+            {
+                m_ActivePacketProperties = packetProps;
+
+                tutorialMode = true;
+                m_IsRunning = true;
+            }
+        }
+
+        /// <summary>
         /// Enables scoring functionality
         /// </summary>
         /// <param name="reset">If properties should reset</param>
         public void EnableScoring(bool reset)
         {
-            if (m_IsRunning)
+            if (m_IsRunning && !tutorialMode)
                 return;
 
             m_IsRunning = true;
+            tutorialMode = false;
 
             if (reset)
             {
                 m_Score = 0f;
                 m_Multiplier = 1f;
+                m_Stage = 0;
                 m_StageResets = 0;
                 m_RemainingLives = m_StageLives;
 
-                m_Score = 0;
+                m_ActivePacketProperties = GetPacketProperties(m_Stage);
 
                 m_Boost = 0f;
                 m_BoostActive = false;
+
+                if (m_BoostReadyParticles)
+                    m_BoostReadyParticles.Stop();
+
+                // Need to notify listeners of changes
+                {
+                    if (OnMultiplierUpdated != null)
+                        OnMultiplierUpdated.Invoke(m_Multiplier, m_Stage);
+
+                    if (OnBoostModeUpdated != null)
+                        OnBoostModeUpdated.Invoke(false);
+                }
             }
 
             m_MultiplierTick = StartCoroutine(MultiplierTickRoutine());
-            m_PacketSpawn = StartCoroutine(PacketSpawnRoutine());
+            SetPacketGenerationEnabled(true);
         }
 
         /// <summary>
@@ -262,15 +287,37 @@ namespace TO5.Wires
             if (!m_IsRunning)
                 return;
 
+            SetPacketGenerationEnabled(false);
+
             StopCoroutine(m_MultiplierTick);
-            StopCoroutine(m_PacketSpawn);
             m_MultiplierTick = null;
             m_PacketSpawn = null;
 
             m_IsRunning = false;
+            tutorialMode = false;
         }
 
-        
+        /// <summary>
+        /// Set if automatic packet generation is enabled
+        /// </summary>
+        /// <param name="enable">If to enable</param>
+        public void SetPacketGenerationEnabled(bool enable)
+        {
+            if (!tutorialMode && m_GeneratingPackets != enable)
+            {
+                m_GeneratingPackets = enable;
+
+                if (m_GeneratingPackets)
+                {
+                    m_PacketSpawn = StartCoroutine(PacketSpawnRoutine());
+                }
+                else
+                {
+                    StopCoroutine(m_PacketSpawn);
+                    m_PacketSpawn = null;
+                }
+            }
+        }
 
         /// <summary>
         /// Increases the multiplier by amount of stages
@@ -278,7 +325,7 @@ namespace TO5.Wires
         /// <param name="stages">Stages to increase by</param>
         public void IncreaseMultiplier(int stages = 1)
         {
-            if (m_IsRunning)
+            if (m_IsRunning && !tutorialMode)
                 if (SetMultiplierStage(m_Stage + stages))
                     PlayMultiplierAesthetics(true);
         }
@@ -289,7 +336,7 @@ namespace TO5.Wires
         /// <param name="stages"></param>
         public void DecreaseMultiplier(int stages = 1)
         {
-            if (!m_IsRunning)
+            if (!m_IsRunning || tutorialMode)
                 return;
 
             if (SetMultiplierStage(m_Stage - stages))
@@ -364,12 +411,21 @@ namespace TO5.Wires
         }
 
         /// <summary>
+        /// Adds amount scaled by total multiplier to current score
+        /// </summary>
+        /// <param name="amount">Amount to add</param>
+        public void AddScore(float amount)
+        {
+            if (m_IsRunning && !tutorialMode)
+                m_Score += amount * totalMultiplier;
+        }
+
+        /// <summary>
         /// Adds jump points to players score
         /// </summary>
         public void AwardJumpPoints()
         {
-            if (m_IsRunning)
-                m_Score += m_JumpScore * totalMultiplier;
+            AddScore(m_JumpScore * totalMultiplier);
         }
 
         /// <summary>
@@ -378,7 +434,7 @@ namespace TO5.Wires
         /// <returns></returns>
         private IEnumerator MultiplierTickRoutine()
         {
-            while (m_IsRunning)
+            while (m_IsRunning && !tutorialMode)
             {
                 PacketStageProperties packetProps = GetStagePacketProperties();
                 float interval = packetProps.m_MultiplierIncreaseInterval;
@@ -401,7 +457,7 @@ namespace TO5.Wires
         /// </summary>
         /// <param name="tryCluster">If a cluster of packets can possibly be spawned</param>
         /// <returns>Packet or null</returns>
-        private DataPacket GenerateRandomPacket(bool tryCluster)
+        public DataPacket GenerateRandomPacket(bool tryCluster)
         {
             PacketStageProperties packetProps = GetStagePacketProperties();
 
@@ -462,7 +518,7 @@ namespace TO5.Wires
         /// <param name="speed">Speed of the packet</param>
         /// <param name="lifetime">Lifetime of the packet</param>
         /// <returns>Packet or null</returns>
-        private DataPacket GeneratePacket(Vector3 position, float speed, float lifetime)
+        public DataPacket GeneratePacket(Vector3 position, float speed, float lifetime)
         {
             if (lifetime <= 0f)
                 return null;
@@ -624,7 +680,7 @@ namespace TO5.Wires
         /// Adds to current boost count (if allowed)
         /// </summary>
         /// <param name="amount">Amount to add</param>
-        private void AddBoost(float amount)
+        public void AddBoost(float amount)
         {
             if (!m_BoostActive && m_Boost < 100f)
             {
@@ -642,11 +698,8 @@ namespace TO5.Wires
         /// </summary>
         private void PacketCollected(DataPacket packet)
         {
-            if (!tutorialMode)
-            {
-                m_Score += m_PacketScore * totalMultiplier;
-                AddBoost(m_BoostPerPacket);
-            }
+            AddScore(m_PacketScore);
+            AddBoost(m_BoostPerPacket);
 
             DeactivatePacket(packet, true);
         }

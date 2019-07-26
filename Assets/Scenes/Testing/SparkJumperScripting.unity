@@ -133,12 +133,6 @@ MonoBehaviour:
   m_FadeTime: 2
   m_FadeColor: {r: 0, g: 0, b: 0, a: 1}
   m_FadeAudio: 1
---- !u!223 &291607679 stripped
-Canvas:
-  m_CorrespondingSourceObject: {fileID: 4188151413034487832, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
-    type: 3}
-  m_PrefabInstance: {fileID: 8646348427722513404}
-  m_PrefabAsset: {fileID: 0}
 --- !u!198 &356797985 stripped
 ParticleSystem:
   m_CorrespondingSourceObject: {fileID: 5108084396032772484, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
@@ -411,6 +405,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1384009257}
   m_CullTransparentMesh: 0
+--- !u!114 &1439473702 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7608203177998312396, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
+    type: 3}
+  m_PrefabInstance: {fileID: 8646348427722513404}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 457830bdfcebae94f8292dc0b5852328, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1444838667
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -496,12 +502,12 @@ PrefabInstance:
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_BoostChargeRate
-      value: 100
+      value: 0.83
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_MultiplierStages
-      value: 0
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
@@ -1795,7 +1801,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_TutorialDisplay
       value: 
-      objectReference: {fileID: 291607679}
+      objectReference: {fileID: 0}
     - target: {fileID: 3395505406176328842, guid: 9a8c4600bb7ba224baddce08e9afd423,
         type: 3}
       propertyPath: m_DebugText
@@ -1816,6 +1822,11 @@ PrefabInstance:
       propertyPath: m_ArcadeLength
       value: 60
       objectReference: {fileID: 0}
+    - target: {fileID: 3395505406176328842, guid: 9a8c4600bb7ba224baddce08e9afd423,
+        type: 3}
+      propertyPath: m_TutorialUI
+      value: 
+      objectReference: {fileID: 1439473702}
     - target: {fileID: 3395505406176328845, guid: 9a8c4600bb7ba224baddce08e9afd423,
         type: 3}
       propertyPath: m_LocalPosition.x

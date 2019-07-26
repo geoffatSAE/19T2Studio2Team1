@@ -56,7 +56,7 @@ namespace TO5.Wires
         /// Delegate for when the player has jumped off a wire
         /// </summary>
         /// <param name="failed">If player 'failed' to jump (was auto jumped or jumped while drifting)</param>
-        public delegate void JumpedOffWire(bool failed);
+        public delegate void JumpedOffWire(Wire wire, bool failed);
 
         public JumpedOffWire PlayerJumpedOffWire;       // Event for when player has jumped off a wire
         private bool m_IsRunning = false;               // If wires are being ticked
@@ -1004,10 +1004,11 @@ namespace TO5.Wires
                     if (m_ScoreManager && !tutorialMode)
                         m_ScoreManager.EnableScoring(false);
                 }
-                else if (PlayerJumpedOffWire != null)
+
+                if (PlayerJumpedOffWire != null)
                 {
                     // Player jumped off wire while not drifting
-                    PlayerJumpedOffWire.Invoke(m_WireFailed);
+                    PlayerJumpedOffWire.Invoke(spark.GetWire(), m_WireFailed);
                 }
             }
         }
