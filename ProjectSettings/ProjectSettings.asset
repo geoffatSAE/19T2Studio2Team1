@@ -156,6 +156,7 @@ PlayerSettings:
     Android: com.TO5.SparkJumper
     Standalone: com.oculus.UnitySample
     XboxOne: com.oculus.UnitySample
+    iOS: com.oculus.UnitySample
   buildNumber: {}
   AndroidBundleVersionCode: 1
   AndroidMinSdkVersion: 24
@@ -393,6 +394,9 @@ PlayerSettings:
     m_Devices:
     - Oculus
   - m_BuildTarget: XboxOne
+    m_Enabled: 1
+    m_Devices: []
+  - m_BuildTarget: iOS
     m_Enabled: 1
     m_Devices: []
   m_BuildTargetEnableVuforiaSettings: []
