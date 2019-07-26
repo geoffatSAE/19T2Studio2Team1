@@ -62,9 +62,9 @@ MonoBehaviour:
   m_OnSwitchInterval: 2
   m_OffSwitchInterval: 0.5
   m_SwitchBlendDuration: 0.5
-  m_OnColor: {r: 0.9622642, g: 0.92992175, b: 0.6036846, a: 1}
+  m_OnColor: {r: 1, g: 0.93157786, b: 0.2216981, a: 1}
   m_OffColor: {r: 1, g: 0, b: 0, a: 1}
-  m_OnScale: {x: 1, y: 1, z: 1}
+  m_OnScale: {x: 2, y: 2, z: 2}
   m_OffScale: {x: 0.3, y: 0.3, z: 0.3}
   m_RotationTime: 0.15
   m_Renderer: {fileID: 3065728797395294410}
@@ -77,14 +77,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7764608039323799743}
     m_Modifications:
-    - target: {fileID: 100000, guid: d410ef23520b14a4e9df547e2466899e, type: 3}
-      propertyPath: m_Name
-      value: SparkModel
-      objectReference: {fileID: 0}
     - target: {fileID: 2300000, guid: d410ef23520b14a4e9df547e2466899e, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: a1c44975929f6194fa5b13c9b5d9474c, type: 2}
+    - target: {fileID: 100000, guid: d410ef23520b14a4e9df547e2466899e, type: 3}
+      propertyPath: m_Name
+      value: SparkModel
+      objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: d410ef23520b14a4e9df547e2466899e, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0
@@ -129,6 +129,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: d410ef23520b14a4e9df547e2466899e, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: d410ef23520b14a4e9df547e2466899e, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: d410ef23520b14a4e9df547e2466899e, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d410ef23520b14a4e9df547e2466899e, type: 3}
 --- !u!4 &3065728797393001002 stripped
@@ -150,16 +162,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7764608039323799743}
     m_Modifications:
-    - target: {fileID: 3629688899988690982, guid: 3e86119e7ee510d43ad63447fa2e18e6,
-        type: 3}
-      propertyPath: m_Name
-      value: Spark Particle
-      objectReference: {fileID: 0}
-    - target: {fileID: 3629688899988690982, guid: 3e86119e7ee510d43ad63447fa2e18e6,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6386639328395818443, guid: 3e86119e7ee510d43ad63447fa2e18e6,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -214,6 +216,31 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6386639328395818443, guid: 3e86119e7ee510d43ad63447fa2e18e6,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.09675023
+      objectReference: {fileID: 0}
+    - target: {fileID: 6386639328395818443, guid: 3e86119e7ee510d43ad63447fa2e18e6,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.09675023
+      objectReference: {fileID: 0}
+    - target: {fileID: 6386639328395818443, guid: 3e86119e7ee510d43ad63447fa2e18e6,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.09675023
+      objectReference: {fileID: 0}
+    - target: {fileID: 3629688899988690982, guid: 3e86119e7ee510d43ad63447fa2e18e6,
+        type: 3}
+      propertyPath: m_Name
+      value: Spark Particle
+      objectReference: {fileID: 0}
+    - target: {fileID: 3629688899988690982, guid: 3e86119e7ee510d43ad63447fa2e18e6,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6228584958879962053, guid: 3e86119e7ee510d43ad63447fa2e18e6,
         type: 3}
