@@ -25,6 +25,7 @@ namespace TO5.Wires
         [SerializeField] private Transform m_WarningPivot;              // Pivot for the end of wire sign
 
         [Header("Boost")]
+        [SerializeField] private float m_BoostSpeedMultiplier = 1.5f;           // Amount to scale panning and simulation speed when boost is active
         [SerializeField] private ParticleSystem m_BoostActivationParticles;     // Particle system to play when boost is activated
         [SerializeField] private ParticleSystem m_BoostParticles;               // Particle system to play during boost     
         public float m_BoostParticlesSpeed = 2f;                                // Speed of boost particles
@@ -33,6 +34,8 @@ namespace TO5.Wires
 
         private Wire m_ActiveWire;                              // Wire player is either on or travelling to
         private bool m_HaveSwitched = false;                    // If blend has switched (from old to new)
+        private int m_Intensity = 0;                            // Intensity set last
+        private bool m_BoostActive = false;                     // If boost is active
 
         void Awake()
         {
@@ -96,11 +99,13 @@ namespace TO5.Wires
         /// <param name="intensity"></param>
         public void SetIntensity(int intensity)
         {
+            float speedScale = m_BoostActive ? m_BoostSpeedMultiplier : 1f;
+
             if (m_BorderRenderer)
             {
                 if (intensity < m_BorderPanningSpeeds.Length)
                 {
-                    Vector2 speed = m_BorderPanningSpeeds[intensity];
+                    Vector2 speed = m_BorderPanningSpeeds[intensity] * speedScale;
                     m_BorderMaterial.SetVector("_PanningSpeed", new Vector4(speed.x, speed.y, 0f, 0f));
                 }
             }
@@ -109,11 +114,26 @@ namespace TO5.Wires
             {
                 if (intensity < m_ParticleSimulationSpeeds.Length)
                 {
-                    float speed = m_ParticleSimulationSpeeds[intensity];
+                    float speed = m_ParticleSimulationSpeeds[intensity] * speedScale;
 
                     ParticleSystem.MainModule main = m_BorderParticles.main;
                     main.simulationSpeed = speed;
                 }
+            }
+
+            m_Intensity = intensity;
+        }
+
+        /// <summary>
+        /// Set if aesthetics should be boosted
+        /// </summary>
+        /// <param name="active">Activate boosted aesthetics</param>
+        public void SetBoostActive(bool active)
+        {
+            if (m_BoostActive != active)
+            {
+                m_BoostActive = active;
+                SetIntensity(m_Intensity);
             }
         }
 

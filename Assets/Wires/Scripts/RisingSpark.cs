@@ -111,6 +111,8 @@ namespace TO5.Wires
             float duration = m_FallbackDuration;
             if (m_GameMode)
             {
+                m_GameMode.OnGameStarted -= OnGameStart;
+
                 // If we know the games expected length, we can let the routine finish
                 // as is instead of relying on when the game actually ends
                 WiresArcade arcade = m_GameMode as WiresArcade;

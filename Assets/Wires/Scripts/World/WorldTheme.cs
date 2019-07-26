@@ -160,6 +160,8 @@ namespace TO5.Wires
         {
             m_BoostActive = active;
 
+            m_WorldAesthetics.SetBoostActive(active);
+
             if (!m_IsJumping && !m_IsDrifting)
                 m_WorldAesthetics.SetBoostParticlesEnabled(active, m_WorldAesthetics.m_BoostParticlesSpeed);          
         }

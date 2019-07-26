@@ -70,6 +70,7 @@ namespace TO5.Wires
         private int m_PacketSpawnsSinceLastCluster = 0;                                 // Amount of random packets spawn attempts since the last packet cluster
 
         #if UNITY_EDITOR
+        [Header("Debug")]
         [SerializeField] private Text m_DebugText;      // Text for writing debug data
         #endif
 

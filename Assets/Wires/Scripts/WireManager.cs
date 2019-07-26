@@ -68,8 +68,9 @@ namespace TO5.Wires
         [SerializeField] private SparkJumper m_SparkJumper;      // The players spark jumper
 
         [Header("Sparks")]
-        public Spark m_SparkPrefab;                         // The sparks to use
-        public AudioSource m_SparkSpawnAudioSource;         // Audio source to play spark spawn sound
+        public Spark m_SparkPrefab;                                         // The sparks to use
+        [SerializeField] private float m_BoostSpeedMultiplier = 1.25f;      // Multiplier to speed when boost is active
+        public AudioSource m_SparkSpawnAudioSource;                         // Audio source to play spark spawn sound
 
         [Header("Wires")]
         [SerializeField] private int m_InitialSegments = 10;            // Segments for initial starting wire
@@ -158,8 +159,14 @@ namespace TO5.Wires
                 else
                 {
                     // Step is influenced by multiplier stage
-                    float gameSpeed = m_ScoreManager ? m_ScoreManager.multiplierStage + 1 : 1f;
-                    step = wireProps.m_SparkSpeed * gameSpeed * Time.deltaTime;
+                    float gameSpeed = 1f, boostMultiplier = 1f;
+                    if (m_ScoreManager)
+                    {
+                        gameSpeed = m_ScoreManager.multiplierStage + 1;
+                        boostMultiplier = m_ScoreManager.boostActive ? m_BoostSpeedMultiplier : 1f;
+                    }
+
+                    step = wireProps.m_SparkSpeed * gameSpeed * boostMultiplier * Time.deltaTime;
                 }
 
                 for (int i = 0; i < m_Wires.activeCount; ++i)
