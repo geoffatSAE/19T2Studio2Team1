@@ -1,17 +1,18 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace TO5.Wires
 {
     /// <summary>
     /// Properties for how wires and sparks spawn and behave
     /// </summary>
-    [Serializable]
+    [System.Serializable]
     public class WireStageProperties
     {
         public float m_InnerSpawnRadius = 5f;                           // Inner radius of spawn circle (wires do not spawn inside this radius)
         public float m_OuterSpawnRadius = 20f;                          // Outer radius of spawn circle (wires do not spawn outside this radius)
         [Range(0, 1)] public float m_BottomCircleCutoff = 0.7f;         // Cutoff from bottom of spawn circle (no wires will spawn in cutoff)
+        [Range(0, 1)] public float m_TopCircleCutoff = 1f;              // Cutoff from top of spawn circle (no wires will spawn in cutoff)
         public int m_MaxWiresAtOnce = 5;                                // Max wires that can be active at once
         public int m_MinSegments = 8;                                   // Min segments per wire
         public int m_MaxSegments = 12;                                  // Max segments per wire
@@ -35,7 +36,7 @@ namespace TO5.Wires
     /// <summary>
     /// Properties for how data packets spawn and behave
     /// </summary>
-    [Serializable]
+    [System.Serializable]
     public class PacketStageProperties
     {
         public int m_MinSpawnOffset = 20;                               // Min segments in front of player to spawn
@@ -55,6 +56,124 @@ namespace TO5.Wires
 
         public float m_MultiplierIncreaseInterval = 15f;                // Time to reach next stage   
         public float m_HandicapMultiplierIncreaseInterval = 10f;        // Time to reach next stage after failing X times
-        [Obsolete] public int m_ResetsTillHandicap = 3;                 // Resets until handicap interval is used
     }
+
+    /// <summary>
+    /// Helper functions used by Wires
+    /// </summary>
+    struct Wires
+    {
+        private static float CutoffThreshold;       // Threshold for where random offset is most likely to loop for too long
+
+        /// <summary>
+        /// Generates a random offset of a circle (assuming origin is 0,0)
+        /// </summary>
+        /// <param name="minOffset">Min offset from origin</param>
+        /// <param name="maxOffset">Max offset from origin</param>
+        /// <param name="bottomCutoff">Cutoff from bottom</param>
+        /// <param name="topCutoff">Cutoff from top</param>
+        /// <returns>Random offset</returns>
+        public static Vector2 GetRandomCircleOffset(float minOffset, float maxOffset, float bottomCutoff, float topCutoff)
+        {
+            // High chance of looping forever
+            if (bottomCutoff <= CutoffThreshold && topCutoff <= CutoffThreshold)
+            {
+                Debug.LogWarning("Cutoffs are too close to zero");
+                return Vector2.right * Random.Range(minOffset, maxOffset);
+            }
+
+            Profiler.BeginSample("GetRandomCircleOffset");
+
+            float rad = Random.Range(0f, Mathf.PI * 2f);
+            Vector2 direction = new Vector2(Mathf.Sin(rad), Mathf.Cos(rad));
+
+            // We can quickly do one check instead of two if both are nearly the same
+            if (Mathf.Approximately(bottomCutoff, topCutoff))
+            {
+                while (Mathf.Abs(Vector2.Dot(direction, Vector2.down)) > bottomCutoff)
+                {
+                    rad = Random.Range(0f, Mathf.PI * 2f);
+                    direction.Set(Mathf.Sin(rad), Mathf.Cos(rad));
+                }
+            }
+            else
+            {
+                while (Vector2.Dot(direction, Vector2.down) > bottomCutoff || Vector2.Dot(direction, Vector2.up) > topCutoff)
+                {
+                    rad = Random.Range(0f, Mathf.PI * 2f);
+                    direction.Set(Mathf.Sin(rad), Mathf.Cos(rad));
+                }
+            }
+
+            Profiler.EndSample();
+
+            return direction * Random.Range(minOffset, maxOffset);
+        }
+
+        #if UNITY_EDITOR
+        /// <summary>
+        /// Helper function for drawing spawning areas for wires and packets
+        /// </summary>
+        /// <param name="innerRadius">Areas inner radius</param>
+        /// <param name="outerRadius">Areas outer radius</param>
+        /// <param name="center">Center of area</param>
+        public static void DrawSpawnArea(float innerRadius, float outerRadius, Vector3 center)
+        {
+            const int segments = 16;
+            const float step = Mathf.PI * 2f / segments;
+            for (int i = 0; i < segments; ++i)
+            {
+                float crad = step * i;
+                float nrad = step * ((i + 1) % segments);
+
+                Vector3 cdir = new Vector3(Mathf.Cos(crad), Mathf.Sin(crad), 0f);
+                Vector3 ndir = new Vector3(Mathf.Cos(nrad), Mathf.Sin(nrad), 0f);
+
+                // Inner border
+                {
+                    Vector3 start = center + cdir * innerRadius;
+                    Vector3 end = center + ndir * innerRadius;
+                    Gizmos.DrawLine(start, end);
+                }
+
+                // Outer border
+                {
+                    Vector3 start = center + cdir * outerRadius;
+                    Vector3 end = center + ndir * outerRadius;
+                    Gizmos.DrawLine(start, end);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Helper function for drawing cutoff for spawning wires and packets
+        /// </summary>
+        /// <param name="cutoff">Cutoff value (between 0 and 1)</param>
+        /// <param name="center">Center of circle</param>
+        /// <param name="radius">Radius of circle</param>
+        /// <param name="bottom">If drawing bottom or top cutoff</param>
+        public static void DrawCutoffGizmo(float cutoff, Vector3 center, float radius, bool bottom)
+        {
+            float cutoffStart = Mathf.PI * (bottom ? 1.5f : 0.5f);
+            float cutoffInverse = 1 - cutoff;
+
+            // Left cutoff line
+            {
+                float rad = cutoffStart - (Mathf.PI * 0.5f * cutoffInverse);
+                Vector3 dir = new Vector3(Mathf.Cos(rad), Mathf.Sin(rad), 0f);
+
+                Gizmos.DrawLine(center, center + dir * radius);
+            }
+
+            // Right cutoff line
+            {
+                float rad = cutoffStart + (Mathf.PI * 0.5f * cutoffInverse);
+                Vector3 dir = new Vector3(Mathf.Cos(rad), Mathf.Sin(rad), 0f);
+
+                Gizmos.DrawLine(center, center + dir * radius);
+            }
+        }
+        #endif
+    }
+
 }

@@ -362,8 +362,10 @@ namespace TO5.Wires
             // We don't want to loop too many times
             int attempts = 0;
             while (++attempts <= maxAttempts)
-            {
-                Vector2 circleOffset = GetRandomSpawnCircleOffset(wireProps.m_InnerSpawnRadius, wireProps.m_OuterSpawnRadius);
+            {  
+                Vector2 circleOffset = Wires.GetRandomCircleOffset(wireProps.m_InnerSpawnRadius, 
+                    wireProps.m_OuterSpawnRadius, wireProps.m_BottomCircleCutoff, wireProps.m_TopCircleCutoff);
+
                 int segmentRange = Random.Range(-wireProps.m_SpawnSegmentRange, wireProps.m_SpawnSegmentRange + 1);
                 int segmentOffset = wireProps.m_SpawnSegmentOffset + segmentRange;
 
@@ -424,7 +426,9 @@ namespace TO5.Wires
             int attempts = 0;
             while (++attempts <= maxAttempts)
             {
-                Vector2 circleOffset = GetRandomSpawnCircleOffset(wireProps.m_InnerSpawnRadius, wireProps.m_OuterSpawnRadius);
+                Vector2 circleOffset = Wires.GetRandomCircleOffset(wireProps.m_InnerSpawnRadius,
+                    wireProps.m_OuterSpawnRadius, wireProps.m_BottomCircleCutoff, wireProps.m_TopCircleCutoff);
+
                 int segmentRange = Random.Range(-wireProps.m_SpawnSegmentRange, wireProps.m_SpawnSegmentRange + 1);
                 int segmentOffset = wireProps.m_SpawnSegmentOffset + segmentRange;
 
@@ -628,28 +632,6 @@ namespace TO5.Wires
             }
 
             return transform.position;
-        }
-
-        /// <summary>
-        /// Generates a random offset within bounds of spawn parameters
-        /// </summary>
-        /// <param name="minOffset">Min offset of random distance</param>
-        /// <returns>Random offset</returns>
-        public Vector2 GetRandomSpawnCircleOffset(float minOffset, float maxOffset)
-        {
-            WireStageProperties wireProps = GetStageWireProperties();
-
-            float rad = Random.Range(0f, Mathf.PI * 2f);
-            Vector2 direction = new Vector2(Mathf.Sin(rad), Mathf.Cos(rad));
-
-            // This has a super teeny tiny chance of looping forever
-            while (Vector2.Dot(direction, Vector2.down) > wireProps.m_BottomCircleCutoff)
-            {
-                rad = Random.Range(0f, Mathf.PI * 2f);
-                direction.Set(Mathf.Sin(rad), Mathf.Cos(rad));
-            }
-   
-            return direction * Random.Range(minOffset, maxOffset);
         }
 
         /// <summary>
@@ -1071,56 +1053,15 @@ namespace TO5.Wires
                 if (wireProps != null)
                 {
                     Gizmos.color = Color.green;
-
-                    const int segments = 16;
-                    const float step = Mathf.PI * 2f / segments;
-                    for (int i = 0; i < segments; ++i)
-                    {
-                        float crad = step * i;
-                        float nrad = step * ((i + 1) % segments);
-
-                        Vector3 cdir = new Vector3(Mathf.Cos(crad), Mathf.Sin(crad), 0f);
-                        Vector3 ndir = new Vector3(Mathf.Cos(nrad), Mathf.Sin(nrad), 0f);
-
-                        // Inner border
-                        {
-                            Vector3 start = center + cdir * wireProps.m_InnerSpawnRadius;
-                            Vector3 end = center + ndir * wireProps.m_InnerSpawnRadius;
-                            Gizmos.DrawLine(start, end);
-                        }
-
-                        // Outer border
-                        {
-                            Vector3 start = center + cdir * wireProps.m_OuterSpawnRadius;
-                            Vector3 end = center + ndir * wireProps.m_OuterSpawnRadius;
-                            Gizmos.DrawLine(start, end);
-                        }
-                    }
+                    Wires.DrawSpawnArea(wireProps.m_InnerSpawnRadius, wireProps.m_OuterSpawnRadius, center);
 
                     Gizmos.color = Color.red;
-
-                    const float cutoffStart = Mathf.PI * 1.5f;
-                    float cutoffInverse = 1 - wireProps.m_BottomCircleCutoff;
-
-                    // Left cutoff line
-                    {
-                        float rad = cutoffStart - (Mathf.PI * 0.5f * cutoffInverse);
-                        Vector3 dir = new Vector3(Mathf.Cos(rad), Mathf.Sin(rad), 0f);
-
-                        Gizmos.DrawLine(center, center + dir * wireProps.m_OuterSpawnRadius);
-                    }
-
-                    // Right cutoff line
-                    {
-                        float rad = cutoffStart + (Mathf.PI * 0.5f * cutoffInverse);
-                        Vector3 dir = new Vector3(Mathf.Cos(rad), Mathf.Sin(rad), 0f);
-
-                        Gizmos.DrawLine(center, center + dir * wireProps.m_OuterSpawnRadius);
-                    }
+                    Wires.DrawCutoffGizmo(wireProps.m_BottomCircleCutoff, center, wireProps.m_OuterSpawnRadius, true);
+                    Wires.DrawCutoffGizmo(wireProps.m_TopCircleCutoff, center, wireProps.m_OuterSpawnRadius, false);
 
                     // Draw score systems
                     if (m_ScoreManager)
-                        m_ScoreManager.DrawDebugGizmos(center, wireProps.m_BottomCircleCutoff);
+                        m_ScoreManager.DrawDebugGizmos(center);
                 }
 
                 // Draw Wires

@@ -80,6 +80,7 @@ namespace TO5.Wires
             tutorialProps.m_InnerSpawnRadius = m_TutorialWireRadius;
             tutorialProps.m_OuterSpawnRadius = m_TutorialWireRadius;
             tutorialProps.m_BottomCircleCutoff = 0f;
+            tutorialProps.m_TopCircleCutoff = 0.8f;
             tutorialProps.m_MinSegments = m_TutorialWireSegments;
             tutorialProps.m_MaxSegments = m_TutorialWireSegments;
             tutorialProps.m_SpawnSegmentRange = 0;

@@ -51,7 +51,9 @@ namespace TO5.Wires
         [SerializeField] private DataPacket m_PacketPrefab;                         // Prefab for data packets
         [SerializeField] private float m_PacketSpace = 2f;                          // The space packet should have (avoid overlap)
         [SerializeField] private float m_MinPacketSpawnRadius = 4f;                 // Min radius from active wire packets should spawn
-        [SerializeField] private float m_MaxPacketSpawnRadius = 15f;                // Max radius from active wire packets should spawn                      
+        [SerializeField] private float m_MaxPacketSpawnRadius = 15f;                // Max radius from active wire packets should spawn 
+        [SerializeField, Range(0, 1)] public float m_BottomCircleCutoff = 0.7f;     // Cutoff from bottom of spawn circle (no packets will spawn in cutoff)
+        [SerializeField, Range(0, 1)] public float m_TopCircleCutoff = 1f;          // Cutoff from top of spawn circle (no packets will spawn in cutoff)
         [SerializeField] private PacketStageProperties[] m_PacketProperties;        // Properties for packet behavior for each multiplier stage
 
         public AudioSource m_PacketAudioSource;                                     // Audio source for packets (moves depending on players location)
@@ -404,7 +406,9 @@ namespace TO5.Wires
             int attempts = 0;
             while (++attempts <= maxAttempts)
             {
-                Vector2 circleOffset = m_WireManager.GetRandomSpawnCircleOffset(m_MinPacketSpawnRadius, m_MaxPacketSpawnRadius);
+                Vector2 circleOffset = Wires.GetRandomCircleOffset(m_MinPacketSpawnRadius, 
+                    m_MaxPacketSpawnRadius, m_BottomCircleCutoff, m_TopCircleCutoff);
+
                 position = spawnCenter + new Vector3(circleOffset.x, circleOffset.y, 0f);
 
                 // We expect to spawn far in front of wires
@@ -477,12 +481,11 @@ namespace TO5.Wires
                 int attempts = 0;
                 while (++attempts <= maxAttempts)
                 {
-                    // Offset along plane
                     int randomSegmentOffset = Random.Range(-packetProps.m_ClusterSpawnRange, packetProps.m_ClusterSpawnRange + 1);
                     Vector3 planeOffset = WireManager.WirePlane * (m_WireManager.segmentLength * randomSegmentOffset);
 
-                    // Offset inside circle
-                    Vector2 circleOffset = m_WireManager.GetRandomSpawnCircleOffset(m_MinPacketSpawnRadius, m_MaxPacketSpawnRadius);
+                    Vector2 circleOffset = Wires.GetRandomCircleOffset(m_MinPacketSpawnRadius,
+                        m_MaxPacketSpawnRadius, m_BottomCircleCutoff, m_TopCircleCutoff);
 
                     position = spawnCenter + planeOffset + new Vector3(circleOffset.x, circleOffset.y, 0f);
 
@@ -736,55 +739,14 @@ namespace TO5.Wires
         /// <summary>
         /// Called by wire manager to draw debug gizmos
         /// </summary>
-        public void DrawDebugGizmos(Vector3 center, float cutoff)
+        public void DrawDebugGizmos(Vector3 center)
         {
             Gizmos.color = Color.magenta;
+            Wires.DrawSpawnArea(m_MinPacketSpawnRadius, m_MaxPacketSpawnRadius, center);
 
-            const int segments = 16;
-            const float step = Mathf.PI * 2f / segments;
-            for (int i = 0; i < segments; ++i)
-            {
-                float crad = step * i;
-                float nrad = step * ((i + 1) % segments);
-
-                Vector3 cdir = new Vector3(Mathf.Cos(crad), Mathf.Sin(crad), 0f);
-                Vector3 ndir = new Vector3(Mathf.Cos(nrad), Mathf.Sin(nrad), 0f);
-
-                // Inner border
-                {
-                    Vector3 start = center + cdir * m_MinPacketSpawnRadius;
-                    Vector3 end = center + ndir * m_MinPacketSpawnRadius;
-                    Gizmos.DrawLine(start, end);
-                }
-
-                // Outer border
-                {
-                    Vector3 start = center + cdir * m_MaxPacketSpawnRadius;
-                    Vector3 end = center + ndir * m_MaxPacketSpawnRadius;
-                    Gizmos.DrawLine(start, end);
-                }
-            }
-
-            Gizmos.color = Color.red;
-
-            const float cutoffStart = Mathf.PI * 1.5f;
-            float cutoffInverse = 1 - cutoff;
-
-            // Left cutoff line
-            {
-                float rad = cutoffStart - (Mathf.PI * 0.5f * cutoffInverse);
-                Vector3 dir = new Vector3(Mathf.Cos(rad), Mathf.Sin(rad), 0f);
-
-                Gizmos.DrawLine(center, center + dir * m_MaxPacketSpawnRadius);
-            }
-
-            // Right cutoff line
-            {
-                float rad = cutoffStart + (Mathf.PI * 0.5f * cutoffInverse);
-                Vector3 dir = new Vector3(Mathf.Cos(rad), Mathf.Sin(rad), 0f);
-
-                Gizmos.DrawLine(center, center + dir * m_MaxPacketSpawnRadius);
-            }
+            Gizmos.color = Color.white;
+            Wires.DrawCutoffGizmo(m_BottomCircleCutoff, center, m_MaxPacketSpawnRadius, true);
+            Wires.DrawCutoffGizmo(m_TopCircleCutoff, center, m_MaxPacketSpawnRadius, false);
         }
         #endif
     }
