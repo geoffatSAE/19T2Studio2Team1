@@ -1517,6 +1517,12 @@ Camera:
     type: 3}
   m_PrefabInstance: {fileID: 8646348427722513404}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &1501093633 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8646348427193185105, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
+    type: 3}
+  m_PrefabInstance: {fileID: 8646348427722513404}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1560292121
 GameObject:
   m_ObjectHideFlags: 0
@@ -1914,6 +1920,75 @@ PrefabInstance:
       objectReference: {fileID: 514912847}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9a8c4600bb7ba224baddce08e9afd423, type: 3}
+--- !u!1001 &7056042623828472221
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 1501093633}
+    m_Modifications:
+    - target: {fileID: 7056042624343486687, guid: fc2594087951949439d8a97c6d0184ed,
+        type: 3}
+      propertyPath: m_Name
+      value: FlyingPackets
+      objectReference: {fileID: 0}
+    - target: {fileID: 7056042624343486680, guid: fc2594087951949439d8a97c6d0184ed,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7056042624343486680, guid: fc2594087951949439d8a97c6d0184ed,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7056042624343486680, guid: fc2594087951949439d8a97c6d0184ed,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -250
+      objectReference: {fileID: 0}
+    - target: {fileID: 7056042624343486680, guid: fc2594087951949439d8a97c6d0184ed,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7056042624343486680, guid: fc2594087951949439d8a97c6d0184ed,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7056042624343486680, guid: fc2594087951949439d8a97c6d0184ed,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7056042624343486680, guid: fc2594087951949439d8a97c6d0184ed,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7056042624343486680, guid: fc2594087951949439d8a97c6d0184ed,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7056042624343486680, guid: fc2594087951949439d8a97c6d0184ed,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7056042624343486680, guid: fc2594087951949439d8a97c6d0184ed,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7056042624343486680, guid: fc2594087951949439d8a97c6d0184ed,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: fc2594087951949439d8a97c6d0184ed, type: 3}
 --- !u!1001 &8646348427722513404
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1926,16 +2001,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: SparkJumperPC
       objectReference: {fileID: 0}
-    - target: {fileID: 8646348428308405757, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
-        type: 3}
-      propertyPath: m_ScreenFade
-      value: 
-      objectReference: {fileID: 22814385}
-    - target: {fileID: 4836047251030961452, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
-        type: 3}
-      propertyPath: m_GameMode
-      value: 
-      objectReference: {fileID: 512415689}
     - target: {fileID: 8646348427193185105, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1991,6 +2056,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8646348428308405757, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
+        type: 3}
+      propertyPath: m_ScreenFade
+      value: 
+      objectReference: {fileID: 22814385}
+    - target: {fileID: 4836047251030961452, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
+        type: 3}
+      propertyPath: m_GameMode
+      value: 
+      objectReference: {fileID: 512415689}
     - target: {fileID: 240138024243195650, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
         type: 3}
       propertyPath: m_ScoreManager
