@@ -79,6 +79,6 @@ Material:
     m_Colors:
     - _Color: {r: 1, g: 0.9506, b: 0, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _HighColor: {r: 1, g: 1, b: 1, a: 1}
+    - _HighColor: {r: 0, g: 0.78214496, b: 0.9716981, a: 1}
     - _LowColor: {r: 0.97885394, g: 1, b: 0, a: 1}
     - _PanningSpeed: {r: 50, g: 50, b: 0, a: 0}

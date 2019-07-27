@@ -335,6 +335,7 @@ MonoBehaviour:
   m_SparkJumper: {fileID: 0}
   m_SparkPrefab: {fileID: 7764608039323799731, guid: 630a43b9f7b365f4db327f062cc13540,
     type: 3}
+  m_BoostSpeedMultiplier: 1.25
   m_SparkSpawnAudioSource: {fileID: 8467593056296462756}
   m_InitialSegments: 20
   m_WireAnimator: {fileID: 0}
@@ -348,11 +349,12 @@ MonoBehaviour:
   m_MaxDriftTime: 2.5
   m_WirePrefab: {fileID: 4698685643518956546, guid: 1f8155c3339076843a6198e146cab368,
     type: 3}
-  m_WireSpace: 4
+  m_WireSpace: 2.5
   m_WireProperties:
   - m_InnerSpawnRadius: 3
     m_OuterSpawnRadius: 5
     m_BottomCircleCutoff: 0
+    m_TopCircleCutoff: 1
     m_MaxWiresAtOnce: 4
     m_MinSegments: 20
     m_MaxSegments: 30
@@ -370,6 +372,7 @@ MonoBehaviour:
   - m_InnerSpawnRadius: 4
     m_OuterSpawnRadius: 7
     m_BottomCircleCutoff: 0.3
+    m_TopCircleCutoff: 1
     m_MaxWiresAtOnce: 4
     m_MinSegments: 35
     m_MaxSegments: 40
@@ -387,6 +390,7 @@ MonoBehaviour:
   - m_InnerSpawnRadius: 5
     m_OuterSpawnRadius: 15
     m_BottomCircleCutoff: 0.3
+    m_TopCircleCutoff: 1
     m_MaxWiresAtOnce: 5
     m_MinSegments: 55
     m_MaxSegments: 60
@@ -404,6 +408,7 @@ MonoBehaviour:
   - m_InnerSpawnRadius: 13
     m_OuterSpawnRadius: 22
     m_BottomCircleCutoff: 0.55
+    m_TopCircleCutoff: 1
     m_MaxWiresAtOnce: 5
     m_MinSegments: 65
     m_MaxSegments: 70
@@ -421,6 +426,7 @@ MonoBehaviour:
   - m_InnerSpawnRadius: 15
     m_OuterSpawnRadius: 26
     m_BottomCircleCutoff: 0.7
+    m_TopCircleCutoff: 1
     m_MaxWiresAtOnce: 7
     m_MinSegments: 75
     m_MaxSegments: 80
@@ -438,6 +444,7 @@ MonoBehaviour:
   - m_InnerSpawnRadius: 20
     m_OuterSpawnRadius: 30
     m_BottomCircleCutoff: 0.7
+    m_TopCircleCutoff: 1
     m_MaxWiresAtOnce: 7
     m_MinSegments: 75
     m_MaxSegments: 80
@@ -491,6 +498,8 @@ MonoBehaviour:
   m_PacketSpace: 1
   m_MinPacketSpawnRadius: 4
   m_MaxPacketSpawnRadius: 25.9
+  m_BottomCircleCutoff: 0.7
+  m_TopCircleCutoff: 1
   m_PacketProperties:
   - m_MinSpawnOffset: 85
     m_MinSpawnInterval: 0.8
@@ -505,7 +514,6 @@ MonoBehaviour:
     m_ClusterSpawnRange: 2
     m_MultiplierIncreaseInterval: 12
     m_HandicapMultiplierIncreaseInterval: 9
-    m_ResetsTillHandicap: 2
   - m_MinSpawnOffset: 75
     m_MinSpawnInterval: 1.5
     m_MaxSpawnInterval: 2.5
@@ -519,7 +527,6 @@ MonoBehaviour:
     m_ClusterSpawnRange: 3
     m_MultiplierIncreaseInterval: 15
     m_HandicapMultiplierIncreaseInterval: 10
-    m_ResetsTillHandicap: 2
   - m_MinSpawnOffset: 85
     m_MinSpawnInterval: 1
     m_MaxSpawnInterval: 1.2
@@ -533,7 +540,6 @@ MonoBehaviour:
     m_ClusterSpawnRange: 4
     m_MultiplierIncreaseInterval: 18
     m_HandicapMultiplierIncreaseInterval: 12
-    m_ResetsTillHandicap: 2
   - m_MinSpawnOffset: 105
     m_MinSpawnInterval: 0.8
     m_MaxSpawnInterval: 1.1
@@ -547,7 +553,6 @@ MonoBehaviour:
     m_ClusterSpawnRange: 5
     m_MultiplierIncreaseInterval: 21
     m_HandicapMultiplierIncreaseInterval: 14
-    m_ResetsTillHandicap: 2
   - m_MinSpawnOffset: 125
     m_MinSpawnInterval: 0.5
     m_MaxSpawnInterval: 0.7
@@ -561,7 +566,6 @@ MonoBehaviour:
     m_ClusterSpawnRange: 6
     m_MultiplierIncreaseInterval: 23
     m_HandicapMultiplierIncreaseInterval: 15
-    m_ResetsTillHandicap: 2
   - m_MinSpawnOffset: 135
     m_MinSpawnInterval: 0.35
     m_MaxSpawnInterval: 0.5
@@ -575,7 +579,6 @@ MonoBehaviour:
     m_ClusterSpawnRange: 7
     m_MultiplierIncreaseInterval: 25
     m_HandicapMultiplierIncreaseInterval: 18
-    m_ResetsTillHandicap: 3
   m_PacketAudioSource: {fileID: 7661163149686658425}
   m_BoostChargeRate: 0.83
   m_BoostDepletionRate: 15

@@ -43,6 +43,7 @@ namespace TO5.Wires
 
         private bool m_TutorialActive = false;                          // If tutorial is active
         private TutorialStep m_TutorialStep = TutorialStep.None;        // Current step of tutorial
+        private bool m_TutorialWireDefective = false;                   // If last wire spawned by tutorial was defective
 
         // The length of the arcade game mode
         public float arcadeLength { get { return m_ArcadeLength; } }
@@ -123,7 +124,7 @@ namespace TO5.Wires
 
                     SparkJumper sparkJumper = m_WireManager.sparkJumper;
                     if (sparkJumper.m_Companion)
-                        sparkJumper.m_Companion.SetRenderHUD(false);
+                        sparkJumper.m_Companion.enabled = false;
 
                     if (sparkJumper.m_ScreenFade)
                         sparkJumper.m_ScreenFade.FadeIn();
@@ -170,13 +171,14 @@ namespace TO5.Wires
 
                     SparkJumper sparkJumper = m_WireManager.sparkJumper;
                     if (sparkJumper.m_Companion)
-                        sparkJumper.m_Companion.SetRenderHUD(true);
+                        sparkJumper.m_Companion.enabled = true;
 
                     if (sparkJumper.m_ScreenFade)
                         sparkJumper.m_ScreenFade.ClearFade();
                 }
 
                 m_TutorialActive = false;
+                m_TutorialStep = TutorialStep.None;
 
                 StartArcade();
             }
@@ -232,6 +234,8 @@ namespace TO5.Wires
                     Wire newWire = m_WireManager.GenerateRandomFixedWire(m_TutorialWireSegments, true, defective);
                     while (!newWire)
                         newWire = m_WireManager.GenerateRandomFixedWire(m_TutorialWireSegments, true, defective);
+
+                    m_TutorialWireDefective = defective;
 
                     yield break;
                 }
@@ -309,8 +313,14 @@ namespace TO5.Wires
         {
             if (!failed)
             {
-                if (m_TutorialStep == TutorialStep.Jumping || m_TutorialStep == TutorialStep.Defective)
+                // Chance with non defective wire spawning in earlier than defective wire step
+                // starting. This checks if last generated wire was defective (we don't need to
+                // check the wire specifically since we only spawn one wire at a time in tutorial mode)
+                if ((m_TutorialStep == TutorialStep.Jumping && !m_TutorialWireDefective) ||
+                    (m_TutorialStep == TutorialStep.Defective && m_TutorialWireDefective))
+                {
                     NextTutorialStep();
+                }
             }
 
             // Don't spawn if tutorial is over

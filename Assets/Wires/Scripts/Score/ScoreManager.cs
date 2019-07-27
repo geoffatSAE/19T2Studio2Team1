@@ -18,6 +18,12 @@ namespace TO5.Wires
         public delegate void MultiplierStageUpdated(float multiplier, int stage);
 
         /// <summary>
+        /// Delegate to notify the player lives has changed
+        /// </summary>
+        /// <param name="lives">Lives remaining</param>
+        public delegate void StageLivesUpdated(int lives);
+
+        /// <summary>
         /// Delegate to notify a packet has been despawned
         /// </summary>
         /// <param name="packet">Packet that despawned</param>
@@ -31,6 +37,7 @@ namespace TO5.Wires
         public delegate void BoostModeUpdated(bool active);
 
         public MultiplierStageUpdated OnMultiplierUpdated;      // Event for when multiplier has changed
+        public StageLivesUpdated OnStageLivesUpdated;           // Event for when lives has changed
         public PacketDespawned OnPacketDespawned;               // Event for when a packet despawns
         public BoostModeUpdated OnBoostModeUpdated;             // Event for when boost mode has changed
 
@@ -52,6 +59,8 @@ namespace TO5.Wires
         public ParticleSystem m_MultiplierIncreaseParticles;                    // Root particle system to all increase particles (longest system should be root)
         public ParticleSystem m_MultiplierDecreaseParticles;                    // Root particle system to all decrease particles (longest system should be root)
 
+        private float m_MultiplierStart = -1f;                      // Time multiplier increase interval started
+        private float m_MultiplierInterval = 0f;                    // Interval of multiplier increase
         private int m_StageResets = 0;                              // Amount of times current stage has been reset
         private int m_RemainingLives = 0;                           // Lives remaining in current stage
         private ParticleSystem m_MultiplierParticles;               // Current particle system being played
@@ -97,6 +106,9 @@ namespace TO5.Wires
 
         // Total multipler (default * boost)
         public float totalMultiplier { get { return m_Multiplier * (m_BoostActive ? m_BoostMultiplier : 1f); } }
+
+        // Time till next multiplier increase (1 if at max stage)
+        public float multiplierProgress { get { return GetMultiplierProgress(); } }
 
         // Lives remaining before stage decrease
         public int remainingLives { get { return m_RemainingLives; } }
@@ -255,7 +267,7 @@ namespace TO5.Wires
                 m_Multiplier = 1f;
                 m_Stage = 0;
                 m_StageResets = 0;
-                m_RemainingLives = m_StageLives;
+                SetRemainingLives(m_StageLives);
 
                 m_ActivePacketProperties = GetPacketProperties(m_Stage);
 
@@ -361,7 +373,7 @@ namespace TO5.Wires
                 m_Multiplier = 1 << m_Stage;
 
                 m_StageResets = 0;
-                m_RemainingLives = m_StageLives;
+                SetRemainingLives(m_StageLives);
 
                 m_ActivePacketProperties = GetPacketProperties(m_Stage);
 
@@ -387,7 +399,7 @@ namespace TO5.Wires
 
             // No lives are lost while boost is active
             if (!m_BoostActive)
-                --m_RemainingLives;
+                SetRemainingLives(m_RemainingLives - 1);
 
             if (m_RemainingLives <= 0)
             {
@@ -407,7 +419,7 @@ namespace TO5.Wires
             m_Multiplier = 1f;
             m_Stage = 0;
             m_StageResets = 0;
-            m_RemainingLives = m_StageLives;      
+            SetRemainingLives(m_StageLives);    
         }
 
         /// <summary>
@@ -429,6 +441,22 @@ namespace TO5.Wires
         }
 
         /// <summary>
+        /// Get current progress of automatic multiplier increase
+        /// </summary>
+        /// <returns>Progress of auto increase</returns>
+        public float GetMultiplierProgress()
+        {
+            if (m_MultiplierInterval == -1)
+                return 0f;
+
+            if (m_Stage == m_MultiplierStages || m_MultiplierInterval <= 0f)
+                return 1f;
+
+            float end = m_MultiplierStart + m_MultiplierInterval;
+            return 1f - ((end - Time.time) / m_MultiplierInterval);
+        }
+
+        /// <summary>
         /// Tick routine for increasing multiplier
         /// </summary>
         /// <returns></returns>
@@ -442,6 +470,9 @@ namespace TO5.Wires
                 // Handicap
                 if (m_StageResets >= m_StageHandicap)
                     interval = packetProps.m_HandicapMultiplierIncreaseInterval;
+
+                m_MultiplierStart = Time.time;
+                m_MultiplierInterval = interval;
 
                 yield return new WaitForSeconds(interval);
                 IncreaseMultiplier(1);
@@ -674,6 +705,27 @@ namespace TO5.Wires
 
             m_ActivePacketProperties = GetPacketProperties(m_Stage);
             return m_ActivePacketProperties;
+        }
+
+        /// <summary>
+        /// Set the lives remaining for current stage
+        /// </summary>
+        /// <param name="lives">Lives remaining</param>
+        private void SetRemainingLives(int lives)
+        {
+            lives = Mathf.Max(0, lives);
+
+            // Always keep one life on lowest stage
+            if (lives == 0 && m_Stage == 0)
+                lives = 1;
+
+            if (m_RemainingLives != lives)
+            {
+                m_RemainingLives = lives;
+
+                if (OnStageLivesUpdated != null)
+                    OnStageLivesUpdated.Invoke(m_RemainingLives);
+            }
         }
 
         /// <summary>

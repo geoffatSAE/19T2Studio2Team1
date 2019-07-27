@@ -821,8 +821,8 @@ namespace TO5.Wires
                     Debug.LogWarning("Failed to move spark jumper as no wires either exist or have sparks on them");
                     Debug.LogWarning("Generating new wire and jumping to it");
 
-                    closest = GenerateRandomWire(true);
-                    Assert.IsNotNull(closest);
+                    while (!closest)
+                        closest = GenerateRandomWire(true);
                 }
 
                 m_WireFailed = true;
