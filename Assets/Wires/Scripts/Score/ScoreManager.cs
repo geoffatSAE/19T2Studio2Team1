@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Profiling;
 using UnityEngine.UI;
 
 namespace TO5.Wires
@@ -143,6 +144,8 @@ namespace TO5.Wires
 
         void Update()
         {
+            Profiler.BeginSample("ScoreManager.Tick", this);
+
             if (m_IsRunning)
             {
                 AddScore(m_ScorePerSecond * Time.deltaTime);
@@ -188,6 +191,8 @@ namespace TO5.Wires
             }
 
             UpdatePacketAudioSource();
+
+            Profiler.EndSample();
 
             #if UNITY_EDITOR
             // For testing
@@ -508,6 +513,8 @@ namespace TO5.Wires
                 }   
             }
 
+            Profiler.BeginSample("GenerateRandomPacket", this);
+
             const int maxAttempts = 5;
             Vector3 spawnCenter = m_WireManager.GetSpawnCircleCenter() + WireManager.WirePlane * (m_WireManager.segmentLength * packetProps.m_MinSpawnOffset);
 
@@ -537,8 +544,9 @@ namespace TO5.Wires
 
             float speed = Random.Range(packetProps.m_MinSpeed, packetProps.m_MaxSpeed);
 
-            ++m_PacketSpawnsSinceLastCluster;
+            Profiler.EndSample();
 
+            ++m_PacketSpawnsSinceLastCluster;
             return GeneratePacket(position, speed, packetProps.m_Lifetime);
         }
 
@@ -573,6 +581,8 @@ namespace TO5.Wires
         private DataPacket GeneratePacketCluster()
         {
             PacketStageProperties packetProps = GetStagePacketProperties();
+
+            Profiler.BeginSample("GeneratePacketCluster", this);
 
             const int maxAttempts = 5;
             Vector3 spawnCenter = m_WireManager.GetSpawnCircleCenter() + WireManager.WirePlane * (m_WireManager.segmentLength * packetProps.m_MinSpawnOffset);     
@@ -626,6 +636,8 @@ namespace TO5.Wires
             #if UNITY_EDITOR
             Debug.Log(string.Format("Packet Cluster Spawn Results - Cluster Size: {0}, Packets Spawned: {1}", clusterSize, packetsSpawned));
             #endif
+
+            Profiler.EndSample();
 
             return packet;
         }

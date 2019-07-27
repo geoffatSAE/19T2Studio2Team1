@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.Assertions;
+using UnityEngine.Profiling;
 using UnityEngine.UI;
 
 namespace TO5.Wires
@@ -50,7 +51,7 @@ namespace TO5.Wires
     /// </summary>
     public class WireManager : MonoBehaviour
     {
-        public static Vector3 WirePlane = Vector3.forward;
+        public static readonly Vector3 WirePlane = Vector3.forward;
         
         /// <summary>
         /// Delegate for when the player has jumped off a wire
@@ -141,10 +142,12 @@ namespace TO5.Wires
         void Update()
         {
             float step = 0f;
-
+         
             // Don't tick when player is jumping
             if (m_TickWhenJumping || !m_SparkJumper.isJumping)
             {
+                Profiler.BeginSample("WireManager.Tick", this);
+
                 WireStageProperties wireProps = GetStageWireProperties();
 
                 if (sparkJumper.isDrifting)
@@ -186,6 +189,8 @@ namespace TO5.Wires
                         --i;
                     }
                 }
+
+                Profiler.EndSample();
             }
 
             #if UNITY_EDITOR
@@ -223,7 +228,7 @@ namespace TO5.Wires
         }
 
         /// <summary>
-        /// Starts wires in tutorial mode. Any wire generation must be handled manually (calling GenerateRandomSpark is allowed).
+        /// Starts wires in tutorial mode. Any wire generation must be handled manually (calling GenerateRandomWire is allowed).
         /// Generates the default wire and spark for player to jump onto
         /// </summary>
         /// <param name="wireProps">Wire properties to use for tutorial mode</param>
@@ -360,7 +365,9 @@ namespace TO5.Wires
             if (m_Wires.activeCount >= wireProps.m_MaxWiresAtOnce)
                 return null;
 
-            Vector3 spawnCenter = GetSpawnCircleCenter();          
+            Profiler.BeginSample("GenerateRandomWire", this);
+
+            Vector3 spawnCenter = GetSpawnCircleCenter();
 
             Vector3 start = transform.position;
             bool success = true;
@@ -368,8 +375,8 @@ namespace TO5.Wires
             // We don't want to loop too many times
             int attempts = 0;
             while (++attempts <= maxAttempts)
-            {  
-                Vector2 circleOffset = Wires.GetRandomCircleOffset(wireProps.m_InnerSpawnRadius, 
+            {
+                Vector2 circleOffset = Wires.GetRandomCircleOffset(wireProps.m_InnerSpawnRadius,
                     wireProps.m_OuterSpawnRadius, wireProps.m_BottomCircleCutoff, wireProps.m_TopCircleCutoff);
 
                 int segmentRange = Random.Range(-wireProps.m_SpawnSegmentRange, wireProps.m_SpawnSegmentRange + 1);
@@ -390,6 +397,9 @@ namespace TO5.Wires
             }
 
             int segments = Random.Range(wireProps.m_MinSegments, wireProps.m_MaxSegments + 1);
+
+            // We want sparks to appear instantly if player is drifting
+            instantSpark = instantSpark | m_SparkJumper.isDrifting;
             int sparkDelay = instantSpark ? 0 : Random.Range(0, wireProps.m_SparkSpawnSegmentDelay + 1);
 
             // Wires can never be defective if switch interval is zero
@@ -407,6 +417,8 @@ namespace TO5.Wires
                     offInterval = wireProps.m_SparkOffSwitchInterval;
                 }
             }
+
+            Profiler.EndSample();
 
             WireFactory factory = GetRandomWireFactory();
             return GenerateWire(start, segments, sparkDelay, onInterval, offInterval, factory);

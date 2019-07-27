@@ -63,7 +63,7 @@ namespace TO5.Wires
     /// </summary>
     struct Wires
     {
-        private static float CutoffThreshold;       // Threshold for where random offset is most likely to loop for too long
+        private static readonly float CutoffThreshold = 0.1f;       // Threshold for where random offset is most likely to loop for too long     
 
         /// <summary>
         /// Generates a random offset of a circle (assuming origin is 0,0)
@@ -79,34 +79,39 @@ namespace TO5.Wires
             if (bottomCutoff <= CutoffThreshold && topCutoff <= CutoffThreshold)
             {
                 Debug.LogWarning("Cutoffs are too close to zero");
-                return Vector2.right * Random.Range(minOffset, maxOffset);
+                return new Vector2(Random.Range(minOffset, maxOffset), 0f);
             }
 
             Profiler.BeginSample("GetRandomCircleOffset");
 
-            float rad = Random.Range(0f, Mathf.PI * 2f);
-            Vector2 direction = new Vector2(Mathf.Sin(rad), Mathf.Cos(rad));
+            const float PI2 = Mathf.PI * 2f;
+
+            // We only need to check Y axis since cutoffs are on top and bottom of circle
+            float rad = Random.Range(0f, PI2);
+            float yDir = Mathf.Cos(rad);
 
             // We can quickly do one check instead of two if both are nearly the same
             if (Mathf.Approximately(bottomCutoff, topCutoff))
             {
-                while (Mathf.Abs(Vector2.Dot(direction, Vector2.down)) > bottomCutoff)
+                while (yDir > topCutoff)
                 {
-                    rad = Random.Range(0f, Mathf.PI * 2f);
-                    direction.Set(Mathf.Sin(rad), Mathf.Cos(rad));
+                    rad = Random.Range(0f, PI2);
+                    yDir = Mathf.Cos(rad);
                 }
             }
             else
             {
-                while (Vector2.Dot(direction, Vector2.down) > bottomCutoff || Vector2.Dot(direction, Vector2.up) > topCutoff)
+                while (yDir > topCutoff || -yDir > bottomCutoff)
                 {
-                    rad = Random.Range(0f, Mathf.PI * 2f);
-                    direction.Set(Mathf.Sin(rad), Mathf.Cos(rad));
+                    rad = Random.Range(0f, PI2);
+                    yDir = Mathf.Cos(rad);
                 }
             }
 
-            Profiler.EndSample();
+            Vector2 direction = new Vector2(Mathf.Sin(rad), yDir);
 
+            Profiler.EndSample();
+       
             return direction * Random.Range(minOffset, maxOffset);
         }
 
