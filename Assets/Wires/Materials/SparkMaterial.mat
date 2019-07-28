@@ -67,7 +67,7 @@ Material:
     - _DetailNormalMapScale: 1
     - _Distortion: 0.2
     - _DstBlend: 0
-    - _Extent: 0.05
+    - _Extent: 0.1
     - _FallOff: 4
     - _Frequency: 578
     - _GlossMapScale: 1

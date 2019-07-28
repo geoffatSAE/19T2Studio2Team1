@@ -10,9 +10,15 @@ namespace TO5.Wires
     /// </summary>
     public class WorldMusic : MonoBehaviour
     {
+        static public readonly string BeatTimeShaderName = "_BeatTime";
+
         [SerializeField] private AudioSource m_MusicSource1;        // First source for audio
         [SerializeField] private AudioSource m_MusicSource2;        // Second source for audio
         private bool m_Source1Active = true;                        // Which source is active source
+
+        public float m_BeatRate = 1f;
+        public float m_BeatDelay = 0.5f;
+        public AnimationCurve m_BeatCurve = AnimationCurve.Linear(0f, 1f, 1f, 0f);
 
         void Awake()
         {
@@ -27,6 +33,17 @@ namespace TO5.Wires
 
             m_MusicSource1.enabled = false;
             m_MusicSource2.enabled = false;
+
+            Shader.SetGlobalFloat(BeatTimeShaderName, 0f);
+        }
+
+        void Update()
+        {
+            float time = Mathf.Repeat(Mathf.Max(Time.time - m_BeatDelay, 0f), m_BeatRate);
+            time /= m_BeatRate;
+
+            float beat = m_BeatCurve.Evaluate(time);
+            Shader.SetGlobalFloat("_BeatTime", beat);
         }
 
         /// <summary>
@@ -51,7 +68,7 @@ namespace TO5.Wires
             activeSource.volume = 1f;
 
             activeSource.time = audioClip.length * progess;
-            activeSource.Play();            
+            activeSource.Play();         
         }
 
         /// <summary>

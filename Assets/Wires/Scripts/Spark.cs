@@ -203,7 +203,7 @@ namespace TO5.Wires
                 {
                     // We reverse target and from as alpha is also reversed
                     float alpha = Mathf.Clamp01((end - Time.time) / m_RotationTime);
-                    m_Renderer.transform.rotation = Quaternion.Slerp(target, from, alpha);           
+                    //m_Renderer.transform.rotation = Quaternion.Slerp(target, from, alpha);           
 
                     yield return null;
                 }

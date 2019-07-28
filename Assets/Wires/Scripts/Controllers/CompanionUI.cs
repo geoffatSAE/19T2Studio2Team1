@@ -13,10 +13,11 @@ namespace TO5.Wires
         [SerializeField] private SparkJumper m_SparkJumper;         // Players spark jumper
         [SerializeField] private ScoreManager m_ScoreManager;       // Games score manager
 
+        [Header("Game")]
         public string m_ScoreTextFormat = "Score: {0}";         // Formatting for score text ({0} is required, will be replaced by actual score)
         public string m_MultiplierTextFormat = "X{0}";          // Formatting for multiplier text ({0} is required, will be replaced by actual multiplier)
 
-        [SerializeField] private Canvas m_Canvas;               // Canvas for companions HUD
+        [SerializeField] private Canvas m_GameCanvas;           // Canvas for companions game UI
         [SerializeField] private Text m_ScoreText;              // Text block for writing players score
         [SerializeField] private Text m_MultiplierText;         // Text block for writing players multiplier
         [SerializeField] private Image m_MultiplierImage;       // Image to manipulate based on auto multiplier increase
@@ -26,26 +27,37 @@ namespace TO5.Wires
         public Color m_LifeActiveColor = Color.white;           // Color to use for active lives
         public Color m_LifeInactiveColor = Color.gray;          // Color to use for inactive lives
 
+        [Header("Stats")]
+        public string m_ScoreStatsTextFormat = "Score: {0}";                // Formatting for score text on the stats UI ({0} is required, will be replaced by actual score)
+        public string m_DistanceStatsTextFormat = "Distance: {0:0.0}m";     // Formatting for distance text on the stats UI ({0} is required, will be replaced by actual distance)
+
+        [SerializeField] private Canvas m_StatsCanvas;          // Canvas for companions stats UI
+        [SerializeField] private Text m_ScoreStatsText;         // Text block for writing players final score
+        [SerializeField] private Text m_DistanceStatsText;      // Text block for writing players distance travelled
+
+        private bool m_DisplayGameUI = true;    // If game UI should be displayed
         private int m_ActiveLives = 0;          // Amount of lives player has
 
         void Update()
         {
-            if (m_SparkJumper)
-                RefreshWireProgress(m_SparkJumper.wireProgress);
-
-            if (m_ScoreManager)
+            if (m_DisplayGameUI)
             {
-                RefreshScoreText(m_ScoreManager.score);
-                RefreshMultiplierText((int)m_ScoreManager.totalMultiplier);
-                RefreshMultiplierProgress(m_ScoreManager.multiplierProgress);
-                RefreshBoostProgress(m_ScoreManager.boost);
+                if (m_SparkJumper)
+                    RefreshWireProgress(m_SparkJumper.wireProgress);
+
+                if (m_ScoreManager)
+                {
+                    RefreshScoreText(m_ScoreManager.score);
+                    RefreshMultiplierText((int)m_ScoreManager.totalMultiplier);
+                    RefreshMultiplierProgress(m_ScoreManager.multiplierProgress);
+                    RefreshBoostProgress(m_ScoreManager.boost);
+                }
             }
         }
 
         void OnEnable()
         {
-            if (m_Canvas)
-                m_Canvas.gameObject.SetActive(true);
+            ToggleEnabledUI(m_DisplayGameUI);
 
             if (m_ScoreManager)
             {
@@ -56,11 +68,58 @@ namespace TO5.Wires
 
         void OnDisable()
         {
-            if (m_Canvas)
-                m_Canvas.gameObject.SetActive(false);
+            SetDisplayCanvases(false, false);
 
             if (m_ScoreManager)
                 m_ScoreManager.OnStageLivesUpdated -= StageLivesUpdated;
+        }
+
+        /// <summary>
+        /// Renders the game UI, hiding stats UI
+        /// </summary>
+        public void ShowGameUI()
+        {
+            ToggleEnabledUI(true);
+        }
+
+        /// <summary>
+        /// Renders the stats UI, hiding the game UI
+        /// </summary>
+        /// <param name="score">Score to display on stats</param>
+        /// <param name="distance">Distance to display on stats</param>
+        public void ShowStatsUI(float score, float distance)
+        {
+            if (m_ScoreStatsText)
+                m_ScoreStatsText.text = string.Format(m_ScoreStatsTextFormat, Mathf.FloorToInt(score));
+
+            if (m_DistanceStatsText)
+                m_DistanceStatsText.text = string.Format(m_DistanceStatsTextFormat, distance);
+
+            ToggleEnabledUI(false);
+        }
+
+        /// <summary>
+        /// Set if the game UI or stats UI should be displayed
+        /// </summary>
+        /// <param name="enable">True to display Game UI, False to display Stats UI</param>
+        private void ToggleEnabledUI(bool gameUI)
+        {
+            SetDisplayCanvases(gameUI, !gameUI);
+            m_DisplayGameUI = gameUI;
+        }
+
+        /// <summary>
+        /// Set which canvases will be rendered or disabled
+        /// </summary>
+        /// <param name="gameUI">Render game UI</param>
+        /// <param name="statsUI">Render stats UI</param>
+        private void SetDisplayCanvases(bool gameUI, bool statsUI)
+        {
+            if (m_GameCanvas)
+                m_GameCanvas.gameObject.SetActive(gameUI);
+
+            if (m_StatsCanvas)
+                m_StatsCanvas.gameObject.SetActive(statsUI);
         }
 
         /// <summary>

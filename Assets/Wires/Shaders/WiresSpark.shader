@@ -22,6 +22,8 @@
 			fixed _Speed;
 			fixed _Extent;
 
+			uniform float _BeatTime;
+
 			struct appdata
 			{
 				float4 vertex : POSITION;
@@ -34,18 +36,18 @@
 
 			v2f vert(appdata v)
 			{
-				/*fixed3 center = mul(unity_ObjectToWorld, fixed4(0, 0, 0, 1)).xyz;
+				fixed3 center = mul(unity_ObjectToWorld, fixed4(0, 0, 0, 1)).xyz;
 				fixed3 vertex = mul(unity_ObjectToWorld, v.vertex).xyz;
 
 				fixed3 dir = normalize(vertex - center);
 
 				// Scale extent by models scale
-				vertex += mul((fixed3x3)unity_ObjectToWorld, dir * (_Extent * sin(_Time.y * _Speed)));
+				vertex += mul((fixed3x3)unity_ObjectToWorld, dir * (_Extent * _BeatTime));
 
-				fixed4 object = mul(unity_WorldToObject, fixed4(vertex, 1.f));*/
+				fixed4 object = mul(unity_WorldToObject, fixed4(vertex, 1.f));
 
 				v2f o;
-				o.vertex = UnityObjectToClipPos(v.vertex);// object);
+				o.vertex = UnityObjectToClipPos(object);
 				return o;
 			}
 

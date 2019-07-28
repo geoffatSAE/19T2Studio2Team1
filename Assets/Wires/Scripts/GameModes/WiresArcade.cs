@@ -25,7 +25,8 @@ namespace TO5.Wires
         [Header("Arcade")]
         [SerializeField] private float m_ArcadeLength = 480f;       // How long the game lasts for (in seconds)
 
-        private Wire m_FinalWire;           // The final wire (exit wire)
+        private float m_StartingDistance = 0f;          // Distance player had already travelled at the start of the game
+        private Wire m_FinalWire;                       // The final wire (exit wire)
 
         [Header("Tutorial")]
         [SerializeField] private bool m_EnableTutorial = true;                  // If tutorial is enabled (at start of game)
@@ -189,13 +190,18 @@ namespace TO5.Wires
         /// </summary>
         private void StartArcade()
         {
-            m_WireManager.StartWires();
-            StartCoroutine(GameTimerRoutine());
+            if (m_WireManager.StartWires())
+            {
+                //StartCoroutine(GameTimerRoutine());
+                Invoke("EndGame", m_ArcadeLength);
 
-            m_GameStart = Time.time;
+                m_StartingDistance = m_WireManager.sparkJumper.GetPosition().z;
 
-            if (OnGameStarted != null)
-                OnGameStarted.Invoke();
+                m_GameStart = Time.time;
+
+                if (OnGameStarted != null)
+                    OnGameStarted.Invoke();
+            }
         }
 
         /// <summary>
@@ -205,15 +211,6 @@ namespace TO5.Wires
         {
             if (m_TutorialActive)
                 EndTutorial();
-        }
-
-        /// <summary>
-        /// Routine for handling the games timer
-        /// </summary>
-        private IEnumerator GameTimerRoutine()
-        {
-            yield return new WaitForSeconds(m_ArcadeLength);
-            EndGame();
         }
 
         /// <summary>
@@ -275,8 +272,14 @@ namespace TO5.Wires
         /// </summary>
         private IEnumerator DisplayStatsAndExitRoutine()
         {
+            float score = 0f;
+            float distance = 0f;
+
             if (m_WireManager.scoreManager)
+            {
                 m_WireManager.scoreManager.DisableScoring();
+                score = m_WireManager.scoreManager.score;
+            }
 
             SparkJumper sparkJumper = m_WireManager.sparkJumper;
             if (sparkJumper)
@@ -284,7 +287,10 @@ namespace TO5.Wires
                 sparkJumper.m_JumpingEnabled = false;
                 sparkJumper.OnJumpToSpark -= FinaleJumpToSpark;
 
-                // TODO: Display score and whatnot
+                distance = Mathf.Abs(sparkJumper.GetPosition().z - m_StartingDistance);
+
+                if (sparkJumper.m_Companion)
+                    sparkJumper.m_Companion.ShowStatsUI(score, distance);
             }
 
             yield return new WaitForSeconds(10f);
