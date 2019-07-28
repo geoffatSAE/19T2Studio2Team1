@@ -90,7 +90,7 @@ Material:
     - _WaveSpeed: 10
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0.9613838, g: 1, b: 0.3254717, a: 1}
+    - _Color: {r: 0.9695591, g: 1, b: 0.4764151, a: 1}
     - _EmissionColor: {r: 1.0366492, g: 0.9839873, b: 0.122246355, a: 1}
     - _ImpactOrigin: {r: -5, g: 0, b: 0, a: 0}
     - _InfluenceVector: {r: 5, g: 0, b: 0, a: 0}
