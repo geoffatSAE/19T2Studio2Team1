@@ -75,7 +75,10 @@ namespace TO5.Wires
         [SerializeField, Range(0, 1)] public float m_TopCircleCutoff = 1f;          // Cutoff from top of spawn circle (no packets will spawn in cutoff)
         [SerializeField] private PacketStageProperties[] m_PacketProperties;        // Properties for packet behavior for each multiplier stage
 
-        public AudioSource m_PacketAudioSource;                                     // Audio source for packets (moves depending on players location)
+        public AudioClip m_PacketSpawnSound;                    // Spawn sound for an individual packet
+        public AudioClip m_PacketClusterSpawnSound;             // Spawn sound for a cluster of packets
+        public AudioSource m_PacketSpawnAudioSource;            // Audio source for packets spawning                          
+        public AudioSource m_PacketAudioSource;                 // Audio source for packets (moves depending on players location)
 
         [Header("Boost")]
         [SerializeField] private float m_BoostChargeRate = 0.83f;           // Boost player earns per second
@@ -507,6 +510,9 @@ namespace TO5.Wires
                 if (cluster)
                 {
                     DataPacket packet = GeneratePacketCluster();
+                    if (packet)
+                        PlayPacketSpawnSound(true);
+
                     m_PacketSpawnsSinceLastCluster = 0;
 
                     return packet;
@@ -556,8 +562,9 @@ namespace TO5.Wires
         /// <param name="position">Position of the packet</param>
         /// <param name="speed">Speed of the packet</param>
         /// <param name="lifetime">Lifetime of the packet</param>
+        /// <param name="forCluster">If packet is for a cluster</param>
         /// <returns>Packet or null</returns>
-        public DataPacket GeneratePacket(Vector3 position, float speed, float lifetime)
+        public DataPacket GeneratePacket(Vector3 position, float speed, float lifetime, bool forCluster = false)
         {
             if (lifetime <= 0f)
                 return null;
@@ -567,6 +574,9 @@ namespace TO5.Wires
                 return null;
 
             packet.Activate(position, speed, lifetime);
+
+            if (!forCluster)
+                PlayPacketSpawnSound(false);
 
             if (m_PacketAudioSource && !m_PacketAudioSource.isPlaying)
                 m_PacketAudioSource.Play();
@@ -625,10 +635,12 @@ namespace TO5.Wires
 
                 float speed = Random.Range(packetProps.m_MinSpeed, packetProps.m_MaxSpeed);
 
-                packet = GeneratePacket(position, speed, packetProps.m_Lifetime);
+                DataPacket newPacket = GeneratePacket(position, speed, packetProps.m_Lifetime, true);
+                if (newPacket != null)
+                    packet = newPacket;
 
                 #if UNITY_EDITOR
-                if (packet != null)
+                if (newPacket != null)
                     ++packetsSpawned;
                 #endif
             }
@@ -852,6 +864,24 @@ namespace TO5.Wires
 
                 m_MultiplierParticles.gameObject.SetActive(true);
                 m_MultiplierParticles.Play(true);
+            }
+        }
+
+        /// <summary>
+        /// Plays the spawn sound for a packet generating
+        /// </summary>
+        /// <param name="cluster">If cluster sound should be played instead</param>
+        private void PlayPacketSpawnSound(bool cluster)
+        {
+            if (m_PacketSpawnAudioSource)
+            {
+                AudioClip clip = cluster ? m_PacketClusterSpawnSound : m_PacketSpawnSound;
+                if (clip)
+                {
+                    m_PacketSpawnAudioSource.clip = clip;
+                    m_PacketSpawnAudioSource.time = 0f;
+                    m_PacketSpawnAudioSource.Play();       
+                }
             }
         }
 

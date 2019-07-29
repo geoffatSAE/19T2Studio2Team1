@@ -535,9 +535,9 @@ namespace TO5.Wires
             // Don't jump if drifting
             if (!m_SparkJumper.spark && !m_SparkJumper.isDrifting)
                 m_SparkJumper.InstantJumpToSpark(spark);
-
-            PlayAudioClip(m_SparkSpawnAudioSource, spark.transform.position);
-
+            else
+                PlayAudioClip(m_SparkSpawnAudioSource, spark.transform.position);
+                
             return spark;
         }
 
