@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ed1e754feeb549940b82a0b845f23072, type: 3}
-  m_Name: BlueWire
+  m_Name: AquaWire
   m_EditorClassIdentifier: 
-  m_Color: {r: 0, g: 0.5804844, b: 1, a: 1}
-  m_SkyboxColor: {r: 0, g: 0.6691942, b: 1, a: 1}
-  m_ParticleColor: {r: 0, g: 0.5803922, b: 1, a: 1}
+  m_Color: {r: 0, g: 1, b: 0.80943894, a: 1}
+  m_SkyboxColor: {r: 0.28773582, g: 1, b: 0.89944506, a: 1}
+  m_ParticleColor: {r: 0, g: 1, b: 0.8243475, a: 1}
   m_BoostColor:
     m_Mode: 1
     m_GradientMin:
@@ -48,8 +48,8 @@ MonoBehaviour:
       m_NumAlphaKeys: 2
     m_GradientMax:
       serializedVersion: 2
-      key0: {r: 0, g: 0, b: 1, a: 1}
-      key1: {r: 0, g: 1, b: 1, a: 1}
+      key0: {r: 0, g: 0.20784315, b: 1, a: 1}
+      key1: {r: 0, g: 1, b: 0.8235295, a: 1}
       key2: {r: 0, g: 0, b: 0, a: 0}
       key3: {r: 0, g: 0, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}
@@ -57,7 +57,7 @@ MonoBehaviour:
       key6: {r: 0, g: 0, b: 0, a: 0}
       key7: {r: 0, g: 0, b: 0, a: 0}
       ctime0: 0
-      ctime1: 65535
+      ctime1: 18504
       ctime2: 0
       ctime3: 0
       ctime4: 0

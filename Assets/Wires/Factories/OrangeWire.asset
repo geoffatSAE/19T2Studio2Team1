@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ed1e754feeb549940b82a0b845f23072, type: 3}
-  m_Name: GreenWire
+  m_Name: OrangeWire
   m_EditorClassIdentifier: 
-  m_Color: {r: 0.25207162, g: 1, b: 0, a: 1}
-  m_SkyboxColor: {r: 0, g: 0.735849, b: 0.025971096, a: 1}
-  m_ParticleColor: {r: 0, g: 0.7372549, b: 0.027450982, a: 1}
+  m_Color: {r: 1, g: 0.6597414, b: 0, a: 1}
+  m_SkyboxColor: {r: 1, g: 0.8107844, b: 0.08962262, a: 1}
+  m_ParticleColor: {r: 1, g: 0.65882355, b: 0, a: 1}
   m_BoostColor:
     m_Mode: 1
     m_GradientMin:
@@ -48,8 +48,8 @@ MonoBehaviour:
       m_NumAlphaKeys: 2
     m_GradientMax:
       serializedVersion: 2
-      key0: {r: 0.026652148, g: 0.5377358, b: 0, a: 1}
-      key1: {r: 0, g: 1, b: 0.1971426, a: 1}
+      key0: {r: 1, g: 0.65882355, b: 0, a: 1}
+      key1: {r: 0.998732, g: 1, b: 0, a: 1}
       key2: {r: 0, g: 1, b: 1, a: 1}
       key3: {r: 0, g: 0, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}
@@ -57,7 +57,7 @@ MonoBehaviour:
       key6: {r: 0, g: 0, b: 0, a: 0}
       key7: {r: 0, g: 0, b: 0, a: 0}
       ctime0: 0
-      ctime1: 65535
+      ctime1: 25443
       ctime2: 65535
       ctime3: 0
       ctime4: 0

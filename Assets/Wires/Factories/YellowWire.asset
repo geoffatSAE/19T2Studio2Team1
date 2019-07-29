@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: YellowWire
   m_EditorClassIdentifier: 
   m_Color: {r: 1, g: 0.9864793, b: 0, a: 1}
-  m_SkyboxColor: {r: 0.9238579, g: 1, b: 0, a: 1}
+  m_SkyboxColor: {r: 0.95114684, g: 1, b: 0.3443396, a: 1}
   m_ParticleColor: {r: 0.9238579, g: 1, b: 0, a: 1}
   m_BoostColor:
     m_Mode: 1
@@ -57,7 +57,7 @@ MonoBehaviour:
       key6: {r: 0, g: 0, b: 0, a: 0}
       key7: {r: 0, g: 0, b: 0, a: 0}
       ctime0: 0
-      ctime1: 65535
+      ctime1: 18890
       ctime2: 0
       ctime3: 0
       ctime4: 0
