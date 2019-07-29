@@ -28,6 +28,8 @@ namespace TO5.Wires
         public AudioClip m_OnSelectedSound;                                 // Sound to play when selected while on
         public AudioClip m_OffSelectedSound;                                // Sound to play when selected while off
 
+        public bool Rotate = true;
+
         private Wire m_Wire;                        // Wire this spark is on
         private bool m_CanJumpTo = true;            // If player can jump to this spark
         private Vector3 m_OnTargetScale;            // Scale spark should be at when on
@@ -91,7 +93,7 @@ namespace TO5.Wires
             if (m_SwitchRoutine != null)
                 StopCoroutine(m_SwitchRoutine);
 
-            StopCoroutine("SwitchRoutine");
+            StopCoroutine("RotateRoutine");
 
             m_CanJumpTo = false;
             gameObject.SetActive(false);
@@ -203,7 +205,9 @@ namespace TO5.Wires
                 {
                     // We reverse target and from as alpha is also reversed
                     float alpha = Mathf.Clamp01((end - Time.time) / m_RotationTime);
-                    //m_Renderer.transform.rotation = Quaternion.Slerp(target, from, alpha);           
+
+                    if (Rotate)
+                        m_Renderer.transform.rotation = Quaternion.Slerp(target, from, alpha);           
 
                     yield return null;
                 }
