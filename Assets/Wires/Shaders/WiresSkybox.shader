@@ -1,5 +1,8 @@
 ﻿Shader "Wires/Skybox"
 {
+	// Mimics on Unity's default Cubemap Skybox shader.
+	// We just needed to add some additional functionality to it
+
     Properties
     {
         _Color("Color", Color) = (1, 0, 0, 0)
@@ -13,11 +16,13 @@
     SubShader
     {
         Tags { "RenderType"="Background" "Queue"="Background" }
+
+		Cull Off
+		Lighting Off
+		ZWrite Off
+
         Pass
         {
-			Cull Off
-			ZWrite Off	
-
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
@@ -46,8 +51,6 @@
 
 			float3 rotateVertex(float3 vertex, float rad)
 			{
-				// Mimics Unity's built in Skybox Shader
-				// See https://github.com/TwoTailsGames/Unity-Built-in-Shaders/blob/master/DefaultResourcesExtra/Skybox-Cubed.shader
 				float sina = sin(rad);
 				float cosa = cos(rad);
 

@@ -9,12 +9,13 @@
 		Tags { "RenderType" = "Transparent" "RenderType" = "Transparent" "Queue" = "Overlay" "IgnoreProjector" = "True"}
 		LOD 100
 
+		Cull Off
+		Lighting Off
+		ZTest Always
+		Blend SrcAlpha OneMinusSrcAlpha
+
 		Pass
 		{
-			Cull Off
-			ZTest Always
-			Blend SrcAlpha OneMinusSrcAlpha
-
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag

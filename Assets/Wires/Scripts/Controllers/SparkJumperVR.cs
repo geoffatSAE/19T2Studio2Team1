@@ -19,11 +19,14 @@ namespace TO5.Wires
         {
             // Rotation is handled for us by the OVRCameraRig
 
+            Vector3 controllerPos = GetControllerPosition();
+            Vector3 controllerDir = GetControllerRotation() * Vector3.forward;
+
             #if UNITY_EDITOR
             // Oculus Rift is used for testing in editor
             {
                 if (OVRInput.GetDown(OVRInput.Button.One))
-                    TraceWorld(GetControllerPosition(), OVRInput.GetLocalControllerRotation(ControllerType));
+                    TraceWorld(new Ray(controllerPos, controllerDir));
 
                 if (OVRInput.GetDown(OVRInput.Button.Two))
                     ActivateBoost();
@@ -32,12 +35,15 @@ namespace TO5.Wires
             // Oculus Go is used for packaged builds
             {
                 if (OVRInput.GetDown(OVRInput.Button.PrimaryIndexTrigger))
-                    TraceWorld(GetControllerPosition(), OVRInput.GetLocalControllerRotation(ControllerType));
+                    TraceWorld(new Ray(controllerPos, controllerDir));
 
                 if (OVRInput.GetDown(OVRInput.Button.PrimaryTouchpad))
                     ActivateBoost();
             }
             #endif
+
+            Shader.SetGlobalVector(WorldSpaceControllerPosShaderName, controllerPos);
+            Shader.SetGlobalVector(WorldSpaceControllerDirShaderName, controllerDir);
         }
 
         /// <summary>
@@ -50,6 +56,15 @@ namespace TO5.Wires
                 return m_ControllerOrigin.TransformPoint(OVRInput.GetLocalControllerPosition(ControllerType));
             else
                 return transform.TransformPoint(OVRInput.GetLocalControllerPosition(ControllerType));
+        }
+
+        /// <summary>
+        /// Get the rotation of the players controller
+        /// </summary>
+        /// <returns>Rotation of controller in world space</returns>
+        private Quaternion GetControllerRotation()
+        {
+            return OVRInput.GetLocalControllerRotation(ControllerType);
         }
 
         // SparkJumper Interface

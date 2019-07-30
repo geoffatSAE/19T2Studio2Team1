@@ -11,6 +11,7 @@
     {
         Tags { "RenderType" = "Transparent" "Queue" = "Transparent" }
 
+		Lighting Off
 		Blend SrcAlpha OneMinusSrcAlpha
 		//ZWrite Off
 
@@ -49,7 +50,7 @@
 			
                 return o;
             }
-
+			
             fixed4 frag (v2f i) : SV_Target
             {
 				fixed4 col = tex2D(_MainTex, i.uv);
@@ -60,6 +61,7 @@
 				// Cameras forward vector
 				fixed3 camDir = UNITY_MATRIX_V[2].xyz;
 
+				// We scale alpha so when camera is facing object, it becomes more transparent
 				fixed d = dot(camDir, posDir);
 				col.a = max(clamp(((1 - d) * 2) / _Encapsulation, 0, 1), _MinAlpha);
 

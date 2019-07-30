@@ -16,6 +16,8 @@ namespace TO5.Wires
         private float m_RotationX = 0f;             // Yaw rotation
         private float m_RotationY = 0f;             // Pitch rotation
 
+        public Material ttt;
+
         void Awake()
         {
             if (!m_Camera)
@@ -54,6 +56,9 @@ namespace TO5.Wires
             // Right mouse
             if (Input.GetMouseButtonDown(1))
                 ActivateBoost();
+
+            Shader.SetGlobalVector(WorldSpaceControllerPosShaderName, trans.position);
+            Shader.SetGlobalVector(WorldSpaceControllerDirShaderName, trans.forward);
 
             #if UNITY_EDITOR
             // Pause in editor

@@ -10,6 +10,9 @@ namespace TO5.Wires
     /// </summary>
     public abstract class SparkJumper : MonoBehaviour
     {
+        static public readonly string WorldSpaceControllerPosShaderName = "_WorldSpaceControllerPos";
+        static public readonly string WorldSpaceControllerDirShaderName = "_WorldSpaceControllerDir";
+
         /// <summary>
         /// Delegate for when jumper is jumping to new spark (both starting and ending)
         /// </summary>

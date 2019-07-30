@@ -10,6 +10,8 @@
 	{
 		Tags { "RenderType" = "Opaque" }
 
+		Lighting Off
+
 		Pass
 		{
 			CGPROGRAM
@@ -23,6 +25,7 @@
 			fixed _Extent;
 			fixed3 _Position;
 
+			// Global value (musics beat time)
 			uniform float _BeatTime;
 
 			struct appdata
