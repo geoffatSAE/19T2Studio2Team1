@@ -46,15 +46,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_StartingState:
-    m_Position: {x: 0, y: 400, z: -100}
-    m_Scale: {x: 100, y: 100, z: 100}
+    m_Position: {x: 0, y: 250, z: 600}
+    m_Scale: {x: 200, y: 200, z: 200}
   m_EndingState:
-    m_Position: {x: 0, y: 400, z: 500}
-    m_Scale: {x: 100, y: 100, z: 100}
+    m_Position: {x: 0, y: -250, z: 500}
+    m_Scale: {x: 250, y: 250, z: 400}
   m_OverrideAnchor: {fileID: 5134141384927370640}
   m_GameMode: {fileID: 0}
   m_FallbackDuration: 30
-  m_RotationInterval: 0.3
+  m_RotationInterval: 0.1
   m_RotationOverride: {fileID: 5134141384374063775}
 --- !u!1 &5134141384927370643
 GameObject:
@@ -94,6 +94,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5134141384661580594}
     m_Modifications:
+    - target: {fileID: 629665655112169775, guid: c555c9465e0d21544b0c1bdc6aadee06,
+        type: 3}
+      propertyPath: m_Name
+      value: P_Spark2
+      objectReference: {fileID: 0}
     - target: {fileID: 629665655112169772, guid: c555c9465e0d21544b0c1bdc6aadee06,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -163,11 +168,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 0.15
-      objectReference: {fileID: 0}
-    - target: {fileID: 629665655112169775, guid: c555c9465e0d21544b0c1bdc6aadee06,
-        type: 3}
-      propertyPath: m_Name
-      value: P_Spark2
       objectReference: {fileID: 0}
     - target: {fileID: 629665655112169773, guid: c555c9465e0d21544b0c1bdc6aadee06,
         type: 3}
@@ -343,6 +343,16 @@ PrefabInstance:
         type: 3}
       propertyPath: TrailModule.colorOverLifetime.maxGradient.ctime0
       value: 32768
+      objectReference: {fileID: 0}
+    - target: {fileID: 629665655112169773, guid: c555c9465e0d21544b0c1bdc6aadee06,
+        type: 3}
+      propertyPath: EmissionModule.rateOverTime.minScalar
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 629665655112169773, guid: c555c9465e0d21544b0c1bdc6aadee06,
+        type: 3}
+      propertyPath: EmissionModule.rateOverTime.scalar
+      value: 100
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c555c9465e0d21544b0c1bdc6aadee06, type: 3}

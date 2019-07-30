@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: ebd8e9f24d455124eba14484012abda7
+guid: edde767cf8e4e0447a63362294eff09b
 ModelImporter:
   serializedVersion: 23
   fileIDToRecycleName:
@@ -55,6 +55,8 @@ ModelImporter:
     7400002: Bot_Multiplier Decrease
     7400004: Bot_Boost Constant
     7400006: Bot_End of Wire
+    7400008: Bot_Boost Constant_Start
+    7400010: Bot_Boost Constant_End
     9500000: //RootNode
     13700000: Bot
   externalObjects: {}
