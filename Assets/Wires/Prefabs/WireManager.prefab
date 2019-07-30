@@ -490,7 +490,7 @@ MonoBehaviour:
     m_MinSegments: 20
     m_MaxSegments: 30
     m_MinSpawnInterval: 2
-    m_MaxSpawnInterval: 3
+    m_MaxSpawnInterval: 2.5
     m_SpawnSegmentOffset: 5
     m_SpawnSegmentRange: 3
     m_SparkSpawnSegmentDelay: 2
@@ -499,16 +499,16 @@ MonoBehaviour:
     m_SparkDriftScale: 1
     m_SparkOnSwitchInterval: 2
     m_SparkOffSwitchInterval: 0.5
-    m_JumpTime: 0.5
+    m_JumpTime: 0.6
   - m_InnerSpawnRadius: 4
     m_OuterSpawnRadius: 7
     m_BottomCircleCutoff: 0.3
     m_TopCircleCutoff: 0.7
-    m_MaxWiresAtOnce: 4
+    m_MaxWiresAtOnce: 5
     m_MinSegments: 35
     m_MaxSegments: 40
-    m_MinSpawnInterval: 1.2
-    m_MaxSpawnInterval: 2.1
+    m_MinSpawnInterval: 1
+    m_MaxSpawnInterval: 1.7
     m_SpawnSegmentOffset: 5
     m_SpawnSegmentRange: 3
     m_SparkSpawnSegmentDelay: 3
@@ -517,16 +517,16 @@ MonoBehaviour:
     m_SparkDriftScale: 1
     m_SparkOnSwitchInterval: 2
     m_SparkOffSwitchInterval: 0.5
-    m_JumpTime: 0.45
+    m_JumpTime: 0.5
   - m_InnerSpawnRadius: 5
     m_OuterSpawnRadius: 15
     m_BottomCircleCutoff: 0.3
     m_TopCircleCutoff: 0.7
     m_MaxWiresAtOnce: 5
-    m_MinSegments: 55
-    m_MaxSegments: 60
+    m_MinSegments: 50
+    m_MaxSegments: 58
     m_MinSpawnInterval: 0.8
-    m_MaxSpawnInterval: 1.8
+    m_MaxSpawnInterval: 1.7
     m_SpawnSegmentOffset: 7
     m_SpawnSegmentRange: 3
     m_SparkSpawnSegmentDelay: 3
@@ -540,16 +540,16 @@ MonoBehaviour:
     m_OuterSpawnRadius: 24
     m_BottomCircleCutoff: 0.55
     m_TopCircleCutoff: 0.7
-    m_MaxWiresAtOnce: 5
-    m_MinSegments: 65
-    m_MaxSegments: 70
+    m_MaxWiresAtOnce: 6
+    m_MinSegments: 55
+    m_MaxSegments: 65
     m_MinSpawnInterval: 0.5
-    m_MaxSpawnInterval: 1.2
+    m_MaxSpawnInterval: 1
     m_SpawnSegmentOffset: 8
     m_SpawnSegmentRange: 5
     m_SparkSpawnSegmentDelay: 3
     m_DefectiveWireChance: 0.075
-    m_SparkSpeed: 3.5
+    m_SparkSpeed: 3.4
     m_SparkDriftScale: 0.3
     m_SparkOnSwitchInterval: 1.5
     m_SparkOffSwitchInterval: 1.4
@@ -558,34 +558,34 @@ MonoBehaviour:
     m_OuterSpawnRadius: 26
     m_BottomCircleCutoff: 0.7
     m_TopCircleCutoff: 0.7
-    m_MaxWiresAtOnce: 7
-    m_MinSegments: 75
-    m_MaxSegments: 80
+    m_MaxWiresAtOnce: 6
+    m_MinSegments: 65
+    m_MaxSegments: 70
     m_MinSpawnInterval: 0.4
-    m_MaxSpawnInterval: 1.1
+    m_MaxSpawnInterval: 0.9
     m_SpawnSegmentOffset: 10
     m_SpawnSegmentRange: 5
     m_SparkSpawnSegmentDelay: 3
     m_DefectiveWireChance: 0.08
-    m_SparkSpeed: 3.75
+    m_SparkSpeed: 3.55
     m_SparkDriftScale: 0.6
     m_SparkOnSwitchInterval: 1.2
     m_SparkOffSwitchInterval: 0.3
     m_JumpTime: 0.35
   - m_InnerSpawnRadius: 20
-    m_OuterSpawnRadius: 30
+    m_OuterSpawnRadius: 25
     m_BottomCircleCutoff: 0.7
     m_TopCircleCutoff: 0.7
     m_MaxWiresAtOnce: 7
-    m_MinSegments: 85
-    m_MaxSegments: 90
+    m_MinSegments: 70
+    m_MaxSegments: 80
     m_MinSpawnInterval: 0.3
-    m_MaxSpawnInterval: 0.9
+    m_MaxSpawnInterval: 0.7
     m_SpawnSegmentOffset: 5
     m_SpawnSegmentRange: 6
     m_SparkSpawnSegmentDelay: 6
     m_DefectiveWireChance: 0.08
-    m_SparkSpeed: 4
+    m_SparkSpeed: 3.6
     m_SparkDriftScale: 0.6
     m_SparkOnSwitchInterval: 1
     m_SparkOffSwitchInterval: 0.3
@@ -632,7 +632,7 @@ MonoBehaviour:
   m_BottomCircleCutoff: 0.7
   m_TopCircleCutoff: 0.7
   m_PacketProperties:
-  - m_MinSpawnOffset: 85
+  - m_MinSpawnOffset: 75
     m_MinSpawnInterval: 0.8
     m_MaxSpawnInterval: 1
     m_MinSpeed: 8
@@ -642,10 +642,10 @@ MonoBehaviour:
     m_MinPacketsPerCluster: 1
     m_MaxPacketsPerCluster: 2
     m_ClusterRate: 2
-    m_ClusterSpawnRange: 2
+    m_ClusterSpawnRange: 1
     m_MultiplierIncreaseInterval: 10
     m_HandicapMultiplierIncreaseInterval: 7
-  - m_MinSpawnOffset: 75
+  - m_MinSpawnOffset: 85
     m_MinSpawnInterval: 1.5
     m_MaxSpawnInterval: 2.5
     m_MinSpeed: 13
@@ -655,12 +655,12 @@ MonoBehaviour:
     m_MinPacketsPerCluster: 2
     m_MaxPacketsPerCluster: 4
     m_ClusterRate: 2
-    m_ClusterSpawnRange: 3
+    m_ClusterSpawnRange: 1
     m_MultiplierIncreaseInterval: 12
     m_HandicapMultiplierIncreaseInterval: 9
-  - m_MinSpawnOffset: 85
+  - m_MinSpawnOffset: 100
     m_MinSpawnInterval: 1
-    m_MaxSpawnInterval: 1.2
+    m_MaxSpawnInterval: 2
     m_MinSpeed: 15
     m_MaxSpeed: 20
     m_Lifetime: 5
@@ -668,42 +668,42 @@ MonoBehaviour:
     m_MinPacketsPerCluster: 3
     m_MaxPacketsPerCluster: 4
     m_ClusterRate: 2
-    m_ClusterSpawnRange: 4
+    m_ClusterSpawnRange: 1
     m_MultiplierIncreaseInterval: 14
     m_HandicapMultiplierIncreaseInterval: 11
-  - m_MinSpawnOffset: 1201
-    m_MinSpawnInterval: 0.8
-    m_MaxSpawnInterval: 1.1
+  - m_MinSpawnOffset: 130
+    m_MinSpawnInterval: 1
+    m_MaxSpawnInterval: 2
     m_MinSpeed: 20
     m_MaxSpeed: 30
     m_Lifetime: 5
     m_ClusterChance: 0.05
     m_MinPacketsPerCluster: 3
-    m_MaxPacketsPerCluster: 5
+    m_MaxPacketsPerCluster: 3
     m_ClusterRate: 2
-    m_ClusterSpawnRange: 5
+    m_ClusterSpawnRange: 2
     m_MultiplierIncreaseInterval: 16
     m_HandicapMultiplierIncreaseInterval: 13
-  - m_MinSpawnOffset: 140
-    m_MinSpawnInterval: 0.5
-    m_MaxSpawnInterval: 0.7
+  - m_MinSpawnOffset: 150
+    m_MinSpawnInterval: 0.7
+    m_MaxSpawnInterval: 1.3
     m_MinSpeed: 25
     m_MaxSpeed: 35
     m_Lifetime: 5
     m_ClusterChance: 0.05
     m_MinPacketsPerCluster: 3
-    m_MaxPacketsPerCluster: 6
+    m_MaxPacketsPerCluster: 4
     m_ClusterRate: 2
-    m_ClusterSpawnRange: 6
+    m_ClusterSpawnRange: 2
     m_MultiplierIncreaseInterval: 18
     m_HandicapMultiplierIncreaseInterval: 15
-  - m_MinSpawnOffset: 160
-    m_MinSpawnInterval: 0.5
-    m_MaxSpawnInterval: 0.8
+  - m_MinSpawnOffset: 170
+    m_MinSpawnInterval: 1.6
+    m_MaxSpawnInterval: 1.1
     m_MinSpeed: 30
     m_MaxSpeed: 35
     m_Lifetime: 10
-    m_ClusterChance: 0.1
+    m_ClusterChance: 0.08
     m_MinPacketsPerCluster: 4
     m_MaxPacketsPerCluster: 6
     m_ClusterRate: 2
@@ -718,7 +718,7 @@ MonoBehaviour:
   m_BoostChargeRate: 0.5
   m_BoostDepletionRate: 8
   m_BoostMultiplier: 2
-  m_BoostPerPacket: 5
+  m_BoostPerPacket: 8
   m_BoostReadyParticles: {fileID: 0}
   m_DebugText: {fileID: 0}
 --- !u!1 &9082293327331159452

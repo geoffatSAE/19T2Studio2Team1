@@ -716,36 +716,6 @@ PrefabInstance:
       propertyPath: m_DebugText
       value: 
       objectReference: {fileID: 2014324680}
-    - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
-        type: 3}
-      propertyPath: m_WireProperties.Array.data[5].m_SparkSpeed
-      value: 3.7
-      objectReference: {fileID: 0}
-    - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
-        type: 3}
-      propertyPath: m_WireProperties.Array.data[4].m_SparkSpeed
-      value: 3.6
-      objectReference: {fileID: 0}
-    - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
-        type: 3}
-      propertyPath: m_WireProperties.Array.data[3].m_SparkSpeed
-      value: 3.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
-        type: 3}
-      propertyPath: m_WireProperties.Array.data[2].m_SparkSpeed
-      value: 3.25
-      objectReference: {fileID: 0}
-    - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
-        type: 3}
-      propertyPath: m_WireProperties.Array.data[1].m_SparkSpeed
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
-        type: 3}
-      propertyPath: m_WireProperties.Array.data[0].m_SparkSpeed
-      value: 2.75
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0c734c134181caa47bd9ea2607cf738b, type: 3}
 --- !u!114 &1444838668 stripped
@@ -1092,7 +1062,7 @@ PrefabInstance:
     - target: {fileID: 3395505406176328842, guid: 9a8c4600bb7ba224baddce08e9afd423,
         type: 3}
       propertyPath: m_ArcadeLength
-      value: 300
+      value: 240
       objectReference: {fileID: 0}
     - target: {fileID: 3395505406176328842, guid: 9a8c4600bb7ba224baddce08e9afd423,
         type: 3}
@@ -1162,12 +1132,12 @@ PrefabInstance:
     - target: {fileID: 3395505406176328835, guid: 9a8c4600bb7ba224baddce08e9afd423,
         type: 3}
       propertyPath: m_ParticleSimulationSpeeds.Array.size
-      value: 6
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 3395505406176328835, guid: 9a8c4600bb7ba224baddce08e9afd423,
         type: 3}
       propertyPath: m_BorderPanningSpeeds.Array.size
-      value: 6
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 3395505406176328835, guid: 9a8c4600bb7ba224baddce08e9afd423,
         type: 3}
@@ -1252,7 +1222,7 @@ PrefabInstance:
     - target: {fileID: 3395505406176328835, guid: 9a8c4600bb7ba224baddce08e9afd423,
         type: 3}
       propertyPath: m_BorderPanningSpeeds.Array.data[6].x
-      value: 100
+      value: 80
       objectReference: {fileID: 0}
     - target: {fileID: 3395505406176328835, guid: 9a8c4600bb7ba224baddce08e9afd423,
         type: 3}
@@ -1262,7 +1232,7 @@ PrefabInstance:
     - target: {fileID: 3395505406176328835, guid: 9a8c4600bb7ba224baddce08e9afd423,
         type: 3}
       propertyPath: m_ParticleSimulationSpeeds.Array.data[6]
-      value: 2.5
+      value: 3.3
       objectReference: {fileID: 0}
     - target: {fileID: 3395505406176328835, guid: 9a8c4600bb7ba224baddce08e9afd423,
         type: 3}
@@ -1274,6 +1244,31 @@ PrefabInstance:
       propertyPath: m_BoostActivationParticles
       value: 
       objectReference: {fileID: 997003559}
+    - target: {fileID: 3395505406176328835, guid: 9a8c4600bb7ba224baddce08e9afd423,
+        type: 3}
+      propertyPath: m_BoostSpeedMultiplier
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3395505406176328835, guid: 9a8c4600bb7ba224baddce08e9afd423,
+        type: 3}
+      propertyPath: m_BorderPanningSpeeds.Array.data[0].x
+      value: 7.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3395505406176328835, guid: 9a8c4600bb7ba224baddce08e9afd423,
+        type: 3}
+      propertyPath: m_BorderPanningSpeeds.Array.data[0].y
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 3395505406176328835, guid: 9a8c4600bb7ba224baddce08e9afd423,
+        type: 3}
+      propertyPath: m_BorderPanningSpeeds.Array.data[1].x
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3395505406176328835, guid: 9a8c4600bb7ba224baddce08e9afd423,
+        type: 3}
+      propertyPath: m_BorderPanningSpeeds.Array.data[1].y
+      value: 40
+      objectReference: {fileID: 0}
     - target: {fileID: 3395505406176328846, guid: 9a8c4600bb7ba224baddce08e9afd423,
         type: 3}
       propertyPath: m_GrayscalePulseSpeed
@@ -1353,7 +1348,7 @@ PrefabInstance:
     - target: {fileID: 8646348428308405757, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
         type: 3}
       propertyPath: m_Sensitivity
-      value: 2.3
+      value: 2.6
       objectReference: {fileID: 0}
     - target: {fileID: 8646348427193185105, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
         type: 3}
@@ -1680,6 +1675,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_RootOrder
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 310777032013873255, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2209899522852019192, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
         type: 3}
