@@ -38,6 +38,12 @@ namespace TO5.Wires
         private bool m_DisplayGameUI = true;    // If game UI should be displayed
         private int m_ActiveLives = 0;          // Amount of lives player has
 
+        public Text m_FPSText;
+
+        int frames = 0;
+        int fps = 0;
+        float time = 0f;
+
         void Update()
         {
             if (m_DisplayGameUI)
@@ -53,6 +59,19 @@ namespace TO5.Wires
                     RefreshBoostProgress(m_ScoreManager.boost);
                 }
             }
+
+            time += Time.deltaTime;
+            frames++;
+
+            if (time >= 1f)
+            {
+                fps = frames;
+                frames = 0;
+                time = Mathf.Repeat(time, 1f);
+            }
+
+            if (m_FPSText)
+                m_FPSText.text = string.Format("FPS: {0}", fps);
         }
 
         void OnEnable()
