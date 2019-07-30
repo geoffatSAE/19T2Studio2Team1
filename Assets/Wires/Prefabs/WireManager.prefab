@@ -70,7 +70,8 @@ AudioSource:
   m_GameObject: {fileID: 3265974735791973197}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 243396529080070242, guid: 55545f7fdabb42d4f93bdb72b21c53b1,
+    type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -197,10 +198,11 @@ AudioSource:
   m_GameObject: {fileID: 5186127552377471960}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 243297105590188606, guid: 55545f7fdabb42d4f93bdb72b21c53b1,
+    type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 0.5
+  m_Volume: 0.08
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -324,7 +326,8 @@ AudioSource:
   m_GameObject: {fileID: 6256303657784214869}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 243297105590188606, guid: 55545f7fdabb42d4f93bdb72b21c53b1,
+    type: 2}
   m_audioClip: {fileID: 8300000, guid: c7f87e3c43abd904a8627058b91e1b21, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
@@ -463,7 +466,7 @@ MonoBehaviour:
   m_SparkJumper: {fileID: 0}
   m_SparkPrefab: {fileID: 7764608039323799731, guid: 630a43b9f7b365f4db327f062cc13540,
     type: 3}
-  m_BoostSpeedMultiplier: 1.25
+  m_BoostSpeedMultiplier: 1.2
   m_SparkSpawnAudioSource: {fileID: 8467593056296462756}
   m_InitialSegments: 20
   m_WireAnimator: {fileID: 0}
@@ -477,12 +480,12 @@ MonoBehaviour:
   m_MaxDriftTime: 2.5
   m_WirePrefab: {fileID: 4698685643518956546, guid: 1f8155c3339076843a6198e146cab368,
     type: 3}
-  m_WireSpace: 3.25
+  m_WireSpace: 3
   m_WireProperties:
   - m_InnerSpawnRadius: 3
     m_OuterSpawnRadius: 5
     m_BottomCircleCutoff: 0
-    m_TopCircleCutoff: 1
+    m_TopCircleCutoff: 0.7
     m_MaxWiresAtOnce: 4
     m_MinSegments: 20
     m_MaxSegments: 30
@@ -500,7 +503,7 @@ MonoBehaviour:
   - m_InnerSpawnRadius: 4
     m_OuterSpawnRadius: 7
     m_BottomCircleCutoff: 0.3
-    m_TopCircleCutoff: 1
+    m_TopCircleCutoff: 0.7
     m_MaxWiresAtOnce: 4
     m_MinSegments: 35
     m_MaxSegments: 40
@@ -518,7 +521,7 @@ MonoBehaviour:
   - m_InnerSpawnRadius: 5
     m_OuterSpawnRadius: 15
     m_BottomCircleCutoff: 0.3
-    m_TopCircleCutoff: 1
+    m_TopCircleCutoff: 0.7
     m_MaxWiresAtOnce: 5
     m_MinSegments: 55
     m_MaxSegments: 60
@@ -533,10 +536,10 @@ MonoBehaviour:
     m_SparkOnSwitchInterval: 2
     m_SparkOffSwitchInterval: 0.5
     m_JumpTime: 0.45
-  - m_InnerSpawnRadius: 13
-    m_OuterSpawnRadius: 22
+  - m_InnerSpawnRadius: 14
+    m_OuterSpawnRadius: 24
     m_BottomCircleCutoff: 0.55
-    m_TopCircleCutoff: 1
+    m_TopCircleCutoff: 0.7
     m_MaxWiresAtOnce: 5
     m_MinSegments: 65
     m_MaxSegments: 70
@@ -548,13 +551,13 @@ MonoBehaviour:
     m_DefectiveWireChance: 0.075
     m_SparkSpeed: 3.5
     m_SparkDriftScale: 0.3
-    m_SparkOnSwitchInterval: 2
-    m_SparkOffSwitchInterval: 0.5
+    m_SparkOnSwitchInterval: 1.5
+    m_SparkOffSwitchInterval: 1.4
     m_JumpTime: 0.4
-  - m_InnerSpawnRadius: 15
+  - m_InnerSpawnRadius: 16
     m_OuterSpawnRadius: 26
     m_BottomCircleCutoff: 0.7
-    m_TopCircleCutoff: 1
+    m_TopCircleCutoff: 0.7
     m_MaxWiresAtOnce: 7
     m_MinSegments: 75
     m_MaxSegments: 80
@@ -566,16 +569,16 @@ MonoBehaviour:
     m_DefectiveWireChance: 0.08
     m_SparkSpeed: 3.75
     m_SparkDriftScale: 0.6
-    m_SparkOnSwitchInterval: 2
-    m_SparkOffSwitchInterval: 0.5
+    m_SparkOnSwitchInterval: 1.2
+    m_SparkOffSwitchInterval: 0.3
     m_JumpTime: 0.35
   - m_InnerSpawnRadius: 20
     m_OuterSpawnRadius: 30
     m_BottomCircleCutoff: 0.7
-    m_TopCircleCutoff: 1
+    m_TopCircleCutoff: 0.7
     m_MaxWiresAtOnce: 7
-    m_MinSegments: 75
-    m_MaxSegments: 80
+    m_MinSegments: 85
+    m_MaxSegments: 90
     m_MinSpawnInterval: 0.3
     m_MaxSpawnInterval: 0.9
     m_SpawnSegmentOffset: 5
@@ -584,8 +587,8 @@ MonoBehaviour:
     m_DefectiveWireChance: 0.08
     m_SparkSpeed: 4
     m_SparkDriftScale: 0.6
-    m_SparkOnSwitchInterval: 2
-    m_SparkOffSwitchInterval: 0.5
+    m_SparkOnSwitchInterval: 1
+    m_SparkOffSwitchInterval: 0.3
     m_JumpTime: 0.3
   m_WirePropertiesStagePreview: 5
   m_DisabledSpot: {fileID: 7927552244697839908}
@@ -611,7 +614,7 @@ MonoBehaviour:
   m_ScorePerSecond: 5
   m_JumpScore: 15
   m_PacketScore: 50
-  m_MultiplierStages: 6
+  m_MultiplierStages: 5
   m_StageLives: 4
   m_StageHandicap: 2
   m_MultiplierAudioSource: {fileID: 4692482073915151728}
@@ -627,11 +630,11 @@ MonoBehaviour:
   m_MinPacketSpawnRadius: 4
   m_MaxPacketSpawnRadius: 25.9
   m_BottomCircleCutoff: 0.7
-  m_TopCircleCutoff: 1
+  m_TopCircleCutoff: 0.7
   m_PacketProperties:
   - m_MinSpawnOffset: 85
     m_MinSpawnInterval: 0.8
-    m_MaxSpawnInterval: 1.2
+    m_MaxSpawnInterval: 1
     m_MinSpeed: 8
     m_MaxSpeed: 12
     m_Lifetime: 0
@@ -640,8 +643,8 @@ MonoBehaviour:
     m_MaxPacketsPerCluster: 2
     m_ClusterRate: 2
     m_ClusterSpawnRange: 2
-    m_MultiplierIncreaseInterval: 12
-    m_HandicapMultiplierIncreaseInterval: 9
+    m_MultiplierIncreaseInterval: 10
+    m_HandicapMultiplierIncreaseInterval: 7
   - m_MinSpawnOffset: 75
     m_MinSpawnInterval: 1.5
     m_MaxSpawnInterval: 2.5
@@ -653,8 +656,8 @@ MonoBehaviour:
     m_MaxPacketsPerCluster: 4
     m_ClusterRate: 2
     m_ClusterSpawnRange: 3
-    m_MultiplierIncreaseInterval: 15
-    m_HandicapMultiplierIncreaseInterval: 10
+    m_MultiplierIncreaseInterval: 12
+    m_HandicapMultiplierIncreaseInterval: 9
   - m_MinSpawnOffset: 85
     m_MinSpawnInterval: 1
     m_MaxSpawnInterval: 1.2
@@ -666,9 +669,9 @@ MonoBehaviour:
     m_MaxPacketsPerCluster: 4
     m_ClusterRate: 2
     m_ClusterSpawnRange: 4
-    m_MultiplierIncreaseInterval: 18
-    m_HandicapMultiplierIncreaseInterval: 12
-  - m_MinSpawnOffset: 105
+    m_MultiplierIncreaseInterval: 14
+    m_HandicapMultiplierIncreaseInterval: 11
+  - m_MinSpawnOffset: 1201
     m_MinSpawnInterval: 0.8
     m_MaxSpawnInterval: 1.1
     m_MinSpeed: 20
@@ -679,9 +682,9 @@ MonoBehaviour:
     m_MaxPacketsPerCluster: 5
     m_ClusterRate: 2
     m_ClusterSpawnRange: 5
-    m_MultiplierIncreaseInterval: 21
-    m_HandicapMultiplierIncreaseInterval: 14
-  - m_MinSpawnOffset: 125
+    m_MultiplierIncreaseInterval: 16
+    m_HandicapMultiplierIncreaseInterval: 13
+  - m_MinSpawnOffset: 140
     m_MinSpawnInterval: 0.5
     m_MaxSpawnInterval: 0.7
     m_MinSpeed: 25
@@ -692,28 +695,28 @@ MonoBehaviour:
     m_MaxPacketsPerCluster: 6
     m_ClusterRate: 2
     m_ClusterSpawnRange: 6
-    m_MultiplierIncreaseInterval: 23
+    m_MultiplierIncreaseInterval: 18
     m_HandicapMultiplierIncreaseInterval: 15
-  - m_MinSpawnOffset: 135
-    m_MinSpawnInterval: 0.35
-    m_MaxSpawnInterval: 0.5
+  - m_MinSpawnOffset: 160
+    m_MinSpawnInterval: 0.5
+    m_MaxSpawnInterval: 0.8
     m_MinSpeed: 30
     m_MaxSpeed: 35
     m_Lifetime: 10
     m_ClusterChance: 0.1
-    m_MinPacketsPerCluster: 5
-    m_MaxPacketsPerCluster: 9
+    m_MinPacketsPerCluster: 4
+    m_MaxPacketsPerCluster: 6
     m_ClusterRate: 2
     m_ClusterSpawnRange: 7
-    m_MultiplierIncreaseInterval: 25
-    m_HandicapMultiplierIncreaseInterval: 18
+    m_MultiplierIncreaseInterval: 20
+    m_HandicapMultiplierIncreaseInterval: 17
   m_PacketSpawnSound: {fileID: 8300000, guid: 533ab82fc0da3b4489a255bd7f888159, type: 3}
   m_PacketClusterSpawnSound: {fileID: 8300000, guid: 1b4864a33bd2c944d8bb4a0b77102a55,
     type: 3}
   m_PacketSpawnAudioSource: {fileID: 6503108835169757723}
   m_PacketAudioSource: {fileID: 7661163149686658425}
-  m_BoostChargeRate: 0.83
-  m_BoostDepletionRate: 15
+  m_BoostChargeRate: 0.5
+  m_BoostDepletionRate: 8
   m_BoostMultiplier: 2
   m_BoostPerPacket: 5
   m_BoostReadyParticles: {fileID: 0}
@@ -758,7 +761,8 @@ AudioSource:
   m_GameObject: {fileID: 9082293327331159452}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 243841563610326654, guid: 55545f7fdabb42d4f93bdb72b21c53b1,
+    type: 2}
   m_audioClip: {fileID: 8300000, guid: 2f9b0d5cf9320d24d965a524d29f5211, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
