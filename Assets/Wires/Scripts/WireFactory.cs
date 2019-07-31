@@ -5,11 +5,23 @@ using UnityEngine;
 namespace TO5.Wires
 {
     /// <summary>
+    /// Properties about the music to play
+    /// </summary>
+    [System.Serializable]
+    public struct MusicTrack
+    {
+        public AudioClip m_Music;                   // Music to play
+        [Min(0.01f)] public float m_BeatRate;       // Rate of musics beat
+        [Min(0.01f)] public float m_BeatDelay;      // Initial delay of musics beat
+    }
+
+
+    /// <summary>
     /// Factory for the types of wires to spawn into the world
     /// </summary>
     [CreateAssetMenu]
     public class WireFactory : ScriptableObject
-    {
+    {       
         // The color for this factory
         public Color color { get { return m_Color; } }
 
@@ -30,20 +42,20 @@ namespace TO5.Wires
         [SerializeField] private Color m_ParticleColor;                             // Particles color
         [SerializeField] private ParticleSystem.MinMaxGradient m_BoostColor;        // Boost color
         [SerializeField] private Texture2D m_BorderTexture;                         // Texture for outer border
-        [SerializeField] private AudioClip[] m_Music;                               // Wires music tracks (for each intensity)
+        [SerializeField] private MusicTrack[] m_MusicTracks;                        // Wires music tracks (for each intensity)
 
         /// <summary>
-        /// Get music at index
+        /// Get music at track
         /// </summary>
-        /// <param name="index">Index of music</param>
-        /// <returns>Audio clip or null</returns>
-        public AudioClip GetMusic(int index)
+        /// <param name="index">Index of track</param>
+        /// <returns>Audio clip or default track</returns>
+        public MusicTrack GetMusicTrack(int index)
         {
-            if (m_Music == null || m_Music.Length == 0)
-                return null;
+            if (m_MusicTracks == null || m_MusicTracks.Length == 0)
+                return new MusicTrack();
 
-            index = Mathf.Clamp(index, 0, m_Music.Length - 1); ;
-            return m_Music[index];
+            index = Mathf.Clamp(index, 0, m_MusicTracks.Length - 1); ;
+            return m_MusicTracks[index];
         }
     }
 }

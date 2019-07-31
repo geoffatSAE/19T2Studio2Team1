@@ -387,8 +387,8 @@ MonoBehaviour:
   m_Canvas: {fileID: 5220531377242686815}
   m_Image: {fileID: 5220531377100126288}
   m_Slides:
-  - {fileID: 2800000, guid: 25338de99cd096741a15f6aab2776fcd, type: 3}
-  - {fileID: 2800000, guid: 86e6847510c31684085881d5826ca376, type: 3}
-  - {fileID: 2800000, guid: 5a74066e43ae1684a80d9bd79ecca6ee, type: 3}
-  - {fileID: 2800000, guid: cd51df623ddaec2469a6e9bbf01cc683, type: 3}
+  - {fileID: 2800000, guid: b168059bb397f62449eec649f1d9c8ae, type: 3}
+  - {fileID: 2800000, guid: 8dad535144c8acd459f4ddad56588bed, type: 3}
+  - {fileID: 2800000, guid: b45b68c533969664ebcbb2e356210d46, type: 3}
+  - {fileID: 2800000, guid: aed515095568c994d86081d9883a17ae, type: 3}
   m_SkipButton: {fileID: 5220531377157060925}

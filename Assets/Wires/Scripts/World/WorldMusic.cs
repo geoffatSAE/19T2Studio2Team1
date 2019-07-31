@@ -16,9 +16,11 @@ namespace TO5.Wires
         [SerializeField] private AudioSource m_MusicSource2;        // Second source for audio
         private bool m_Source1Active = true;                        // Which source is active source
 
-        public float m_BeatRate = 1f;
-        public float m_BeatDelay = 0.5f;
-        public AnimationCurve m_BeatCurve = AnimationCurve.Linear(0f, 1f, 1f, 0f);
+        public AnimationCurve m_BeatCurve = AnimationCurve.Linear(0f, 1f, 1f, 0f);      // Animation curve of beat (value provided to shaders)
+        private float m_ActiveBeatRate = 1f;                                            // Beat rate of active music
+        private float m_ActiveBeatDelay = 0f;                                           // Beat delay of active music
+        private float m_PendingBeatRate = 1f;                                           // Beat rate of pending music
+        private float m_PendingBeatDelay = 0f;                                          // Beat delay of pending music
 
         void Awake()
         {
@@ -39,24 +41,24 @@ namespace TO5.Wires
 
         void Update()
         {
-            float time = Mathf.Repeat(Mathf.Max(Time.time - m_BeatDelay, 0f), m_BeatRate);
-            time /= m_BeatRate;
-
-            float beat = m_BeatCurve.Evaluate(time);
-            Shader.SetGlobalFloat("_BeatTime", beat);
+            // Current time of beat (accounted for initial delay)
+            float beatTime = Mathf.Repeat(Mathf.Max(Time.time - m_ActiveBeatDelay, 0f), m_ActiveBeatRate) / m_ActiveBeatRate;
+            Shader.SetGlobalFloat(BeatTimeShaderName, m_BeatCurve.Evaluate(beatTime));
         }
 
         /// <summary>
         /// Sets active music, instantly overriding whats actively playing (can be used during Blending)
         /// </summary>
-        /// <param name="audioClip">Music to play</param>
-        public void SetActiveMusic(AudioClip audioClip)
+        /// <param name="track">Track to play</param>
+        public void SetActiveTrack(MusicTrack track)
         {
-            if (!audioClip)
+            if (!track.m_Music)
             {
                 Debug.LogWarning("Audio clip is invalid. Unable to play music", this);
                 return;
             }
+
+            AudioClip audioClip = track.m_Music;
 
             AudioSource activeSource = m_Source1Active ? m_MusicSource1 : m_MusicSource2;
             activeSource.enabled = true;
@@ -68,20 +70,25 @@ namespace TO5.Wires
             activeSource.volume = 1f;
 
             activeSource.time = audioClip.length * progess;
-            activeSource.Play();         
+            activeSource.Play();
+
+            m_ActiveBeatRate = track.m_BeatRate;
+            m_ActiveBeatDelay = track.m_BeatDelay;
         }
 
         /// <summary>
         /// Sets active music pending to be blended, allowing BlendMusic to be called
         /// </summary>
-        /// <param name="audioClip">Music to fade to</param>
-        public void SetPendingMusic(AudioClip audioClip)
+        /// <param name="track">Track to change to</param>
+        public void SetPendingTrack(MusicTrack track)
         {
-            if (!audioClip)
+            if (!track.m_Music)
             {
                 Debug.LogWarning("Audio clip is invalid. Unable to play music", this);
                 return;
             }
+
+            AudioClip audioClip = track.m_Music;
 
             AudioSource activeSource = m_Source1Active ? m_MusicSource2 : m_MusicSource1;
             AudioSource fadingSource = m_Source1Active ? m_MusicSource1 : m_MusicSource2;
@@ -100,6 +107,9 @@ namespace TO5.Wires
             activeSource.Play();                
 
             m_Source1Active = !m_Source1Active;
+
+            m_PendingBeatRate = track.m_BeatRate;
+            m_PendingBeatDelay = track.m_BeatDelay;
         }
 
         /// <summary>
@@ -118,7 +128,15 @@ namespace TO5.Wires
 
             // Disable inactive source when finished (as it should be mute)
             if (progress >= 1f)
+            {
                 fadingSource.enabled = false;
+            }
+            // Switch to pending beat rate
+            else if (progress >= 0.5f)
+            {
+                m_ActiveBeatRate = m_PendingBeatRate;
+                m_ActiveBeatDelay = m_PendingBeatDelay;
+            }
         }
     }
 }
