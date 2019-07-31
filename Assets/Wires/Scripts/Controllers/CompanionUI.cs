@@ -28,6 +28,12 @@ namespace TO5.Wires
         public Color m_LifeActiveColor = Color.white;           // Color to use for active lives
         public Color m_LifeInactiveColor = Color.gray;          // Color to use for inactive lives
 
+        public FloatingMovement m_FloatMove;
+        public Transform m_JumpPivot;
+        public float m_IncJumpTime = 1.25f;
+        public float m_IncHeight = 0.5f;
+        public float m_DecHeight = 0.2f;
+
         [Header("Stats")]
         public string m_ScoreStatsTextFormat = "Score: {0}";                // Formatting for score text on the stats UI ({0} is required, will be replaced by actual score)
         public string m_DistanceStatsTextFormat = "Distance: {0:0.0}m";     // Formatting for distance text on the stats UI ({0} is required, will be replaced by actual distance)
@@ -261,18 +267,27 @@ namespace TO5.Wires
         {
             // Boost overrides these animations
             if (m_ScoreManager && m_ScoreManager.boostActive)
-                return;
-
-            if (m_Animator)
             {
-                if (stage != m_PreviousStage)
-                {
-                    string stateName = stage > m_PreviousStage ? m_MulIncAnim : m_MulDecAnim;
-                    m_Animator.Play(stateName);
-                }
+                m_PreviousStage = stage;
+                return;
             }
 
-            m_PreviousStage = stage;
+            if (m_PreviousStage != stage)
+            {
+                if (m_Animator)
+                {
+                    if (stage != m_PreviousStage)
+                    {
+                        string stateName = stage > m_PreviousStage ? m_MulIncAnim : m_MulDecAnim;
+                        m_Animator.Play(stateName);
+                    }
+                }
+
+                StopCoroutine("JumpRoutine");
+                StartCoroutine(JumpRoutine(stage > m_PreviousStage ? m_IncHeight : -m_DecHeight));
+
+                m_PreviousStage = stage;
+            }
         }
 
         /// <summary>
@@ -283,6 +298,30 @@ namespace TO5.Wires
         {
             if (m_Animator)
                 m_Animator.SetBool("boostActive", active);
+        }
+
+        private IEnumerator JumpRoutine(float offset)
+        {
+            if (m_FloatMove)
+                m_FloatMove.enabled = false;
+
+            float end = Time.time + m_IncJumpTime;
+            while (Time.time < end)
+            {
+                float alpha = Mathf.Clamp01((end - Time.time) / m_IncJumpTime);
+                alpha = Mathf.Pow((alpha * 2f) - 1f, 2f);
+
+                if (m_JumpPivot)
+                    m_JumpPivot.transform.localPosition = new Vector3(0f, Mathf.Lerp(0f, offset, 1f - alpha), 0f);
+
+                yield return null;
+            }
+
+            if (m_JumpPivot)
+                m_JumpPivot.transform.localPosition = Vector3.zero;
+
+            if (m_FloatMove)
+                m_FloatMove.enabled = true;
         }
     }
 }
