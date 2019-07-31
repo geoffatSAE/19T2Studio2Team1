@@ -715,6 +715,8 @@ MonoBehaviour:
     type: 3}
   m_PacketSpawnAudioSource: {fileID: 6503108835169757723}
   m_PacketAudioSource: {fileID: 7661163149686658425}
+  m_PacketCollectedParticles: {fileID: 469596020462369590, guid: ebda5d0062df6f74fb8409a598ca1179,
+    type: 3}
   m_BoostChargeRate: 0.5
   m_BoostDepletionRate: 8
   m_BoostMultiplier: 2
