@@ -126,6 +126,7 @@ namespace TO5.Wires
         {
             m_IsDrifting = isEnabled;
 
+            m_WorldMusic.FadeMusic(isEnabled);
             m_WorldColor.SetGrayscaleEnabled(isEnabled);
 
             if (isEnabled)

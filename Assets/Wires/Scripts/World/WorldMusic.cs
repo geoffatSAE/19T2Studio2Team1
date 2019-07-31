@@ -12,9 +12,14 @@ namespace TO5.Wires
     {
         static public readonly string BeatTimeShaderName = "_BeatTime";
 
-        [SerializeField] private AudioSource m_MusicSource1;        // First source for audio
-        [SerializeField] private AudioSource m_MusicSource2;        // Second source for audio
-        private bool m_Source1Active = true;                        // Which source is active source
+        [SerializeField] private AudioSource m_MusicSource1;                // First source for audio
+        [SerializeField] private AudioSource m_MusicSource2;                // Second source for audio
+        [SerializeField, Min(0f)] private float m_MusicFadeTime = 1.5f;     // Time at which music fades when drifting
+        [SerializeField] private float m_MusicFadeVolume = 0.5f;            // Music volume when faded out
+        [SerializeField] private float m_MusicFadePitch = 0.75f;            // Music speed when faded out
+        private bool m_Source1Active = true;                                // Which source is active source
+        private bool m_FadingMusic = false;                                 // If music is being faded out
+        private Coroutine m_FadingMusicRoutine = null;                      // Routine for fading music
 
         public AnimationCurve m_BeatCurve = AnimationCurve.Linear(0f, 1f, 1f, 0f);      // Animation curve of beat (value provided to shaders)
         private float m_ActiveBeatRate = 1f;                                            // Beat rate of active music
@@ -139,6 +144,71 @@ namespace TO5.Wires
             {
                 fadingSource.enabled = false;
             }         
+        }
+
+        /// <summary>
+        /// Fades the music in and out (cancels previous fade if active)
+        /// </summary>
+        /// <param name="fadeMusic">If to fade music out</param>
+        public void FadeMusic(bool fadeMusic)
+        {
+            if (m_FadingMusic != fadeMusic)
+            {
+                m_FadingMusic = fadeMusic;
+
+                if (m_FadingMusicRoutine != null)
+                {
+                    StopCoroutine(m_FadingMusicRoutine);
+                    m_FadingMusicRoutine = null;
+                }
+
+                m_FadingMusicRoutine = StartCoroutine(FadeMusicRoutine(!fadeMusic));
+            }
+        }
+
+        /// <summary>
+        /// Routine for fading music in and out (both active and inactive sources)
+        /// </summary>
+        /// <param name="fadeIn">If music should fade in or out</param>
+        /// <returns></returns>
+        private IEnumerator FadeMusicRoutine(bool fadeIn)
+        {
+            float end = Time.time + m_MusicFadeTime;
+            while (Time.time < end)
+            {
+                float alpha = Mathf.Clamp01((end - Time.time) / m_MusicFadeTime);
+
+                if (!fadeIn)
+                    alpha = 1f - alpha;
+
+                InterpolateMusicFade(alpha);
+
+                yield return null;
+            }
+
+            InterpolateMusicFade(fadeIn ? 0f : 1f);
+        }
+
+        /// <summary>
+        /// Interpolates the volume and pitch of music sources
+        /// </summary>
+        /// <param name="alpha">Alpha of interpolation</param>
+        private void InterpolateMusicFade(float alpha)
+        {
+            float volume = Mathf.Lerp(1f, m_MusicFadeVolume, alpha);
+            float pitch = Mathf.Lerp(1f, m_MusicFadePitch, alpha);
+
+            if (m_MusicSource1)
+            {
+                m_MusicSource1.volume = volume;
+                m_MusicSource1.pitch = pitch;
+            }
+
+            if (m_MusicSource2)
+            {
+                m_MusicSource2.volume = volume;
+                m_MusicSource2.pitch = pitch;
+            }
         }
     }
 }

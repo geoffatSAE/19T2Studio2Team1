@@ -36,7 +36,12 @@ namespace TO5.Wires
         [SerializeField] private Text m_ScoreStatsText;         // Text block for writing players final score
         [SerializeField] private Text m_DistanceStatsText;      // Text block for writing players distance travelled
 
+        [Header("Animation")]
+        [SerializeField] private string m_MulIncAnim = "MulIncrease";       // Name of state for playing multiplier increased anim
+        [SerializeField] private string m_MulDecAnim = "MulDecrease";       // Name of state for playing multiplier decreased anim
+
         private bool m_DisplayGameUI = true;    // If game UI should be displayed
+        private int m_PreviousStage = 0;
         private int m_ActiveLives = 0;          // Amount of lives player has
 
         public Text m_FPSText;
@@ -48,7 +53,12 @@ namespace TO5.Wires
         void Awake()
         {
             if (m_ScoreManager)
+            {
+                m_PreviousStage = m_ScoreManager.multiplierStage;
+
+                m_ScoreManager.OnMultiplierUpdated += MultiplierUpdated;
                 m_ScoreManager.OnBoostModeUpdated += BoostModeUpdated;
+            }
         }
 
         void Update()
@@ -240,6 +250,25 @@ namespace TO5.Wires
         private void StageLivesUpdated(int lives)
         {
             RefreshLivesList(lives);
+        }
+
+        /// <summary>
+        /// Notify that multiplier stage has changed
+        /// </summary>
+        /// <param name="multiplier">New multiplier</param>
+        /// <param name="stage">New stage</param>
+        private void MultiplierUpdated(float multiplier, int stage)
+        {
+            if (m_Animator)
+            {
+                if (stage != m_PreviousStage)
+                {
+                    string stateName = stage > m_PreviousStage ? m_MulIncAnim : m_MulDecAnim;
+                    m_Animator.Play(stateName);
+                }
+            }
+
+            m_PreviousStage = stage;
         }
 
         /// <summary>
