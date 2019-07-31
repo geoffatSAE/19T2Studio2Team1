@@ -126,17 +126,18 @@ namespace TO5.Wires
             activeSource.volume = progress;
             fadingSource.volume = 1f - progress;
 
-            // Disable inactive source when finished (as it should be mute)
-            if (progress >= 1f)
-            {
-                fadingSource.enabled = false;
-            }
             // Switch to pending beat rate
-            else if (progress >= 0.5f)
+            if (progress >= 0.5f)
             {
                 m_ActiveBeatRate = m_PendingBeatRate;
                 m_ActiveBeatDelay = m_PendingBeatDelay;
             }
+
+            // Disable inactive source when finished (as it should be mute)
+            if (progress >= 1f)
+            {
+                fadingSource.enabled = false;
+            }         
         }
     }
 }

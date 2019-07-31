@@ -79,6 +79,9 @@ namespace TO5.Wires
         public AudioClip m_PacketClusterSpawnSound;             // Spawn sound for a cluster of packets
         public AudioSource m_PacketSpawnAudioSource;            // Audio source for packets spawning                          
         public AudioSource m_PacketAudioSource;                 // Audio source for packets (moves depending on players location)
+        public ParticleSystem m_PacketCollectedParticles;       // Particle system to play when a packet is collected
+
+        private ObjectPool<ParticleSystem> m_PacketCollectedSystems = new ObjectPool<ParticleSystem>();     // Pool of particle systems used for packet collection
 
         [Header("Boost")]
         [SerializeField] private float m_BoostChargeRate = 0.83f;           // Boost player earns per second
@@ -194,6 +197,7 @@ namespace TO5.Wires
             }
 
             UpdatePacketAudioSource();
+            UpdatePacketParticles();
 
             Profiler.EndSample();
 
@@ -698,6 +702,9 @@ namespace TO5.Wires
                 if (m_PacketAudioSource)
                     m_PacketAudioSource.Stop();
 
+            if (wasCollected)
+                SpawnPacketCollectedParticles(packet);
+
             if (OnPacketDespawned != null)
                 OnPacketDespawned.Invoke(packet, wasCollected);
         }
@@ -920,6 +927,48 @@ namespace TO5.Wires
 
                     if (closestPacket)
                         m_PacketAudioSource.transform.position = closestPacket.transform.position;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Spawns a particle system for when a packet has been collected
+        /// </summary>
+        /// <param name="packet">Packet that was collected</param>
+        private void SpawnPacketCollectedParticles(DataPacket packet)
+        {
+            if (!packet)
+                return;
+
+            ParticleSystem system = null;
+            if (m_PacketCollectedSystems.canActivateObject)
+            {
+                system = m_PacketCollectedSystems.ActivateObject();
+                system.transform.position = packet.transform.position;
+            }
+            else if (m_PacketCollectedParticles != null)
+            {
+                system = Instantiate(m_PacketCollectedParticles, packet.transform.position, Quaternion.identity);
+                m_PacketCollectedSystems.Add(system);
+                m_PacketCollectedSystems.ActivateObject();
+            }    
+
+            system.time = 0f;
+            system.Play();
+        }
+
+        /// <summary>
+        /// Updates which particles are active or inactive
+        /// </summary>
+        private void UpdatePacketParticles()
+        {
+            for (int i = 0; i < m_PacketCollectedSystems.activeCount; ++i)
+            {
+                ParticleSystem system = m_PacketCollectedSystems.GetObject(i);
+                if (!system.IsAlive())
+                {
+                    m_PacketCollectedSystems.DeactivateObject(i);
+                    --i;
                 }
             }
         }

@@ -70,7 +70,7 @@ namespace TO5.Wires
                         WireFactory factory = m_CurrentWire.factory;
                         if (factory)
                         {
-                            m_WorldMusic.SetPendingTrack(factory.GetMusicTrack(m_MultiplierStage));
+                            m_WorldMusic.SetActiveTrack(factory.GetMusicTrack(m_MultiplierStage));
                             m_WorldColor.SetActiveColor(factory.skyboxColor);
                         }
 

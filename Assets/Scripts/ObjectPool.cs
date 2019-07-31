@@ -69,17 +69,21 @@ namespace TO5
         /// <param name="value">Object to deactivate</param>
         public void DeactivateObject(T value)
         {
-            int index = m_Objects.FindIndex(item => item == value);
-            if (index != -1)
-            {
-                // Object isn't active if equal or greater
-                if (index < m_ActiveCount)
-                {
-                    Assert.IsTrue(m_ActiveCount > 0);
+            DeactivateObject(m_Objects.FindIndex(item => item == value));
+        }
 
-                    Swap(index, m_ActiveCount - 1);
-                    --m_ActiveCount;
-                }
+        /// <summary>
+        /// Deactivates the object at given index
+        /// </summary>
+        /// <param name="index">Index of object to deactivate</param>
+        public void DeactivateObject(int index)
+        {
+            if (index >= 0 && index < m_ActiveCount)
+            {
+                Assert.IsTrue(m_ActiveCount > 0);
+
+                Swap(index, m_ActiveCount - 1);
+                --m_ActiveCount;
             }
         }
 
