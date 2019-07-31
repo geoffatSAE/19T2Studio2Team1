@@ -12,6 +12,7 @@ namespace TO5.Wires
     {
         [SerializeField] private SparkJumper m_SparkJumper;         // Players spark jumper
         [SerializeField] private ScoreManager m_ScoreManager;       // Games score manager
+        [SerializeField] private Animator m_Animator;               // Companions animator
 
         [Header("Game")]
         public string m_ScoreTextFormat = "Score: {0}";         // Formatting for score text ({0} is required, will be replaced by actual score)
@@ -43,6 +44,12 @@ namespace TO5.Wires
         int frames = 0;
         int fps = 0;
         float time = 0f;
+
+        void Awake()
+        {
+            if (m_ScoreManager)
+                m_ScoreManager.OnBoostModeUpdated += BoostModeUpdated;
+        }
 
         void Update()
         {
@@ -233,6 +240,16 @@ namespace TO5.Wires
         private void StageLivesUpdated(int lives)
         {
             RefreshLivesList(lives);
+        }
+
+        /// <summary>
+        /// Notify that players boost has updated modes
+        /// </summary>
+        /// <param name="active">If boost is active</param>
+        private void BoostModeUpdated(bool active)
+        {
+            if (m_Animator)
+                m_Animator.SetBool("boostActive", active);
         }
     }
 }

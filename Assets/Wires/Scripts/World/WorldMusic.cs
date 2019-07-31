@@ -42,8 +42,9 @@ namespace TO5.Wires
         void Update()
         {
             // Current time of beat (accounted for initial delay)
-            float beatTime = Mathf.Repeat(Mathf.Max(Time.time - m_ActiveBeatDelay, 0f), m_ActiveBeatRate) / m_ActiveBeatRate;
-            Shader.SetGlobalFloat(BeatTimeShaderName, m_BeatCurve.Evaluate(beatTime));
+            float beatRate = m_ActiveBeatRate > 0f ? m_ActiveBeatRate : 1f;
+            float beatTime = Mathf.Max(Time.time - m_ActiveBeatDelay, 0f) / beatRate;
+            Shader.SetGlobalFloat(BeatTimeShaderName, m_BeatCurve.Evaluate(Mathf.Repeat(beatTime, 1f)));
         }
 
         /// <summary>

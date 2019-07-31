@@ -1681,6 +1681,12 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!95 &1781560669 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 7271393408115988490, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
+    type: 3}
+  m_PrefabInstance: {fileID: 8646348427722513404}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2014324678
 GameObject:
   m_ObjectHideFlags: 0
@@ -2201,6 +2207,11 @@ PrefabInstance:
       propertyPath: m_ScoreManager
       value: 
       objectReference: {fileID: 1444838669}
+    - target: {fileID: 240138024243195650, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
+        type: 3}
+      propertyPath: m_Animator
+      value: 
+      objectReference: {fileID: 1781560669}
     - target: {fileID: 3992764447687396754, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -2321,6 +2332,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7271393408115988490, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
+        type: 3}
+      propertyPath: m_Avatar
+      value: 
+      objectReference: {fileID: 9000000, guid: f42c7a07e9f3e524096430d2e4a9c490, type: 3}
     - target: {fileID: 1752312350989601713, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
         type: 3}
       propertyPath: m_IsActive
