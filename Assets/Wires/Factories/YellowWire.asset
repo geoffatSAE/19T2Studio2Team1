@@ -78,10 +78,22 @@ MonoBehaviour:
     m_ColorMin: {r: 0, g: 0, b: 0, a: 0}
     m_ColorMax: {r: 0, g: 0, b: 0, a: 0}
   m_BorderTexture: {fileID: 2800000, guid: deff90eebe787eb4baf1deb26e423804, type: 3}
-  m_Music:
-  - {fileID: 8300000, guid: fb5af112210c21343ac9e41218767f05, type: 3}
-  - {fileID: 8300000, guid: c9f1f303a35054441ae1c175af059bce, type: 3}
-  - {fileID: 8300000, guid: 1a3a93f58df3d984888a21c77486ce7a, type: 3}
-  - {fileID: 8300000, guid: 57eefec948321cc47b3bd85ea971050d, type: 3}
-  - {fileID: 8300000, guid: e44afa3a98c52c643b95d23dc498f29c, type: 3}
-  - {fileID: 8300000, guid: 6c990c30c83a8c544b60f2be32b53e98, type: 3}
+  m_MusicTracks:
+  - m_Music: {fileID: 8300000, guid: 7a4542fd7afd394448505f5f60efeb8f, type: 3}
+    m_BeatRate: 0
+    m_BeatDelay: 0
+  - m_Music: {fileID: 8300000, guid: fa8bad77e1e3b3046b19f28ae5d637be, type: 3}
+    m_BeatRate: 0
+    m_BeatDelay: 0
+  - m_Music: {fileID: 8300000, guid: db2995a61c2b05d4abd6271e719c3073, type: 3}
+    m_BeatRate: 0
+    m_BeatDelay: 0
+  - m_Music: {fileID: 8300000, guid: 57eefec948321cc47b3bd85ea971050d, type: 3}
+    m_BeatRate: 0
+    m_BeatDelay: 0
+  - m_Music: {fileID: 8300000, guid: e44afa3a98c52c643b95d23dc498f29c, type: 3}
+    m_BeatRate: 0
+    m_BeatDelay: 0
+  - m_Music: {fileID: 8300000, guid: 6c990c30c83a8c544b60f2be32b53e98, type: 3}
+    m_BeatRate: 0
+    m_BeatDelay: 0
