@@ -40,7 +40,8 @@ AudioSource:
   m_GameObject: {fileID: 3395505406105372226}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 243439692182584664, guid: 55545f7fdabb42d4f93bdb72b21c53b1,
+    type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 1
@@ -181,14 +182,20 @@ MonoBehaviour:
   m_WireManager: {fileID: 0}
   m_WorldTheme: {fileID: 3395505406176328832}
   m_AutoStart: 1
-  m_GameTime: 480
+  m_ArcadeLength: 480
+  m_PostArcadeLength: 10
   m_EnableTutorial: 0
   m_TutorialInitialSegments: 20
   m_TutorialWireSegments: 20
   m_TutorialWireRadius: 5
   m_TutorialSparkSpeed: 1
+  m_TutorialSparkOnInterval: 2
+  m_TutorialSparkOffInterval: 1
   m_TutorialJumpTime: 1.5
-  m_TutorialDisplay: {fileID: 0}
+  m_TutorialPacketOffset: 50
+  m_TutorialPacketSpeed: 7.5
+  m_TutorialPacketLifetime: 15
+  m_TutorialUI: {fileID: 0}
   m_DebugText: {fileID: 0}
 --- !u!114 &3395505406176328832
 MonoBehaviour:
@@ -216,6 +223,33 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_MusicSource1: {fileID: 3395505407192623761}
   m_MusicSource2: {fileID: 3395505406105372229}
+  m_MusicFadeTime: 1.5
+  m_MusicFadeVolume: 0.5
+  m_MusicFadePitch: 0.75
+  m_BeatCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: -1
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: -1
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!114 &3395505406176328846
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -262,6 +296,11 @@ MonoBehaviour:
   - 2.2
   - 2.5
   m_WarningPivot: {fileID: 3395505405431495115}
+  m_BoostSpeedMultiplier: 1.5
+  m_BoostActivationParticles: {fileID: 0}
+  m_BoostParticles: {fileID: 0}
+  m_BoostParticlesSpeed: 2
+  m_BoostDissapateSpeed: 15
 --- !u!1 &3395505407192623774
 GameObject:
   m_ObjectHideFlags: 0
@@ -302,7 +341,8 @@ AudioSource:
   m_GameObject: {fileID: 3395505407192623774}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 243439692182584664, guid: 55545f7fdabb42d4f93bdb72b21c53b1,
+    type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 1

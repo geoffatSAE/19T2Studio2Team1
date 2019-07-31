@@ -211,6 +211,7 @@ MonoBehaviour:
   m_Companion: {fileID: 3321108571430207815}
   m_ScreenFade: {fileID: 382227911843054374}
   m_SelectionAudioSource: {fileID: 8388617532822680114}
+  m_BoostFailSound: {fileID: 8300000, guid: 26f589e1d3e6db74a8fdee6c7ddd9c97, type: 3}
   m_ControllerOrigin: {fileID: 4081323772982013150}
   m_HeadOrigin: {fileID: 4081323772982013150}
 --- !u!114 &382227911843054374
@@ -323,7 +324,8 @@ AudioSource:
   m_GameObject: {fileID: 5065976935793413055}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 243841563610326654, guid: 55545f7fdabb42d4f93bdb72b21c53b1,
+    type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 1
@@ -417,11 +419,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4081323774656870565}
     m_Modifications:
-    - target: {fileID: 8910129730801368223, guid: 63d94be21e8b39a4f97e9f6c380700a7,
-        type: 3}
-      propertyPath: m_Name
-      value: ZoomParticles
-      objectReference: {fileID: 0}
     - target: {fileID: 8910129730801368194, guid: 63d94be21e8b39a4f97e9f6c380700a7,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -477,6 +474,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8910129730801368223, guid: 63d94be21e8b39a4f97e9f6c380700a7,
+        type: 3}
+      propertyPath: m_Name
+      value: ZoomParticles
+      objectReference: {fileID: 0}
     - target: {fileID: 8910129730801368193, guid: 63d94be21e8b39a4f97e9f6c380700a7,
         type: 3}
       propertyPath: lengthInSec
@@ -507,11 +509,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4081323773829006849}
     m_Modifications:
-    - target: {fileID: 2401690158805835777, guid: 32e6c8a2e089b5240ba8e9cad84c7b14,
-        type: 3}
-      propertyPath: m_Name
-      value: BoostTrigger
-      objectReference: {fileID: 0}
     - target: {fileID: 2401690158805835780, guid: 32e6c8a2e089b5240ba8e9cad84c7b14,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -582,6 +579,11 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 0.099999994
       objectReference: {fileID: 0}
+    - target: {fileID: 2401690158805835777, guid: 32e6c8a2e089b5240ba8e9cad84c7b14,
+        type: 3}
+      propertyPath: m_Name
+      value: BoostTrigger
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 32e6c8a2e089b5240ba8e9cad84c7b14, type: 3}
 --- !u!4 &4172484037682497357 stripped
@@ -597,6 +599,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4081323774656870565}
     m_Modifications:
+    - target: {fileID: 3763885994031084875, guid: a5a33f51ce935c547bd9d87b27f3a6a2,
+        type: 3}
+      propertyPath: m_SparkJumper
+      value: 
+      objectReference: {fileID: 4081323773829006848}
     - target: {fileID: 6653541786956647586, guid: a5a33f51ce935c547bd9d87b27f3a6a2,
         type: 3}
       propertyPath: m_Name
@@ -657,11 +664,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3763885994031084875, guid: a5a33f51ce935c547bd9d87b27f3a6a2,
-        type: 3}
-      propertyPath: m_SparkJumper
-      value: 
-      objectReference: {fileID: 4081323773829006848}
     - target: {fileID: 2953362715361866680, guid: a5a33f51ce935c547bd9d87b27f3a6a2,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -814,7 +816,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400004, guid: 126d619cf4daa52469682f85c1378b4a, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 400004, guid: 126d619cf4daa52469682f85c1378b4a, type: 3}
       propertyPath: m_LocalPosition.z
@@ -958,6 +960,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4081323774656870565}
     m_Modifications:
+    - target: {fileID: 5134141384927370643, guid: 24679e943130bb24e8e396828a93b8bc,
+        type: 3}
+      propertyPath: m_Name
+      value: RisingSpark
+      objectReference: {fileID: 0}
     - target: {fileID: 5134141384927370640, guid: 24679e943130bb24e8e396828a93b8bc,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1013,11 +1020,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5134141384927370643, guid: 24679e943130bb24e8e396828a93b8bc,
-        type: 3}
-      propertyPath: m_Name
-      value: RisingSpark
-      objectReference: {fileID: 0}
     - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
         type: 3}
       propertyPath: m_GameMode
@@ -1027,6 +1029,91 @@ PrefabInstance:
         type: 3}
       propertyPath: m_RotationTime
       value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
+        type: 3}
+      propertyPath: m_StartingState.m_Position.z
+      value: 450
+      objectReference: {fileID: 0}
+    - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
+        type: 3}
+      propertyPath: m_StartingState.m_Scale.x
+      value: 250
+      objectReference: {fileID: 0}
+    - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
+        type: 3}
+      propertyPath: m_StartingState.m_Scale.y
+      value: 250
+      objectReference: {fileID: 0}
+    - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
+        type: 3}
+      propertyPath: m_StartingState.m_Scale.z
+      value: 250
+      objectReference: {fileID: 0}
+    - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
+        type: 3}
+      propertyPath: m_EndingState.m_Position.y
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
+        type: 3}
+      propertyPath: m_EndingState.m_Position.z
+      value: 600
+      objectReference: {fileID: 0}
+    - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
+        type: 3}
+      propertyPath: m_EndingState.m_Scale.x
+      value: 275
+      objectReference: {fileID: 0}
+    - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
+        type: 3}
+      propertyPath: m_EndingState.m_Scale.y
+      value: 275
+      objectReference: {fileID: 0}
+    - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
+        type: 3}
+      propertyPath: m_EndingState.m_Scale.z
+      value: 275
+      objectReference: {fileID: 0}
+    - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
+        type: 3}
+      propertyPath: m_FallbackDuration
+      value: 300
+      objectReference: {fileID: 0}
+    - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
+        type: 3}
+      propertyPath: m_OverrideAnchor
+      value: 
+      objectReference: {fileID: 988699986689996307}
+    - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
+        type: 3}
+      propertyPath: m_RotationOverride
+      value: 
+      objectReference: {fileID: 988699986169624860}
+    - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
+        type: 3}
+      propertyPath: m_EndGameState.m_Position.y
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
+        type: 3}
+      propertyPath: m_EndGameState.m_Position.z
+      value: 300
+      objectReference: {fileID: 0}
+    - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
+        type: 3}
+      propertyPath: m_EndGameState.m_Scale.x
+      value: 250
+      objectReference: {fileID: 0}
+    - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
+        type: 3}
+      propertyPath: m_EndGameState.m_Scale.y
+      value: 250
+      objectReference: {fileID: 0}
+    - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
+        type: 3}
+      propertyPath: m_EndGameState.m_Scale.z
+      value: 400
       objectReference: {fileID: 0}
     - target: {fileID: 4019624321145973867, guid: 24679e943130bb24e8e396828a93b8bc,
         type: 3}
@@ -1041,6 +1128,12 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 5402264587274644355}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &988699986169624860 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5134141384374063775, guid: 24679e943130bb24e8e396828a93b8bc,
+    type: 3}
+  m_PrefabInstance: {fileID: 5402264587274644355}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &5441012845724929251
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1048,11 +1141,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4081323773829006849}
     m_Modifications:
-    - target: {fileID: 2566531738595326909, guid: 8c17724e2584b2848a7d96e6df4ab514,
-        type: 3}
-      propertyPath: m_Name
-      value: BoostActive
-      objectReference: {fileID: 0}
     - target: {fileID: 2566531738595326904, guid: 8c17724e2584b2848a7d96e6df4ab514,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1122,6 +1210,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 0.099999994
+      objectReference: {fileID: 0}
+    - target: {fileID: 2566531738595326909, guid: 8c17724e2584b2848a7d96e6df4ab514,
+        type: 3}
+      propertyPath: m_Name
+      value: BoostActive
       objectReference: {fileID: 0}
     - target: {fileID: 2566531738595326907, guid: 8c17724e2584b2848a7d96e6df4ab514,
         type: 3}
