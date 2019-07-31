@@ -57,6 +57,7 @@ namespace TO5.Wires
         public AudioSource m_MultiplierAudioSource;                             // Audio source to play multiplier sounds with
         public AudioClip m_MultiplierIncreaseClip;                              // Sound to play when multiplier increases
         public AudioClip m_MultiplierDecreaseClip;                              // Sound to play when multiplier decreases
+        public AudioClip m_LifeLostClip;                                        // Clip to play when a live has been lost
         public ParticleSystem m_MultiplierIncreaseParticles;                    // Root particle system to all increase particles (longest system should be root)
         public ParticleSystem m_MultiplierDecreaseParticles;                    // Root particle system to all decrease particles (longest system should be root)
 
@@ -88,6 +89,10 @@ namespace TO5.Wires
         [SerializeField] private float m_BoostDepletionRate = 10f;          // Boost player consumes per second (when active)
         [SerializeField] private float m_BoostMultiplier = 2f;              // Multipler all score is scaled by when boost is active
         [SerializeField] private float m_BoostPerPacket = 5f;               // Boost player earns when collecting a packet
+        public AudioSource m_BoostAudioSource;                              // Audio source for playing boost sounds
+        public AudioClip m_BoostReadySound;                                 // Sound to play when boost is ready
+        public AudioClip m_BoostActivatedSound;                             // Sound to play when boost has been activated
+        public AudioClip m_BoostDepletedSound;                              // Sound to play when boost has been depleted
         public ParticleSystem m_BoostReadyParticles;                        // Particles to play when boost is ready
 
         private ObjectPool<DataPacket> m_DataPackets = new ObjectPool<DataPacket>();    // Packets being managed
@@ -167,6 +172,8 @@ namespace TO5.Wires
                         // Was boost just depleted?
                         if (!m_BoostActive)
                         {
+                            PlayBoostSound(m_BoostDepletedSound);
+
                             if (OnBoostModeUpdated != null)
                                 OnBoostModeUpdated.Invoke(false);
                         }
@@ -754,6 +761,12 @@ namespace TO5.Wires
             {
                 m_RemainingLives = lives;
 
+                if (m_MultiplierAudioSource && m_LifeLostClip)
+                {
+                    m_MultiplierAudioSource.clip = m_LifeLostClip;
+                    m_MultiplierAudioSource.Play();
+                }
+
                 if (OnStageLivesUpdated != null)
                     OnStageLivesUpdated.Invoke(m_RemainingLives);
             }
@@ -770,6 +783,8 @@ namespace TO5.Wires
                 m_Boost = Mathf.Min(100f, m_Boost + amount);
                 if (m_Boost >= 100f)
                 {
+                    PlayBoostSound(m_BoostReadySound);
+
                     if (m_BoostReadyParticles)
                         m_BoostReadyParticles.Play();
                 }
@@ -804,6 +819,8 @@ namespace TO5.Wires
             if (!m_BoostActive && boostReady)
             {
                 m_BoostActive = true;
+
+                PlayBoostSound(m_BoostActivatedSound);
 
                 if (m_BoostReadyParticles)
                     m_BoostReadyParticles.Stop();
@@ -889,6 +906,20 @@ namespace TO5.Wires
                     m_PacketSpawnAudioSource.time = 0f;
                     m_PacketSpawnAudioSource.Play();       
                 }
+            }
+        }
+
+        /// <summary>
+        /// Plays audio clip for the boost audio source
+        /// </summary>
+        /// <param name="clip">Audio clip to play</param>
+        private void PlayBoostSound(AudioClip clip)
+        {
+            if (m_BoostAudioSource && clip)
+            {
+                m_BoostAudioSource.clip = clip;
+                m_BoostAudioSource.time = 0f;
+                m_BoostAudioSource.Play();
             }
         }
 

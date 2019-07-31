@@ -41,7 +41,7 @@ namespace TO5.Wires
         [SerializeField] private string m_MulDecAnim = "MulDecrease";       // Name of state for playing multiplier decreased anim
 
         private bool m_DisplayGameUI = true;    // If game UI should be displayed
-        private int m_PreviousStage = 0;
+        private int m_PreviousStage = 0;        // Players previous multiplier stage
         private int m_ActiveLives = 0;          // Amount of lives player has
 
         public Text m_FPSText;
@@ -259,6 +259,10 @@ namespace TO5.Wires
         /// <param name="stage">New stage</param>
         private void MultiplierUpdated(float multiplier, int stage)
         {
+            // Boost overrides these animations
+            if (m_ScoreManager && m_ScoreManager.boostActive)
+                return;
+
             if (m_Animator)
             {
                 if (stage != m_PreviousStage)

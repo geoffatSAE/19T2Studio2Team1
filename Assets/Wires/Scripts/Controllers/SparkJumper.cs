@@ -45,6 +45,7 @@ namespace TO5.Wires
 
         public ScreenFade m_ScreenFade;                     // Screen fade for game transitions
         public AudioSource m_SelectionAudioSource;          // Audio source for playing selection sounds
+        public AudioClip m_BoostFailSound;                  // Sound to play when boost activation fails
 
         // If the player is allowed to request a jump
         public bool canJump { get { return m_JumpingEnabled && !m_IsJumping; } }
@@ -172,11 +173,14 @@ namespace TO5.Wires
         /// <returns>If boost was activated</returns>
         public bool ActivateBoost()
         {
-            if (m_IsDrifting || !m_JumpingEnabled)
-                return false;
+            bool activated = false;
 
-            if (OnActivateBoost != null)
-                return OnActivateBoost.Invoke();
+            if (!m_IsDrifting && m_JumpingEnabled)
+                if (OnActivateBoost != null)
+                    activated = OnActivateBoost.Invoke();
+
+            if (!activated)
+                PlaySelectionSound(m_BoostFailSound, false);
 
             return false;
         }
@@ -278,12 +282,13 @@ namespace TO5.Wires
         /// Plays audio clip as a selection sound
         /// </summary>
         /// <param name="clip">Clip to play</param>
-        public void PlaySelectionSound(AudioClip clip)
+        /// <param name="randomPitch">If a random pitch should be used</param>
+        public void PlaySelectionSound(AudioClip clip, bool randomPitch = true)
         {
             if (m_SelectionAudioSource && clip)
             {
                 m_SelectionAudioSource.clip = clip;
-                m_SelectionAudioSource.pitch = Random.Range(0.8f, 1.2f);
+                m_SelectionAudioSource.pitch = randomPitch ? Random.Range(0.8f, 1.2f) : 1f;
                 m_SelectionAudioSource.Play();
             }
         }
