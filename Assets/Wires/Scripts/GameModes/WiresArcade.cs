@@ -24,6 +24,7 @@ namespace TO5.Wires
 
         [Header("Arcade")]
         [SerializeField] private float m_ArcadeLength = 480f;       // How long the game lasts for (in seconds)
+        [SerializeField] private float m_PostArcadeLength = 10f;    // How long to display game stats for before exiting
 
         private float m_StartingDistance = 0f;          // Distance player had already travelled at the start of the game
         private Wire m_FinalWire;                       // The final wire (exit wire)
@@ -48,6 +49,9 @@ namespace TO5.Wires
 
         // The length of the arcade game mode
         public float arcadeLength { get { return m_ArcadeLength; } }
+
+        // The length of post game state
+        public float postArcadeLength { get { return m_PostArcadeLength; } }
 
         #if UNITY_EDITOR
         [Header("Debug")]
@@ -293,7 +297,7 @@ namespace TO5.Wires
                     sparkJumper.m_Companion.ShowStatsUI(score, distance);
             }
 
-            yield return new WaitForSeconds(10f);
+            yield return new WaitForSeconds(m_PostArcadeLength);
 
             if (sparkJumper && sparkJumper.m_ScreenFade)
             {
@@ -389,7 +393,11 @@ namespace TO5.Wires
             // You can put whatever you wish here
 
             // for now
+            #if UNITY_EDITOR
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            #else
+            Application.Quit(0);
+            #endif
         }
 
         /// <summary>

@@ -19,18 +19,26 @@ namespace TO5.Wires
             public Vector3 m_Scale;          // Local scale
         }
 
+        [Header("Game")]
         [SerializeField] private State m_StartingState;                 // State we start at
         [SerializeField] private State m_EndingState;                   // State we end at
         [SerializeField] private Transform m_OverrideAnchor;            // The transform we move locally too (will use parent by default)
         [SerializeField] private WiresGameMode m_GameMode;              // Game mode to sync with
         [SerializeField] private float m_FallbackDuration = 600f;       // Fallback duration to use if game mode has no set game length
 
-        [Min(0.1f)] public float m_RotationInterval = 1.5f;             // Time for a full rotation
+        [Header("Post Game")]
+        [SerializeField] private State m_EndGameState;                  // State to transition to after game has finished
+        [SerializeField] private float m_EndGameFallbackDuration = 10f; // Fallback duration to use if end game state has no same length
+
+        [Min(0.1f)] public float m_StartRotationInterval = 1.5f;        // Initial rotation interval
+        [Min(0.1f)] public float m_EndRotationInterval = 0.5f;          // Rotation interval to interpolate to during rise   
         public Transform m_RotationOverride;                            // Override transform to rotate
 
-        private float m_RotationTime = 0f;      // Time passed of current rotation
-        private Quaternion m_FromOrientation;   // Orientation to rotate from
-        private Quaternion m_ToOrientation;     // Orientation to rotate to
+        private State m_FinishingState;             // State we were at when game finished
+        private float m_RotationInterval = 1.5f;    // Time for a full rotation (lerped between start and end based on rise)
+        private float m_RotationTime = 0f;          // Time passed of current rotation
+        private Quaternion m_FromOrientation;       // Orientation to rotate from
+        private Quaternion m_ToOrientation;         // Orientation to rotate to
 
         void Awake()
         {
@@ -38,7 +46,7 @@ namespace TO5.Wires
                 m_OverrideAnchor = transform.parent;
 
             // Default spot
-            Interpolate(0f);
+            InterpolateGameState(0f);
 
             if (m_GameMode)
                 m_GameMode.OnGameStarted += OnGameStart;
@@ -48,6 +56,7 @@ namespace TO5.Wires
             Transform rotationTransform = m_RotationOverride ? m_RotationOverride : transform;
             m_FromOrientation = rotationTransform.rotation;
             m_ToOrientation = Random.rotation;
+            m_RotationInterval = m_StartRotationInterval;
         }
 
         void Update()
@@ -73,13 +82,24 @@ namespace TO5.Wires
         }
 
         /// <summary>
-        /// Interpolates transform
+        /// Interpolates transform based on game start and end states
         /// </summary>
         /// <param name="alpha">Alpha of lerp</param>
-        private void Interpolate(float alpha)
+        private void InterpolateGameState(float alpha)
         {
             transform.localPosition = Vector3.Lerp(m_StartingState.m_Position, m_EndingState.m_Position, alpha);
             transform.localScale = Vector3.Lerp(m_StartingState.m_Scale, m_EndingState.m_Scale, alpha);
+            m_RotationInterval = Mathf.Lerp(m_StartRotationInterval, m_EndRotationInterval, alpha);
+        }
+
+        /// <summary>
+        /// Interpolates transform based on finishing and end game states
+        /// </summary>
+        /// <param name="alpha">Alpha of lerp</param>
+        private void InterpolatePostGameState(float alpha)
+        {
+            transform.localPosition = Vector3.Lerp(m_FinishingState.m_Position, m_EndGameState.m_Position, alpha);
+            transform.localScale = Vector3.Lerp(m_FinishingState.m_Scale, m_EndGameState.m_Scale, alpha);
         }
 
         /// <summary>
@@ -94,13 +114,37 @@ namespace TO5.Wires
                 while (Time.time < end)
                 {
                     float alpha = 1f - Mathf.Clamp01((end - Time.time) / duration);
-                    Interpolate(alpha);
+                    InterpolateGameState(alpha);
 
                     yield return null;
                 }
             }
 
-            Interpolate(1f);
+            InterpolateGameState(1f);
+        }
+
+        /// <summary>
+        /// Routine for handling the interpolation of transform after the game
+        /// </summary>
+        /// <param name="duration">Duration of approach</param>
+        private IEnumerator ApproachRoutine(float duration)
+        {
+            if (duration > 0f)
+            {
+                m_FinishingState.m_Position = transform.localPosition;
+                m_FinishingState.m_Scale = transform.localScale;
+
+                float end = Time.time + duration;
+                while (Time.time < end)
+                {
+                    float alpha = 1f - Mathf.Clamp01((end - Time.time) / duration);
+                    InterpolatePostGameState(alpha);
+
+                    yield return null;
+                }
+            }
+
+            InterpolatePostGameState(1f);
         }
 
         /// <summary>
@@ -112,14 +156,12 @@ namespace TO5.Wires
             if (m_GameMode)
             {
                 m_GameMode.OnGameStarted -= OnGameStart;
+                m_GameMode.OnGameFinished += OnGameFinished;
 
-                // If we know the games expected length, we can let the routine finish
-                // as is instead of relying on when the game actually ends
+                // Fix rise duration to match length of game modes with fixed time
                 WiresArcade arcade = m_GameMode as WiresArcade;
                 if (arcade)
-                    duration = arcade.arcadeLength;
-                else
-                    m_GameMode.OnGameFinished += OnGameFinished;
+                    duration = arcade.arcadeLength;                 
             }
 
             StartCoroutine(RiseRoutine(duration));
@@ -131,6 +173,19 @@ namespace TO5.Wires
         private void OnGameFinished()
         {
             StopCoroutine("RiseRoutine");
+
+            float duration = m_EndGameFallbackDuration;
+            if (m_GameMode)
+            {
+                m_GameMode.OnGameFinished -= OnGameFinished;
+
+                // Fix approach duration to length of post game time
+                WiresArcade arcade = m_GameMode as WiresArcade;
+                if (arcade)
+                    duration = arcade.postArcadeLength;
+            }
+
+            StartCoroutine(ApproachRoutine(duration));
         }
 
         #if UNITY_EDITOR
@@ -149,12 +204,13 @@ namespace TO5.Wires
         
         void OnDrawGizmos()
         {
-            Vector3 start = Vector3.zero, end = Vector3.zero, origin = Vector3.zero;
+            Vector3 start = Vector3.zero, end = Vector3.zero, postEnd = Vector3.zero, origin = Vector3.zero; 
 
             if (Application.isPlaying || m_OverrideAnchor)
             {
                 start = TransformStatePosition(m_StartingState.m_Position);
                 end = TransformStatePosition(m_EndingState.m_Position);
+                postEnd = TransformStatePosition(m_EndGameState.m_Position);
             }
             else
             {
@@ -163,6 +219,7 @@ namespace TO5.Wires
 
                 start = TransformStatePosition(m_StartingState.m_Position);
                 end = TransformStatePosition(m_EndingState.m_Position);
+                postEnd = TransformStatePosition(m_EndGameState.m_Position);
 
                 m_OverrideAnchor = null;
             }
@@ -186,6 +243,14 @@ namespace TO5.Wires
             Gizmos.color = Color.yellow;
             Gizmos.DrawWireCube(start, Vector3.Scale(transform.lossyScale, m_StartingState.m_Scale));
             Gizmos.DrawWireCube(end, Vector3.Scale(transform.lossyScale, m_EndingState.m_Scale));
+
+            // Post Path
+            Gizmos.color = Color.magenta;
+            Gizmos.DrawLine(end, postEnd);
+
+            // Post Size
+            Gizmos.color = Color.white;
+            Gizmos.DrawWireCube(postEnd, Vector3.Scale(transform.lossyScale, m_EndGameState.m_Scale));
         }
         #endif
     }
