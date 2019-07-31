@@ -948,10 +948,14 @@ namespace TO5.Wires
             }
             else if (m_PacketCollectedParticles != null)
             {
-                system = Instantiate(m_PacketCollectedParticles, packet.transform.position, Quaternion.identity);
+                system = Instantiate(m_PacketCollectedParticles, packet.transform.position, Quaternion.identity);               
                 m_PacketCollectedSystems.Add(system);
                 m_PacketCollectedSystems.ActivateObject();
-            }    
+            }
+            else
+            {
+                return;
+            }
 
             system.time = 0f;
             system.Play();

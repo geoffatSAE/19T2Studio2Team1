@@ -41,8 +41,6 @@ namespace TO5.Wires
 
         void Update()
         {
-            AudioSource activeSource = m_Source1Active ? m_MusicSource1 : m_MusicSource2;
-
             // Current time of beat (accounted for initial delay)
             float beatRate = m_ActiveBeatRate > 0f ? m_ActiveBeatRate : 1f;
             float beatTime = Mathf.Max(Time.time - m_ActiveBeatDelay, 0f) / beatRate;
