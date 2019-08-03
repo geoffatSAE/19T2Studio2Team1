@@ -12,8 +12,9 @@ namespace TO5.Wires
         // Right hand controller is used for testing as the Go controller shares the same type
         public static OVRInput.Controller ControllerType = OVRInput.Controller.RTrackedRemote;
 
-        public Transform m_ControllerOrigin;        // Override transform for controllers origin
-        public Transform m_HeadOrigin;              // Origin of players head (headset)
+        public Transform m_ControllerOrigin;                        // Override transform for controllers origin
+        public Transform m_HeadOrigin;                              // Origin of players head (headset)
+        [SerializeField] private LaserPointer m_LaserPointer;       // Laser point that visualizes players aim
 
         void Update()
         {
@@ -44,6 +45,16 @@ namespace TO5.Wires
 
             Shader.SetGlobalVector(WorldSpaceControllerPosShaderName, controllerPos);
             Shader.SetGlobalVector(WorldSpaceControllerDirShaderName, controllerDir);
+        }
+
+        void LateUpdate()
+        {
+            Vector3 controllerPos = GetControllerPosition();
+            Vector3 controllerDir = GetControllerRotation() * Vector3.forward;
+
+            // Help player see what they are pointing at
+            if (m_LaserPointer)
+                m_LaserPointer.PointLaser(controllerPos, controllerDir);
         }
 
         /// <summary>

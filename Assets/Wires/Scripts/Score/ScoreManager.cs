@@ -90,6 +90,7 @@ namespace TO5.Wires
         [SerializeField] private float m_BoostMultiplier = 2f;              // Multipler all score is scaled by when boost is active
         [SerializeField] private float m_BoostPerPacket = 5f;               // Boost player earns when collecting a packet
         public AudioSource m_BoostAudioSource;                              // Audio source for playing boost sounds
+        public AudioSource m_BoostLoopingAudioSource;                       // Audio source for playing looping boost sounds
         public AudioClip m_BoostReadySound;                                 // Sound to play when boost is ready
         public AudioClip m_BoostActivatedSound;                             // Sound to play when boost has been activated
         public AudioClip m_BoostDepletedSound;                              // Sound to play when boost has been depleted
@@ -173,6 +174,9 @@ namespace TO5.Wires
                         if (!m_BoostActive)
                         {
                             PlayBoostSound(m_BoostDepletedSound);
+
+                            if (m_BoostLoopingAudioSource)
+                                m_BoostLoopingAudioSource.Stop();
 
                             if (OnBoostModeUpdated != null)
                                 OnBoostModeUpdated.Invoke(false);
@@ -783,7 +787,7 @@ namespace TO5.Wires
                 m_Boost = Mathf.Min(100f, m_Boost + amount);
                 if (m_Boost >= 100f)
                 {
-                    PlayBoostSound(m_BoostReadySound);
+                    PlayBoostSound(m_BoostReadySound);  
 
                     if (m_BoostReadyParticles)
                         m_BoostReadyParticles.Play();
@@ -821,6 +825,12 @@ namespace TO5.Wires
                 m_BoostActive = true;
 
                 PlayBoostSound(m_BoostActivatedSound);
+
+                if (m_BoostLoopingAudioSource)
+                {
+                    m_BoostLoopingAudioSource.time = 0f;
+                    m_BoostLoopingAudioSource.Play();
+                }
 
                 if (m_BoostReadyParticles)
                     m_BoostReadyParticles.Stop();

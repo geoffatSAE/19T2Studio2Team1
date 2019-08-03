@@ -57,13 +57,13 @@ namespace TO5.Wires
 
             if (m_WireMesh)
             {
-                // Bounds is in world space
+                // Bounds is in world space (TODO: Should be using local space (which is Mesh.Bounds)
                 Bounds meshBounds = m_WireMesh.bounds;
                 float scaler = m_WireDistance / meshBounds.size.z;
 
-                Vector3 scale = m_Pivot.transform.localScale;
+                Vector3 scale = m_Pivot.localScale;
                 scale.y = scaler;
-                m_Pivot.transform.localScale = scale;
+                m_Pivot.localScale = scale;
             }
 
             if (factory)

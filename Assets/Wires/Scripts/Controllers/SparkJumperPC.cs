@@ -16,6 +16,10 @@ namespace TO5.Wires
         private float m_RotationX = 0f;             // Yaw rotation
         private float m_RotationY = 0f;             // Pitch rotation
 
+        #if UNITY_EDITOR
+        public LaserPointer m_LaserPointer;         // Testing laser pointer
+        #endif
+
         void Awake()
         {
             if (!m_Camera)
@@ -59,6 +63,9 @@ namespace TO5.Wires
             Shader.SetGlobalVector(WorldSpaceControllerDirShaderName, trans.forward);
 
             #if UNITY_EDITOR
+            if (m_LaserPointer)
+                m_LaserPointer.PointLaser(trans.position, trans.forward);
+            
             // Pause in editor
             if (Input.GetKeyDown(KeyCode.B))
                 Debug.Break();
