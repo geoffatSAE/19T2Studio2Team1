@@ -23,6 +23,7 @@ namespace TO5.Wires
         public Color m_OffColor = Color.red;                                // Color to use when off
         public Vector3 m_OnScale = Vector3.one;                             // Scale to use when on
         public Vector3 m_OffScale = new Vector3(0.5f, 0.5f, 0.5f);          // Scale to use when off
+        public bool m_Rotate = true;                                        // If spark should rotate
         [Min(0.1f)] public float m_RotationTime = 0.5f;                     // Time it takes for spark to rotate   
         [SerializeField] private Renderer m_Renderer;                       // Sparks renderer
         public AudioClip m_OnSelectedSound;                                 // Sound to play when selected while on
@@ -80,7 +81,8 @@ namespace TO5.Wires
             m_OnTargetScale = m_OnScale;
             m_Collider.enabled = true;// m_CanJumpTo;
 
-            StartCoroutine(RotateRoutine());
+            if (m_Rotate)
+                StartCoroutine(RotateRoutine());
         }
 
         /// <summary>
