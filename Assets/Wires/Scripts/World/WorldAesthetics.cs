@@ -9,6 +9,17 @@ namespace TO5.Wires
     /// </summary>
     public class WorldAesthetics : MonoBehaviour
     {
+        /// <summary>
+        /// Properties to set when player reaches new multiplier for flying packets
+        /// </summary>
+        [Serializable]
+        public struct FlyingPacketsStage
+        {
+            public float m_SimulationSpeed;         // Speed of particle simulation
+            public float m_SpawnRate;               // Spawn rate of particles
+        }
+
+
         [Header("Border")]
         [SerializeField] private Transform m_BorderPivot;               // Pivot for the outer wires border
         [SerializeField] private Renderer m_BorderRenderer;             // Renderer for the outer wires border
@@ -18,7 +29,7 @@ namespace TO5.Wires
 
         [Header("Zoom")]
         [SerializeField] private ParticleSystem m_BorderParticles;      // Particle system for the outer wires particles
-        [SerializeField] private float[] m_ParticleSimulationSpeeds;    // Velocity of particles for eahc multiplier stage
+        [SerializeField] private float[] m_ParticleSimulationSpeeds;    // Velocity of particles for each multiplier stage
         private Color m_ParticleColor = Color.white;                    // Color of particles before blending
 
         [Header("Warning")]
@@ -31,6 +42,10 @@ namespace TO5.Wires
         public float m_BoostParticlesSpeed = 2f;                                // Speed of boost particles
         public float m_BoostDissapateSpeed = 15f;                               // Speed at which boost particles disappear (when stopping due to jumping/drifting)
         private bool m_UpdateBoostParticles = false;                            // If boost particles need to be updated
+
+        [Header("Flying Packets")]
+        [SerializeField] private ParticleSystem m_FlyingPacketsParticles;       // Particle system emitting the flying packets
+        [SerializeField] private FlyingPacketsStage[] m_FlyingPacketsStages;    // Properties to set flying packets per multiplier level
 
         private Wire m_ActiveWire;                              // Wire player is either on or travelling to
         private bool m_HaveSwitched = false;                    // If blend has switched (from old to new)
@@ -120,6 +135,8 @@ namespace TO5.Wires
                     main.simulationSpeed = speed;
                 }
             }
+
+            SetFlyingPacketsStage(intensity);
 
             m_Intensity = intensity;
         }
@@ -309,6 +326,27 @@ namespace TO5.Wires
             {
                 ParticleSystem.TrailModule trails = m_BoostParticles.trails;
                 trails.colorOverLifetime = color;
+            }
+        }
+
+        /// <summary>
+        /// Sets the flying packet stage properties to use
+        /// </summary>
+        /// <param name="index">Index of stage</param>
+        private void SetFlyingPacketsStage(int index)
+        {
+            if (m_FlyingPacketsParticles)
+            {
+                if (index < m_FlyingPacketsStages.Length)
+                {
+                    FlyingPacketsStage stage = m_FlyingPacketsStages[index];
+
+                    ParticleSystem.MainModule main = m_FlyingPacketsParticles.main;
+                    main.simulationSpeed = stage.m_SimulationSpeed;
+
+                    ParticleSystem.EmissionModule emission = m_FlyingPacketsParticles.emission;
+                    emission.rateOverTime = stage.m_SpawnRate;
+                }
             }
         }
     }
