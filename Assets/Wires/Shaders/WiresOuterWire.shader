@@ -4,7 +4,6 @@
     {
 		_Color ("Color", Color) = (1, 1, 1, 1)
 		_Alpha ("Alpha", Range(0, 1)) = 0.2
-		_MaxAlpha ("Max Alpha", Range(0, 1)) = 0.8
         _MainTex ("Texture", 2D) = "white" {}
 		_PanningSpeed ("Panning Speed (X, Y)", Vector) = (1, 0, 0, 0)
 		_AlphaScale ("Alpha Scale", Range(0, 1)) = 1
@@ -25,7 +24,6 @@
 
 		half4 _Color;
 		half _Alpha;
-		half _MaxAlpha;
 		sampler2D _MainTex;
 		half2 _PanningSpeed;
 		half _AlphaScale;
@@ -57,7 +55,7 @@
 
 			fixed4 c = _Color * (x * blend.x + y * blend.y + z * blend.z);
 			o.Albedo = c.rgb;
-			o.Alpha = _Alpha* _AlphaScale* ease(centerRatio);
+			o.Alpha = _Alpha * _AlphaScale * ease(centerRatio);
 		}
 		ENDCG
 	}

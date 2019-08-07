@@ -173,7 +173,9 @@ MonoBehaviour:
   m_LayerMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_NoColor: {r: 0, g: 0, b: 0, a: 0}
+  m_HitColor: {r: 0, g: 1, b: 0, a: 1}
+  m_ClearColor: {r: 1, g: 1, b: 1, a: 1}
+  m_ColorLerpSpeed: 2
   m_Pivot: {fileID: 718288890905108059}
   m_LaserRenderer: {fileID: 718288890774788429}
   m_LaserPointRenderer: {fileID: 718288891585558512}
