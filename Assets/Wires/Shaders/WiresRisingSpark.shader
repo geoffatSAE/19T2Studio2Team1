@@ -31,7 +31,7 @@
             struct v2f
             {       
                 float4 vertex : SV_POSITION;
-				float2 uv : TEXCOORD0;
+				float4 grab : TEXCOORD1;
             };
 
 			fixed4 _LowColor;
@@ -43,13 +43,14 @@
             {
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
-				o.uv = v.uv;
+				o.grab = ComputeScreenPos(o.vertex);
                 return o;
             }
 
             fixed4 frag (v2f i) : SV_Target
             {
-				fixed2 uv = i.uv + (_PanningSpeed * _Time.x);
+				fixed2 uv = i.grab.xy / i.grab.w;
+				uv += _PanningSpeed * _Time.x;
 
 				fixed3 noise = tex2D(_Noise, uv).rgb;
 				fixed3 color = lerp(_LowColor.rgb, _HighColor.rgb, noise);

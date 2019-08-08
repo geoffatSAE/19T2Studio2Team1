@@ -300,6 +300,9 @@ namespace TO5.Wires
                 if (m_BoostReadyParticles)
                     m_BoostReadyParticles.Stop();
 
+                if (m_BoostLoopingAudioSource)
+                    m_BoostLoopingAudioSource.Stop();
+
                 // Need to notify listeners of changes
                 {
                     if (OnMultiplierUpdated != null)

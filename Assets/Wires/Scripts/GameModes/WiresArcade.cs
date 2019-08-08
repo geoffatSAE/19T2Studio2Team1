@@ -129,7 +129,11 @@ namespace TO5.Wires
 
                     SparkJumper sparkJumper = m_WireManager.sparkJumper;
                     if (sparkJumper.m_Companion)
-                        sparkJumper.m_Companion.enabled = false;
+                    {
+                        CompanionUI companion = sparkJumper.m_Companion;
+                        companion.DisableCompanion();
+                        companion.MoveToTutorialAnchor();
+                    }
 
                     if (sparkJumper.m_ScreenFade)
                         sparkJumper.m_ScreenFade.FadeIn();
@@ -176,7 +180,11 @@ namespace TO5.Wires
 
                     SparkJumper sparkJumper = m_WireManager.sparkJumper;
                     if (sparkJumper.m_Companion)
-                        sparkJumper.m_Companion.enabled = true;
+                    {
+                        CompanionUI companion = sparkJumper.m_Companion;
+                        companion.EnableCompanion();
+                        companion.MoveToGameAnchor();
+                    }
 
                     if (sparkJumper.m_ScreenFade)
                         sparkJumper.m_ScreenFade.ClearFade();

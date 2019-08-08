@@ -10,6 +10,16 @@ namespace TO5.Wires
     /// </summary>
     public class CompanionUI : MonoBehaviour
     {
+        /// <summary>
+        /// The companions anchor relative to it's parent
+        /// </summary>
+        [System.Serializable]
+        public struct Anchor
+        {
+            public Vector3 m_Position;          // Position in local space
+            public Vector3 m_Scale;             // Scale in local space
+        }
+
         [SerializeField] private SparkJumper m_SparkJumper;         // Players spark jumper
         [SerializeField] private ScoreManager m_ScoreManager;       // Games score manager
         [SerializeField] private Animator m_Animator;               // Companions animator
@@ -28,6 +38,7 @@ namespace TO5.Wires
         public Color m_LifeActiveColor = Color.white;           // Color to use for active lives
         public Color m_LifeInactiveColor = Color.gray;          // Color to use for inactive lives
 
+        // TODO: Polish
         public FloatingMovement m_FloatMove;
         public Transform m_JumpPivot;
         public float m_IncJumpTime = 1.25f;
@@ -46,18 +57,39 @@ namespace TO5.Wires
         [SerializeField] private string m_MulIncAnim = "MulIncrease";       // Name of state for playing multiplier increased anim
         [SerializeField] private string m_MulDecAnim = "MulDecrease";       // Name of state for playing multiplier decreased anim
 
-        private bool m_DisplayGameUI = true;    // If game UI should be displayed
-        private int m_PreviousStage = 0;        // Players previous multiplier stage
-        private int m_ActiveLives = 0;          // Amount of lives player has
+        // Would ideally use a dictionary for these mode settings but dictionaries aren't exposed to the editor
 
-        public Text m_FPSText;
+        [Header("Anchor")]
+        [SerializeField] private Anchor m_GameAnchor;               // Game anchor (overwritten on awake)
+        [SerializeField] private Anchor m_TutorialAnchor;           // Anchor to use in tutorial mode
+        public float m_SwitchAnchorSpeed = 1f;                      // Speed at which to switch anchors
 
-        int frames = 0;
-        int fps = 0;
-        float time = 0f;
+        private Coroutine m_SwitchAnchorRoutine = null;     // Switch anchor routine currently running
+        private float m_SwitchAnchorTime = 1f;              // Current time of anchor switch
+        private bool m_AtGameAnchor = true;                 // If we are at (or switching to) the game anchor
+
+        private bool m_DisplayGameUI = true;                // If game UI should be displayed
+        private int m_PreviousStage = 0;                    // Players previous multiplier stage
+        private int m_ActiveLives = 0;                      // Amount of lives player has
+
+        [Header("Debug")]
+        [Tooltip("Displays FPS, will be hidden in non-development builds")]
+        public Text m_FPSText;              // Text block to display the FPS with
+
+        #if UNITY_EDITOR || DEVELOPMENT_BUILD
+        int m_Frames = 0;                   // Frames passes this second
+        int m_FPS = 0;                      // Frames rendered last second
+        float m_FrameTime = 0f;             // Time passed since last second
+        #endif
 
         void Awake()
-        {
+        { 
+            // Disable text in non development builds
+            #if !(UNITY_EDITOR || DEVELOPMENT_BUILD)
+            if (m_FPSText)
+                m_FPSText.gameObject.SetActive(false);
+            #endif
+
             if (m_ScoreManager)
             {
                 m_PreviousStage = m_ScoreManager.multiplierStage;
@@ -65,6 +97,9 @@ namespace TO5.Wires
                 m_ScoreManager.OnMultiplierUpdated += MultiplierUpdated;
                 m_ScoreManager.OnBoostModeUpdated += BoostModeUpdated;
             }
+
+            m_GameAnchor.m_Position = transform.localPosition;
+            m_GameAnchor.m_Scale = transform.localScale;
         }
 
         void Update()
@@ -83,21 +118,29 @@ namespace TO5.Wires
                 }
             }
 
-            time += Time.deltaTime;
-            frames++;
-
-            if (time >= 1f)
+            #if UNITY_EDITOR || DEVELOPMENT_BUILD
+            // Update FPS
             {
-                fps = frames;
-                frames = 0;
-                time = Mathf.Repeat(time, 1f);
-            }
+                m_FrameTime += Time.deltaTime;
+                m_Frames++;
 
-            if (m_FPSText)
-                m_FPSText.text = string.Format("FPS: {0}", fps);
+                if (m_FrameTime >= 1f)
+                {
+                    m_FPS = m_Frames;
+                    m_Frames = 0;
+                    m_FrameTime = Mathf.Repeat(m_FrameTime, 1f);
+                }
+
+                if (m_FPSText)
+                    m_FPSText.text = string.Format("FPS: {0}", m_FPS);
+            }
+            #endif
         }
 
-        void OnEnable()
+        /// <summary>
+        /// Enables the companions UI and updates
+        /// </summary>
+        public void EnableCompanion()
         {
             ToggleEnabledUI(m_DisplayGameUI);
 
@@ -108,7 +151,10 @@ namespace TO5.Wires
             }
         }
 
-        void OnDisable()
+        /// <summary>
+        /// Disables the companions UI and updates
+        /// </summary>
+        public void DisableCompanion()
         {
             SetDisplayCanvases(false, false);
 
@@ -162,6 +208,57 @@ namespace TO5.Wires
 
             if (m_StatsCanvas)
                 m_StatsCanvas.gameObject.SetActive(statsUI);
+        }
+
+        /// <summary>
+        /// Move companion to its game anchor
+        /// </summary>
+        public void MoveToGameAnchor()
+        {
+            MoveToAnchor(true);
+        }
+
+        /// <summary>
+        /// Move companion to its tutorial anchor
+        /// </summary>
+        public void MoveToTutorialAnchor()
+        {
+            MoveToAnchor(false);
+        }
+
+        /// <summary>
+        /// Moves companion to desired anchor (if not already)
+        /// </summary>
+        /// <param name="gameAnchor">If to move to game anchor</param>
+        private void MoveToAnchor(bool gameAnchor)
+        {
+            if (gameAnchor != m_AtGameAnchor)
+            {
+                if (m_SwitchAnchorRoutine != null)
+                    StopCoroutine(m_SwitchAnchorRoutine);
+
+                m_AtGameAnchor = gameAnchor;
+                m_SwitchAnchorTime = Mathf.Clamp01(1f - m_SwitchAnchorTime);
+
+                m_SwitchAnchorRoutine = StartCoroutine(SwitchAnchorRoutine());
+            }
+        }
+
+        /// <summary>
+        /// Interpolates between game and tutorial anchor 
+        /// </summary>
+        /// <param name="alpha">Stage of interpolation</param>
+        private void InterpolateAnchor(float alpha)
+        {
+            // Easing function InOutCubic
+            // See: https://easings.net/en
+            if (alpha < 0.5f)
+                alpha = 4f * alpha * alpha * alpha;
+            else
+                alpha = (alpha - 1f) * (2f * alpha - 2f) * (2f * alpha - 2f) + 1;
+
+            transform.localPosition = Vector3.Lerp(m_GameAnchor.m_Position, m_TutorialAnchor.m_Position, alpha);
+            transform.localScale = Vector3.Lerp(m_GameAnchor.m_Scale, m_TutorialAnchor.m_Scale, alpha);
         }
 
         /// <summary>
@@ -322,6 +419,41 @@ namespace TO5.Wires
 
             if (m_FloatMove)
                 m_FloatMove.enabled = true;
+        }
+
+        /// <summary>
+        /// Routine that handles switching the companions anchor
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerator SwitchAnchorRoutine()
+        {
+            while (m_SwitchAnchorTime < 1f)
+            {
+                m_SwitchAnchorTime += Time.deltaTime * m_SwitchAnchorSpeed;
+                m_SwitchAnchorSpeed = Mathf.Min(m_SwitchAnchorSpeed, 1f);
+
+                InterpolateAnchor(m_AtGameAnchor ? 1f - m_SwitchAnchorTime : m_SwitchAnchorTime);
+
+                yield return null;
+            }
+
+            InterpolateAnchor(m_AtGameAnchor ? 0f : 1f);
+        }
+
+        void OnDrawGizmos()
+        {
+            Transform parent = transform.parent ? transform.parent : transform;
+            Vector3 gamePos = parent.TransformPoint(m_GameAnchor.m_Position);
+            Vector3 tutPos = parent.TransformPoint(m_TutorialAnchor.m_Position);
+
+            // Travel line
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawLine(gamePos, tutPos);
+
+            // Sizes
+            Gizmos.color = Color.magenta;
+            Gizmos.DrawWireCube(gamePos, Vector3.Scale(parent.lossyScale, m_GameAnchor.m_Scale));
+            Gizmos.DrawWireCube(tutPos, Vector3.Scale(parent.lossyScale, m_TutorialAnchor.m_Scale));
         }
     }
 }
