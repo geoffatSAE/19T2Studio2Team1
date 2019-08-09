@@ -48,10 +48,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_StartingState:
     m_Position: {x: 0, y: 250, z: 600}
-    m_Scale: {x: 200, y: 200, z: 200}
+    m_Scale: {x: 100, y: 100, z: 100}
   m_EndingState:
     m_Position: {x: 0, y: -250, z: 500}
-    m_Scale: {x: 250, y: 250, z: 400}
+    m_Scale: {x: 150, y: 150, z: 150}
   m_OverrideAnchor: {fileID: 5134141384927370640}
   m_GameMode: {fileID: 0}
   m_FallbackDuration: 30
@@ -59,7 +59,7 @@ MonoBehaviour:
     m_Position: {x: 0, y: 0, z: 0}
     m_Scale: {x: 0, y: 0, z: 0}
   m_EndGameFallbackDuration: 10
-  m_StartRotationInterval: 5
+  m_StartRotationInterval: 2
   m_EndRotationInterval: 0.5
   m_RotationOverride: {fileID: 2138667955544983926}
 --- !u!1 &5134141384927370643

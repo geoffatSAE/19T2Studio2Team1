@@ -788,7 +788,7 @@ MonoBehaviour:
     m_SpawnSegmentOffset: 7
     m_SpawnSegmentRange: 3
     m_SparkSpawnSegmentDelay: 3
-    m_DefectiveWireChance: 0.05
+    m_DefectiveWireChance: 0
     m_SparkSpeed: 3.25
     m_SparkDriftScale: 0.6
     m_SparkOnSwitchInterval: 2
@@ -824,7 +824,7 @@ MonoBehaviour:
     m_SpawnSegmentOffset: 10
     m_SpawnSegmentRange: 5
     m_SparkSpawnSegmentDelay: 3
-    m_DefectiveWireChance: 0.08
+    m_DefectiveWireChance: 0
     m_SparkSpeed: 3.55
     m_SparkDriftScale: 0.6
     m_SparkOnSwitchInterval: 1.2
@@ -842,7 +842,7 @@ MonoBehaviour:
     m_SpawnSegmentOffset: 5
     m_SpawnSegmentRange: 6
     m_SparkSpawnSegmentDelay: 6
-    m_DefectiveWireChance: 0.08
+    m_DefectiveWireChance: 0
     m_SparkSpeed: 3.6
     m_SparkDriftScale: 0.6
     m_SparkOnSwitchInterval: 1
@@ -976,13 +976,13 @@ MonoBehaviour:
   m_PacketAudioSource: {fileID: 7661163149686658425}
   m_PacketCollectedParticles: {fileID: 469596020462369590, guid: ebda5d0062df6f74fb8409a598ca1179,
     type: 3}
-  m_BoostChargeRate: 0.5
+  m_BoostChargeRate: 2
   m_BoostDepletionRate: 12
   m_BoostMultiplier: 2
   m_BoostPerPacket: 8
   m_BoostAudioSource: {fileID: 1420648253490766540}
   m_BoostLoopingAudioSource: {fileID: 8280543612210784032}
-  m_BoostReadySound: {fileID: 8300000, guid: 252a7a01df9707743be987926a03f9fd, type: 3}
+  m_BoostReadySound: {fileID: 8300000, guid: 22061b42fdc60b849adfe3cfdf95c205, type: 3}
   m_BoostActivatedSound: {fileID: 8300000, guid: 23afa94d8ff8f6b438c095747d9551a5,
     type: 3}
   m_BoostDepletedSound: {fileID: 8300000, guid: c6de205880f010d4588f7dd20ad6f18c,
