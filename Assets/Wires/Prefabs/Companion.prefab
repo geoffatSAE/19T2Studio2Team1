@@ -1692,8 +1692,8 @@ MonoBehaviour:
   m_FloatMove: {fileID: 6653541785662568250}
   m_JumpPivot: {fileID: 1881301029925431942}
   m_IncJumpTime: 1
-  m_IncHeight: 3
-  m_DecHeight: 2
+  m_IncHeight: 1.5
+  m_DecHeight: 0.8
   m_ScoreStatsTextFormat: 'Score: {0}'
   m_DistanceStatsTextFormat: 'Distance: {0:0.0}m'
   m_StatsCanvas: {fileID: 3691047393023316541}
@@ -1705,8 +1705,8 @@ MonoBehaviour:
     m_Position: {x: 0, y: 0, z: 0}
     m_Scale: {x: 1, y: 1, z: 1}
   m_TutorialAnchor:
-    m_Position: {x: 1.5, y: 1.75, z: 1.5}
-    m_Scale: {x: 1.25, y: 1.25, z: 1.25}
+    m_Position: {x: 2.8, y: 1.75, z: 0.6}
+    m_Scale: {x: 1.5, y: 1.5, z: 1.5}
   m_SwitchAnchorSpeed: 0.5
   m_FPSText: {fileID: 0}
 --- !u!1 &6653541787310680283
