@@ -333,6 +333,12 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: -92.230995, y: 0, z: 0}
+--- !u!4 &715968467 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 32786647604555376, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
+    type: 3}
+  m_PrefabInstance: {fileID: 8646348427722513404}
+  m_PrefabAsset: {fileID: 0}
 --- !u!95 &998099596 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 32786647595516306, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
@@ -1409,7 +1415,7 @@ PrefabInstance:
     - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_MaxDriftTime
-      value: 2.5
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
@@ -2444,34 +2450,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 240138024243195650, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
         type: 3}
-      propertyPath: m_TutorialAnchor.m_Position.x
-      value: 5
-      objectReference: {fileID: 0}
+      propertyPath: m_LookAtTarget
+      value: 
+      objectReference: {fileID: 1107096172}
     - target: {fileID: 240138024243195650, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
         type: 3}
-      propertyPath: m_TutorialAnchor.m_Position.y
-      value: 1.78
-      objectReference: {fileID: 0}
-    - target: {fileID: 240138024243195650, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
-        type: 3}
-      propertyPath: m_TutorialAnchor.m_Position.z
-      value: 1.7
-      objectReference: {fileID: 0}
-    - target: {fileID: 240138024243195650, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
-        type: 3}
-      propertyPath: m_TutorialAnchor.m_Scale.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 240138024243195650, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
-        type: 3}
-      propertyPath: m_TutorialAnchor.m_Scale.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 240138024243195650, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
-        type: 3}
-      propertyPath: m_TutorialAnchor.m_Scale.z
-      value: 1
-      objectReference: {fileID: 0}
+      propertyPath: m_RotationOverride
+      value: 
+      objectReference: {fileID: 715968467}
     - target: {fileID: 3992764447687396754, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -2626,6 +2612,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -1.9000015
+      objectReference: {fileID: 0}
+    - target: {fileID: 32786647604555376, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb, type: 3}

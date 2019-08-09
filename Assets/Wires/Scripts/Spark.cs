@@ -26,6 +26,7 @@ namespace TO5.Wires
         public bool m_Rotate = true;                                        // If spark should rotate
         [Min(0.1f)] public float m_RotationTime = 0.5f;                     // Time it takes for spark to rotate   
         [SerializeField] private Renderer m_Renderer;                       // Sparks renderer
+        [SerializeField] private ParticleSystem[] m_Particles;              // Sparks particles
         public AudioClip m_OnSelectedSound;                                 // Sound to play when selected while on
         public AudioClip m_OffSelectedSound;                                // Sound to play when selected while off
 
@@ -218,8 +219,19 @@ namespace TO5.Wires
         /// <param name="progress">Progress of blend</param>
         private void BlendSwitchStatus(float progress)
         {
+            Color color = Color.Lerp(m_OffColor, m_OnColor, progress);
+
             if (m_Renderer)
-                m_Renderer.material.color = Color.Lerp(m_OffColor, m_OnColor, progress);
+                m_Renderer.material.color = color;
+
+            foreach (ParticleSystem system in m_Particles)
+            {
+                if (!system)
+                    continue;
+
+                ParticleSystem.ColorOverLifetimeModule colorModule = system.colorOverLifetime;
+                colorModule.color = color;
+            }
 
             transform.localScale = Vector3.Lerp(m_OffScale, m_OnTargetScale, progress);
         }

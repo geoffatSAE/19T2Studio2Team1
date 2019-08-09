@@ -22,6 +22,8 @@ namespace TO5.Wires
         private Coroutine m_FadingMusicRoutine = null;                      // Routine for fading music
 
         public AnimationCurve m_BeatCurve = AnimationCurve.Linear(0f, 1f, 1f, 0f);      // Animation curve of beat (value provided to shaders)
+        private float m_BeatTime = 0f;                                                  // Time of beat
+        private float m_BeatScale = 1f;                                                 // Amount to scale time by during update (changes based on fade)
         private float m_ActiveBeatRate = 1f;                                            // Beat rate of active music
         private float m_ActiveBeatDelay = 0f;                                           // Beat delay of active music
         private float m_PendingBeatRate = 1f;                                           // Beat rate of pending music
@@ -46,9 +48,11 @@ namespace TO5.Wires
 
         void Update()
         {
+            m_BeatTime += Time.deltaTime * m_BeatScale;
+
             // Current time of beat (accounted for initial delay)
             float beatRate = m_ActiveBeatRate > 0f ? m_ActiveBeatRate : 1f;
-            float beatTime = Mathf.Max(Time.time - m_ActiveBeatDelay, 0f) / beatRate;
+            float beatTime = Mathf.Max(m_BeatTime - m_ActiveBeatDelay, 0f) / beatRate;
             Shader.SetGlobalFloat(BeatTimeShaderName, m_BeatCurve.Evaluate(Mathf.Repeat(beatTime, 1f)));
         }
 
@@ -209,6 +213,8 @@ namespace TO5.Wires
                 m_MusicSource2.volume = volume;
                 m_MusicSource2.pitch = pitch;
             }
+
+            m_BeatScale = pitch;
         }
     }
 }
