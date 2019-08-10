@@ -788,7 +788,7 @@ MonoBehaviour:
     m_SpawnSegmentOffset: 7
     m_SpawnSegmentRange: 3
     m_SparkSpawnSegmentDelay: 3
-    m_DefectiveWireChance: 0
+    m_DefectiveWireChance: 0.08
     m_SparkSpeed: 3.25
     m_SparkDriftScale: 0.6
     m_SparkOnSwitchInterval: 2
@@ -806,7 +806,7 @@ MonoBehaviour:
     m_SpawnSegmentOffset: 8
     m_SpawnSegmentRange: 5
     m_SparkSpawnSegmentDelay: 3
-    m_DefectiveWireChance: 0.075
+    m_DefectiveWireChance: 0.08
     m_SparkSpeed: 3.4
     m_SparkDriftScale: 0.3
     m_SparkOnSwitchInterval: 1.5
@@ -824,7 +824,7 @@ MonoBehaviour:
     m_SpawnSegmentOffset: 10
     m_SpawnSegmentRange: 5
     m_SparkSpawnSegmentDelay: 3
-    m_DefectiveWireChance: 0
+    m_DefectiveWireChance: 0.08
     m_SparkSpeed: 3.55
     m_SparkDriftScale: 0.6
     m_SparkOnSwitchInterval: 1.2
@@ -842,7 +842,7 @@ MonoBehaviour:
     m_SpawnSegmentOffset: 5
     m_SpawnSegmentRange: 6
     m_SparkSpawnSegmentDelay: 6
-    m_DefectiveWireChance: 0
+    m_DefectiveWireChance: 0.08
     m_SparkSpeed: 3.6
     m_SparkDriftScale: 0.6
     m_SparkOnSwitchInterval: 1
