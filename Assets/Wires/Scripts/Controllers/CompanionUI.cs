@@ -63,8 +63,7 @@ namespace TO5.Wires
         [SerializeField] private Anchor m_GameAnchor;               // Game anchor (overwritten on awake)
         [SerializeField] private Anchor m_TutorialAnchor;           // Anchor to use in tutorial mode
         public float m_SwitchAnchorSpeed = 1f;                      // Speed at which to switch anchors
-        //[SerializeField] private Transform m_LookAtTarget;        // Target for companion to look at (will not rotate if nothing is set)
-        //[SerializeField] private Transform m_RotationOverride;    // Transform to rotate instead of ours
+        [SerializeField] private Transform m_LookAtTarget;          // Target for companion to look at (will not rotate if nothing is set)
 
         private Coroutine m_SwitchAnchorRoutine = null;     // Switch anchor routine currently running
         private float m_SwitchAnchorTime = 1f;              // Current time of anchor switch
@@ -102,6 +101,9 @@ namespace TO5.Wires
 
             m_GameAnchor.m_Position = transform.localPosition;
             m_GameAnchor.m_Scale = transform.localScale;
+
+            if (m_LookAtTarget)
+                transform.LookAt(m_LookAtTarget);
         }
 
         void Update()
@@ -262,11 +264,8 @@ namespace TO5.Wires
             transform.localPosition = Vector3.Lerp(m_GameAnchor.m_Position, m_TutorialAnchor.m_Position, alpha);
             transform.localScale = Vector3.Lerp(m_GameAnchor.m_Scale, m_TutorialAnchor.m_Scale, alpha);
 
-            //if (m_LookAtTarget)
-            //{
-            //    Transform rotateTransform = m_RotationOverride ? m_RotationOverride : transform;
-            //    transform.LookAt(m_LookAtTarget);
-            //}
+            if (m_LookAtTarget)
+                transform.LookAt(m_LookAtTarget);
         }
 
         /// <summary>

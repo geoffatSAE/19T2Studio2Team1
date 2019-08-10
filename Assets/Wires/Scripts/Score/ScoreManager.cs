@@ -90,10 +90,11 @@ namespace TO5.Wires
         [SerializeField] private float m_BoostMultiplier = 2f;              // Multipler all score is scaled by when boost is active
         [SerializeField] private float m_BoostPerPacket = 5f;               // Boost player earns when collecting a packet
         public AudioSource m_BoostAudioSource;                              // Audio source for playing boost sounds
-        public AudioSource m_BoostLoopingAudioSource;                       // Audio source for playing looping boost sounds
-        public AudioClip m_BoostReadySound;                                 // Sound to play when boost is ready
+        public AudioSource m_BoostLoopingAudioSource;                       // Audio source for playing looping boost sounds       
         public AudioClip m_BoostActivatedSound;                             // Sound to play when boost has been activated
         public AudioClip m_BoostDepletedSound;                              // Sound to play when boost has been depleted
+        public AudioClip m_BoostReadySound;                                 // Sound to play when boost is ready
+        public AudioClip m_BoostActiveSound;                                // Sound to play while boost is active
         public ParticleSystem m_BoostReadyParticles;                        // Particles to play when boost is ready
 
         private ObjectPool<DataPacket> m_DataPackets = new ObjectPool<DataPacket>();    // Packets being managed
@@ -790,7 +791,7 @@ namespace TO5.Wires
                 m_Boost = Mathf.Min(100f, m_Boost + amount);
                 if (m_Boost >= 100f)
                 {
-                    PlayBoostSound(m_BoostReadySound);  
+                    PlayLoopingBoostSound(m_BoostReadySound, 1f);
 
                     if (m_BoostReadyParticles)
                         m_BoostReadyParticles.Play();
@@ -828,12 +829,7 @@ namespace TO5.Wires
                 m_BoostActive = true;
 
                 PlayBoostSound(m_BoostActivatedSound);
-
-                if (m_BoostLoopingAudioSource)
-                {
-                    m_BoostLoopingAudioSource.time = 0f;
-                    m_BoostLoopingAudioSource.Play();
-                }
+                PlayLoopingBoostSound(m_BoostActiveSound, 0.7f);
 
                 if (m_BoostReadyParticles)
                     m_BoostReadyParticles.Stop();
@@ -933,6 +929,29 @@ namespace TO5.Wires
                 m_BoostAudioSource.clip = clip;
                 m_BoostAudioSource.time = 0f;
                 m_BoostAudioSource.Play();
+            }
+        }
+
+        /// <summary>
+        /// Plays audio clip for the looping boost audio source
+        /// </summary>
+        /// <param name="clip">Audio clip to play</param>
+        /// <param name="volume">Volume to play clip at</param>
+        private void PlayLoopingBoostSound(AudioClip clip, float volume)
+        {
+            if (m_BoostLoopingAudioSource)
+            {
+                // A call to this function assumes we were going to override an already looping sound
+                if (!clip)
+                {
+                    m_BoostLoopingAudioSource.Stop();
+                    return;
+                }
+
+                m_BoostLoopingAudioSource.clip = clip;
+                m_BoostLoopingAudioSource.time = 0f;
+                m_BoostLoopingAudioSource.volume = volume;
+                m_BoostLoopingAudioSource.Play();
             }
         }
 

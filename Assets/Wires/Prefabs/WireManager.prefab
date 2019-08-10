@@ -200,9 +200,9 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 243297105590188606, guid: 55545f7fdabb42d4f93bdb72b21c53b1,
     type: 2}
-  m_audioClip: {fileID: 8300000, guid: 326ed38e9edea61498869cdecbbbe45a, type: 3}
+  m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 0.7
+  m_Volume: 1
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -982,11 +982,12 @@ MonoBehaviour:
   m_BoostPerPacket: 8
   m_BoostAudioSource: {fileID: 1420648253490766540}
   m_BoostLoopingAudioSource: {fileID: 8280543612210784032}
-  m_BoostReadySound: {fileID: 8300000, guid: 22061b42fdc60b849adfe3cfdf95c205, type: 3}
   m_BoostActivatedSound: {fileID: 8300000, guid: 23afa94d8ff8f6b438c095747d9551a5,
     type: 3}
   m_BoostDepletedSound: {fileID: 8300000, guid: c6de205880f010d4588f7dd20ad6f18c,
     type: 3}
+  m_BoostReadySound: {fileID: 8300000, guid: 22061b42fdc60b849adfe3cfdf95c205, type: 3}
+  m_BoostActiveSound: {fileID: 8300000, guid: 326ed38e9edea61498869cdecbbbe45a, type: 3}
   m_BoostReadyParticles: {fileID: 0}
   m_DebugText: {fileID: 0}
 --- !u!1 &9082293327331159452

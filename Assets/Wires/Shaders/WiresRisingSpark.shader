@@ -6,6 +6,7 @@
 		_HighColor ("High Color", Color) = (1, 1, 1, 1)
         _Noise ("Noise", 2D) = "white" {}
 		_PanningSpeed ("Panning Speed", Vector) = (10, 5, 0, 0)
+		_Extent ("Extent", Float) = 5
     }
     SubShader
     {
@@ -38,11 +39,21 @@
 			fixed4 _HighColor;
 			sampler2D _Noise;
 			fixed4 _PanningSpeed;
+			fixed _Extent;
+
+			// Global value (musics beat time)
+			uniform float _BeatTime;
 
             v2f vert (appdata v)
             {
+				fixed3 center = mul(unity_ObjectToWorld, fixed4(0, 0, 0, 1)).xyz;
+				fixed3 vertex = mul(unity_ObjectToWorld, v.vertex).xyz;
+
+				vertex += normalize(vertex - center) * (_Extent * _BeatTime);
+				fixed4 object = mul(unity_WorldToObject, fixed4(vertex, 1.f));
+
                 v2f o;
-                o.vertex = UnityObjectToClipPos(v.vertex);
+                o.vertex = UnityObjectToClipPos(object);
 				o.grab = ComputeScreenPos(o.vertex);
                 return o;
             }
