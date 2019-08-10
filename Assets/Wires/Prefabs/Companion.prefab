@@ -1940,8 +1940,8 @@ MonoBehaviour:
     m_Voicelines:
     - {fileID: 8300000, guid: 1530e571a60c0d54f900ac7756448697, type: 3}
     - {fileID: 8300000, guid: bd8bacd486d9007458a621dc7899f542, type: 3}
-    - {fileID: 8300000, guid: e8b896d3423e7674fb8bedb5dbf33291, type: 3}
-    - {fileID: 8300000, guid: 0eb51eac25acc034482d813190ffb272, type: 3}
+    - {fileID: 8300000, guid: 1530e571a60c0d54f900ac7756448697, type: 3}
+    - {fileID: 8300000, guid: 1530e571a60c0d54f900ac7756448697, type: 3}
     m_Priority: 10
     m_Chance: 1
   m_BoostActiveDialogue:
@@ -1971,8 +1971,8 @@ MonoBehaviour:
     m_Chance: 0.1
   m_JumpDialogue:
     m_Voicelines:
-    - {fileID: 8300000, guid: 256eb12553ddff747bf60860df566da3, type: 3}
-    - {fileID: 8300000, guid: 874a44fb7ca60a44abc753bbc33fb5ca, type: 3}
+    - {fileID: 8300000, guid: 490c21ec2e876864583c3070cfbadbff, type: 3}
+    - {fileID: 8300000, guid: 691b1aef7be541844857d0c24f508638, type: 3}
     - {fileID: 8300000, guid: 691b1aef7be541844857d0c24f508638, type: 3}
     - {fileID: 8300000, guid: 490c21ec2e876864583c3070cfbadbff, type: 3}
     m_Priority: 2
