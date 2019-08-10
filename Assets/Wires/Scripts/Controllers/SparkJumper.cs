@@ -41,11 +41,17 @@ namespace TO5.Wires
         public float m_JumpTime = 0.75f;                                                    // Transition time between sparks
         [SerializeField, Min(0.1f)] protected float m_TraceRadius = 0.5f;                   // Radius of sphere cast
         [SerializeField] private LayerMask m_InteractiveLayer = Physics.AllLayers;          // Layer for interactives
-        public CompanionUI m_Companion;                                                     // Players companion
+        [SerializeField] private CompanionUI m_Companion;                                   // Players companion
 
         public ScreenFade m_ScreenFade;                     // Screen fade for game transitions
         public AudioSource m_SelectionAudioSource;          // Audio source for playing selection sounds
         public AudioClip m_BoostFailSound;                  // Sound to play when boost activation fails
+
+        // Players companion displaying UI
+        public CompanionUI companion { get { return m_Companion; } }
+
+        // Players companions voice
+        public CompanionVoice companionVoice { get { return m_Companion ? m_Companion.voice : null; } }
 
         // If the player is allowed to request a jump
         public bool canJump { get { return m_JumpingEnabled && !m_IsJumping; } }
@@ -96,6 +102,10 @@ namespace TO5.Wires
 
             // Can't be drifting while jumping
             SetDriftingEnabled(false);
+
+            CompanionVoice voice = companionVoice;
+            if (voice)
+                voice.PlayJumpDialogue();
 
             StartCoroutine(JumpRoutine());
 

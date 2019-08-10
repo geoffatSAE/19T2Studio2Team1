@@ -155,6 +155,9 @@ namespace TO5.Wires
         // If tutorial settings should be used
         public bool tutorialMode { get; private set; }
 
+        // The players companions voice
+        private CompanionVoice companionVoice { get { return m_SparkJumper ? m_SparkJumper.companionVoice : null; } }
+
         void Update()
         {
             Profiler.BeginSample("ScoreManager.Tick", this);
@@ -168,6 +171,12 @@ namespace TO5.Wires
                 {
                     if (m_BoostActive)
                     {
+                        const float cutoff = 60f;
+
+                        // If boost was above the cutoff before decreasing it this frame, we do this
+                        // so we don't spam delayed mid boost activated companion dialogues
+                        bool aboveCutoff = m_Boost >= cutoff;
+
                         m_Boost = Mathf.Max(0, m_Boost - (m_BoostDepletionRate * Time.deltaTime));
                         m_BoostActive = m_Boost > 0f;
 
@@ -179,8 +188,21 @@ namespace TO5.Wires
                             if (m_BoostLoopingAudioSource)
                                 m_BoostLoopingAudioSource.Stop();
 
+                            CompanionVoice voice = companionVoice;
+                            if (voice)
+                                voice.PlayBoostEndDialogue();
+
                             if (OnBoostModeUpdated != null)
                                 OnBoostModeUpdated.Invoke(false);
+                        }
+                        else if (aboveCutoff && m_Boost < cutoff)
+                        {
+                            if (!m_SparkJumper.isDrifting)
+                            {
+                                CompanionVoice voice = companionVoice;
+                                if (voice)
+                                    voice.PlayBoostActiveDialogue(0.25f);
+                            }
                         }
                     }
                     else if (!m_SparkJumper.isDrifting && !tutorialMode)
@@ -204,8 +226,8 @@ namespace TO5.Wires
             // Move multiplier system
             if (m_MultiplierParticles && m_MultiplierParticles.IsAlive(true))
             {
-                if (m_SparkJumper && m_SparkJumper.m_Companion)
-                    m_MultiplierParticles.transform.position = m_SparkJumper.m_Companion.transform.position;
+                if (m_SparkJumper && m_SparkJumper.companion)
+                    m_MultiplierParticles.transform.position = m_SparkJumper.companion.transform.position;
             }
 
             UpdatePacketAudioSource();
@@ -795,6 +817,10 @@ namespace TO5.Wires
 
                     if (m_BoostReadyParticles)
                         m_BoostReadyParticles.Play();
+
+                    CompanionVoice voice = companionVoice;
+                    if (voice)
+                        voice.PlayBoostReadyDialogue();
                 }
             }
         }
@@ -806,6 +832,10 @@ namespace TO5.Wires
         {
             AddScore(m_PacketScore);
             AddBoost(m_BoostPerPacket);
+
+            CompanionVoice voice = companionVoice;
+            if (voice)
+                voice.PlayPacketCollectedDialogue();
 
             DeactivatePacket(packet, true);
         }
@@ -833,6 +863,10 @@ namespace TO5.Wires
 
                 if (m_BoostReadyParticles)
                     m_BoostReadyParticles.Stop();
+
+                CompanionVoice voice = companionVoice;
+                if (voice)
+                    voice.PlayBoostStartDialogue();
 
                 if (OnBoostModeUpdated != null)
                     OnBoostModeUpdated.Invoke(true);
@@ -892,11 +926,20 @@ namespace TO5.Wires
             m_MultiplierParticles = increase ? m_MultiplierIncreaseParticles : m_MultiplierDecreaseParticles;
             if (m_MultiplierParticles)
             {
-                if (m_SparkJumper && m_SparkJumper.m_Companion)
-                    m_MultiplierParticles.transform.position = m_SparkJumper.m_Companion.transform.position;
+                if (m_SparkJumper && m_SparkJumper.companion)
+                    m_MultiplierParticles.transform.position = m_SparkJumper.companion.transform.position;
 
                 m_MultiplierParticles.gameObject.SetActive(true);
                 m_MultiplierParticles.Play(true);
+            }
+
+            CompanionVoice voice = companionVoice;
+            if (voice)
+            {
+                if (increase)
+                    voice.PlayMultiplierIncreaseDialogue();
+                else
+                    voice.PlayMultiplierDecreaseDialogue();
             }
         }
 

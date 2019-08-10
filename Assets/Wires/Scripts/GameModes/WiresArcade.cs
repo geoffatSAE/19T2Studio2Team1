@@ -43,7 +43,8 @@ namespace TO5.Wires
         [SerializeField] private float m_TutorialPacketLifetime = 15f;          // Lifetime of packets in tutorial mode
         [SerializeField] private TutorialUI m_TutorialUI;                       // UI to display during tutorial mode
 
-        private bool m_TutorialActive = false;                          // If tutorial is active
+        private bool m_TutorialActive = false;                          // If tutorial is active   
+        private int m_TutorialWiresSpawned = 0;                         // Amount of tutorial wires that have been spawned
         private TutorialStep m_TutorialStep = TutorialStep.None;        // Current step of tutorial
         private bool m_TutorialWireDefective = false;                   // If last wire spawned by tutorial was defective
 
@@ -115,6 +116,7 @@ namespace TO5.Wires
             if (m_WireManager.StartTutorial(tutorialProps, m_TutorialInitialSegments))
             {
                 m_TutorialActive = true;
+                m_TutorialWiresSpawned = 0;
                 m_TutorialStep = TutorialStep.None;
 
                 // Switch to tutorial UI
@@ -128,15 +130,18 @@ namespace TO5.Wires
                     }
 
                     SparkJumper sparkJumper = m_WireManager.sparkJumper;
-                    if (sparkJumper.m_Companion)
+                    if (sparkJumper.companion)
                     {
-                        CompanionUI companion = sparkJumper.m_Companion;
+                        CompanionUI companion = sparkJumper.companion;
                         companion.DisableCompanion();
                         companion.MoveToTutorialAnchor();
                     }
 
                     if (sparkJumper.m_ScreenFade)
+                    {
+                        sparkJumper.m_ScreenFade.OnFadeFinished += TutorialFadeFinished;
                         sparkJumper.m_ScreenFade.FadeIn();
+                    }
                 }
 
                 NextTutorialStep();
@@ -151,7 +156,7 @@ namespace TO5.Wires
         /// <summary>
         /// Cleans up any values set for tutorial mode
         /// </summary>
-        private void EndTutorial()
+        private void EndTutorial(bool skipped)
         {
             if (m_TutorialActive)
             {
@@ -179,11 +184,19 @@ namespace TO5.Wires
                     }
 
                     SparkJumper sparkJumper = m_WireManager.sparkJumper;
-                    if (sparkJumper.m_Companion)
+                    if (sparkJumper.companion)
                     {
-                        CompanionUI companion = sparkJumper.m_Companion;
+                        CompanionUI companion = sparkJumper.companion;
                         companion.EnableCompanion();
                         companion.MoveToGameAnchor();
+
+                        if (companion.voice)
+                        {
+                            if (skipped)
+                                companion.voice.PlayTutorialSkippedDialogue();
+                            else
+                                companion.voice.PlayTutorialFinishedDialogue();
+                        }
                     }
 
                     if (sparkJumper.m_ScreenFade)
@@ -191,6 +204,7 @@ namespace TO5.Wires
                 }
 
                 m_TutorialActive = false;
+                m_TutorialWiresSpawned = 0;
                 m_TutorialStep = TutorialStep.None;
 
                 StartArcade();
@@ -204,7 +218,6 @@ namespace TO5.Wires
         {
             if (m_WireManager.StartWires())
             {
-                //StartCoroutine(GameTimerRoutine());
                 Invoke("EndGame", m_ArcadeLength);
 
                 m_StartingDistance = m_WireManager.sparkJumper.GetPosition().z;
@@ -222,7 +235,7 @@ namespace TO5.Wires
         public void SkipTutorial()
         {
             if (m_TutorialActive)
-                EndTutorial();
+                EndTutorial(true);
         }
 
         /// <summary>
@@ -244,7 +257,16 @@ namespace TO5.Wires
                     while (!newWire)
                         newWire = m_WireManager.GenerateRandomFixedWire(m_TutorialWireSegments, true, defective);
 
+                    // We play first tutorial dialogue when first wire spawns in
+                    if (m_TutorialWiresSpawned <= 0)
+                    {
+                        SparkJumper sparkJumper = m_WireManager.sparkJumper;
+                        if (sparkJumper && sparkJumper.companionVoice)
+                            sparkJumper.companionVoice.PlayTutorialDialogue(0);
+                    }
+
                     m_TutorialWireDefective = defective;
+                    ++m_TutorialWiresSpawned;
 
                     yield break;
                 }
@@ -301,8 +323,8 @@ namespace TO5.Wires
 
                 distance = Mathf.Abs(sparkJumper.GetPosition().z - m_StartingDistance);
 
-                if (sparkJumper.m_Companion)
-                    sparkJumper.m_Companion.ShowStatsUI(score, distance);
+                if (sparkJumper.companion)
+                    sparkJumper.companion.ShowStatsUI(score, distance);
             }
 
             yield return new WaitForSeconds(m_PostArcadeLength);
@@ -321,6 +343,21 @@ namespace TO5.Wires
             }
         }
 
+        /// <summary>
+        /// Notify that screen fade in has finished when starting tutorial
+        /// </summary>
+        /// <param name="endAlpha">Last alpha of screen fade</param>
+        private void TutorialFadeFinished(float endAlpha)
+        {
+            SparkJumper sparkJumper = m_WireManager.sparkJumper;
+            if (sparkJumper)
+            {
+                sparkJumper.m_ScreenFade.OnFadeFinished -= TutorialFadeFinished;
+
+                if (sparkJumper.companionVoice)
+                    sparkJumper.companionVoice.PlayIntroDialogue();
+            }
+        }
 
         /// <summary>
         /// Notify that player has jumped off a wire during the tutorial
@@ -355,7 +392,7 @@ namespace TO5.Wires
         {
             ScoreManager scoreManager = m_WireManager.scoreManager;
             if (!scoreManager)
-                EndTutorial();
+                EndTutorial(false);
 
             if (wasCollected)
             {
@@ -388,11 +425,17 @@ namespace TO5.Wires
         private void FinaleJumpToSpark(Spark spark, bool finished)
         {
             if (m_FinalWire && spark.GetWire() == m_FinalWire)
+            {
                 StartCoroutine(DisplayStatsAndExitRoutine());
+
+                SparkJumper sparkJumper = m_WireManager.sparkJumper;
+                if (sparkJumper && sparkJumper.companionVoice)
+                    sparkJumper.companionVoice.PlayGameFinishedDialogue();
+            }
         }
 
         /// <summary>
-        /// Notify that screen fade out has finished
+        /// Notify that screen fade out has finished after game has finished
         /// </summary>
         /// <param name="endAlpha">Last alpha of screen fade</param>
         private void FinaleFadeFinished(float endAlpha)
@@ -415,32 +458,45 @@ namespace TO5.Wires
         {
             if (m_TutorialActive)
             {
+                int step = -1;
+
                 switch (m_TutorialStep)
                 {
                     case TutorialStep.None:
                         StartJumpingTutorial();
+                        
+                        // We call this tutorial dialogue elsewhere
+                        //step = 0;
                         break;
 
                     case TutorialStep.Jumping:
                         StartPacketTutorial();
+                        step = 1;
                         break;
 
                     case TutorialStep.Packets:
                         StartBoostTutorial();
+                        step = 2;
                         break;
 
                     case TutorialStep.Boost:
                         StartDefectiveTutorial();
+                        step = 3;
                         break;
 
                     case TutorialStep.Defective:
-                        EndTutorial();
+                        EndTutorial(false);
                         break;
                 }
-            }
 
-            if (m_TutorialUI)
-                m_TutorialUI.NextSlide();
+
+                if (m_TutorialUI)
+                    m_TutorialUI.NextSlide();
+
+                SparkJumper sparkJumper = m_WireManager.sparkJumper;
+                if (sparkJumper && sparkJumper.companionVoice)
+                    sparkJumper.companionVoice.PlayTutorialDialogue(step);
+            }
         }
 
         /// <summary>
@@ -484,7 +540,7 @@ namespace TO5.Wires
             else
             {
                 // We can't progress onto next tutorial
-                EndTutorial();
+                EndTutorial(false);
             }
         }
 
@@ -507,7 +563,7 @@ namespace TO5.Wires
             else
             {
                 // We can't progress onto next tutorial
-                EndTutorial();
+                EndTutorial(false);
             }
         }
 

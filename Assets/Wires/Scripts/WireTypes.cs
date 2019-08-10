@@ -90,28 +90,16 @@ namespace TO5.Wires
             float rad = Random.Range(0f, PI2);
             float yDir = Mathf.Cos(rad);
 
-            // We can quickly do one check instead of two if both are nearly the same
-            if (Mathf.Approximately(bottomCutoff, topCutoff))
+            while (yDir > topCutoff || -yDir > bottomCutoff)
             {
-                while (yDir > topCutoff)
-                {
-                    rad = Random.Range(0f, PI2);
-                    yDir = Mathf.Cos(rad);
-                }
-            }
-            else
-            {
-                while (yDir > topCutoff || -yDir > bottomCutoff)
-                {
-                    rad = Random.Range(0f, PI2);
-                    yDir = Mathf.Cos(rad);
-                }
+                rad = Random.Range(0f, PI2);
+                yDir = Mathf.Cos(rad);
             }
 
             Vector2 direction = new Vector2(Mathf.Sin(rad), yDir);
 
             Profiler.EndSample();
-       
+
             return direction * Random.Range(minOffset, maxOffset);
         }
 

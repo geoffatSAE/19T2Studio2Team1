@@ -8,6 +8,7 @@ namespace TO5.Wires
     /// <summary>
     /// Handles the UI displayed on the players companion
     /// </summary>
+    [RequireComponent(typeof(CompanionVoice))]
     public class CompanionUI : MonoBehaviour
     {
         /// <summary>
@@ -20,9 +21,13 @@ namespace TO5.Wires
             public Vector3 m_Scale;             // Scale in local space
         }
 
-        [SerializeField] private SparkJumper m_SparkJumper;         // Players spark jumper
+        [SerializeField] private SparkJumper m_SparkJumper;         // Players spark jumper 
         [SerializeField] private ScoreManager m_ScoreManager;       // Games score manager
         [SerializeField] private Animator m_Animator;               // Companions animator
+        private CompanionVoice m_Voice;                             // Companions voice
+
+        // The companions voice script for speaking dialogue
+        public CompanionVoice voice { get { return m_Voice; } }
 
         [Header("Game")]
         public string m_ScoreTextFormat = "Score: {0}";         // Formatting for score text ({0} is required, will be replaced by actual score)
@@ -54,6 +59,7 @@ namespace TO5.Wires
         [SerializeField] private Text m_DistanceStatsText;      // Text block for writing players distance travelled
 
         [Header("Animation")]
+        [SerializeField] private string m_EndWireAnim = "EndOfWire";        // Name of state for playing end of wire anim
         [SerializeField] private string m_MulIncAnim = "MulIncrease";       // Name of state for playing multiplier increased anim
         [SerializeField] private string m_MulDecAnim = "MulDecrease";       // Name of state for playing multiplier decreased anim
 
@@ -90,6 +96,11 @@ namespace TO5.Wires
             if (m_FPSText)
                 m_FPSText.gameObject.SetActive(false);
             #endif
+
+            m_Voice = GetComponent<CompanionVoice>();
+
+            if (m_SparkJumper)
+                m_SparkJumper.OnDriftingUpdated += DriftingUpdated;
 
             if (m_ScoreManager)
             {
@@ -351,6 +362,22 @@ namespace TO5.Wires
             }
 
             m_ActiveLives = lives;
+        }
+
+        /// <summary>
+        /// Notify that player has entered drifting mode
+        /// </summary>
+        /// <param name="isEnabled">If drifting is enabled</param>
+        private void DriftingUpdated(bool isEnabled)
+        {
+            if (isEnabled)
+            {
+                if (m_Animator)
+                    m_Animator.Play(m_EndWireAnim);
+
+                if (m_Voice)
+                    m_Voice.PlayEndOfWireDialogue();
+            }
         }
 
         /// <summary>
