@@ -573,17 +573,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6949668420535121808, guid: a5a33f51ce935c547bd9d87b27f3a6a2,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6844594464007682432, guid: a5a33f51ce935c547bd9d87b27f3a6a2,
         type: 3}
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 4081323772981420802}
     - target: {fileID: 2953362715361866680, guid: a5a33f51ce935c547bd9d87b27f3a6a2,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6949668420535121808, guid: a5a33f51ce935c547bd9d87b27f3a6a2,
         type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -899,7 +899,7 @@ PrefabInstance:
     - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
         type: 3}
       propertyPath: m_EndingState.m_Position.y
-      value: 150
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
         type: 3}
@@ -935,31 +935,36 @@ PrefabInstance:
         type: 3}
       propertyPath: m_RotationOverride
       value: 
-      objectReference: {fileID: 988699986169624860}
+      objectReference: {fileID: 0}
     - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
         type: 3}
       propertyPath: m_EndGameState.m_Position.y
-      value: 150
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
         type: 3}
       propertyPath: m_EndGameState.m_Position.z
-      value: 300
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
         type: 3}
       propertyPath: m_EndGameState.m_Scale.x
-      value: 250
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
         type: 3}
       propertyPath: m_EndGameState.m_Scale.y
-      value: 250
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
         type: 3}
       propertyPath: m_EndGameState.m_Scale.z
-      value: 400
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
+        type: 3}
+      propertyPath: m_EndGameState.m_Position.x
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4019624321145973867, guid: 24679e943130bb24e8e396828a93b8bc,
         type: 3}
@@ -971,12 +976,6 @@ PrefabInstance:
 --- !u!4 &988699986689996307 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5134141384927370640, guid: 24679e943130bb24e8e396828a93b8bc,
-    type: 3}
-  m_PrefabInstance: {fileID: 5402264587274644355}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &988699986169624860 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 5134141384374063775, guid: 24679e943130bb24e8e396828a93b8bc,
     type: 3}
   m_PrefabInstance: {fileID: 5402264587274644355}
   m_PrefabAsset: {fileID: 0}
