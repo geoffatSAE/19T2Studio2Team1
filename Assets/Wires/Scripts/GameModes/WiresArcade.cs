@@ -25,6 +25,7 @@ namespace TO5.Wires
         [Header("Arcade")]
         [SerializeField] private float m_ArcadeLength = 480f;       // How long the game lasts for (in seconds)
         [SerializeField] private float m_PostArcadeLength = 10f;    // How long to display game stats for before exiting
+        [SerializeField] private FireworksHandler m_Fireworks;      // Fireworks to activate during post game
 
         private float m_StartingDistance = 0f;          // Distance player had already travelled at the start of the game
         private Wire m_FinalWire;                       // The final wire (exit wire)
@@ -424,13 +425,16 @@ namespace TO5.Wires
         /// <param name="finished">If jump just finished</param>
         private void FinaleJumpToSpark(Spark spark, bool finished)
         {
-            if (m_FinalWire && spark.GetWire() == m_FinalWire)
+            if (m_FinalWire && spark.GetWire() == m_FinalWire && finished)
             {
                 StartCoroutine(DisplayStatsAndExitRoutine());
 
                 SparkJumper sparkJumper = m_WireManager.sparkJumper;
                 if (sparkJumper && sparkJumper.companionVoice)
                     sparkJumper.companionVoice.PlayGameFinishedDialogue();
+
+                if (m_Fireworks)
+                    m_Fireworks.Activate();
             }
         }
 

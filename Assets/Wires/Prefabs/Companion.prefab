@@ -1921,7 +1921,7 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 6aa4f6dae90c7874fafcb47bcdec08fd, type: 3}
     - {fileID: 8300000, guid: 8dd26e70c9d3a4d4f81e29795e7ba715, type: 3}
     - {fileID: 8300000, guid: 4dc0508f4c9b21145854d741dc065369, type: 3}
-    m_Priority: 5
+    m_Priority: 6
     m_Chance: 1
   m_EndOfWireDialogue:
     m_Voicelines:
