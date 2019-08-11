@@ -92,7 +92,7 @@ namespace TO5.Wires
         void Awake()
         { 
             // Disable text in non development builds
-            #if !(UNITY_EDITOR || DEVELOPMENT_BUILD)
+            #if !UNITY_EDITOR && !DEVELOPMENT_BUILD
             if (m_FPSText)
                 m_FPSText.gameObject.SetActive(false);
             #endif
