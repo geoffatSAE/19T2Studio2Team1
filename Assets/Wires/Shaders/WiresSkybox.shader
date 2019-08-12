@@ -92,7 +92,7 @@
 				half4 tex = texCUBE(_Cubemap, i.uv);
 				half3 color = DecodeHDR(tex, fixed4(1, 1, 1, 1));
 
-				return fixed4(tint, 1);
+				return fixed4(color * tint, 1);
             }
             ENDCG
         }
