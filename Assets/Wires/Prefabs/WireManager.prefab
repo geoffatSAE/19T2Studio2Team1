@@ -746,9 +746,9 @@ MonoBehaviour:
     m_TopCircleCutoff: 0.7
     m_MaxWiresAtOnce: 4
     m_MinSegments: 20
-    m_MaxSegments: 30
-    m_MinSpawnInterval: 2
-    m_MaxSpawnInterval: 2.5
+    m_MaxSegments: 35
+    m_MinSpawnInterval: 2.6
+    m_MaxSpawnInterval: 3.6
     m_SpawnSegmentOffset: 5
     m_SpawnSegmentRange: 3
     m_SparkSpawnSegmentDelay: 2
@@ -764,9 +764,9 @@ MonoBehaviour:
     m_TopCircleCutoff: 0.7
     m_MaxWiresAtOnce: 5
     m_MinSegments: 35
-    m_MaxSegments: 40
-    m_MinSpawnInterval: 1
-    m_MaxSpawnInterval: 1.7
+    m_MaxSegments: 45
+    m_MinSpawnInterval: 2.2
+    m_MaxSpawnInterval: 3.2
     m_SpawnSegmentOffset: 5
     m_SpawnSegmentRange: 3
     m_SparkSpawnSegmentDelay: 3
@@ -781,10 +781,10 @@ MonoBehaviour:
     m_BottomCircleCutoff: 0.3
     m_TopCircleCutoff: 0.7
     m_MaxWiresAtOnce: 5
-    m_MinSegments: 50
-    m_MaxSegments: 58
-    m_MinSpawnInterval: 0.8
-    m_MaxSpawnInterval: 1.7
+    m_MinSegments: 45
+    m_MaxSegments: 55
+    m_MinSpawnInterval: 1.7
+    m_MaxSpawnInterval: 2.7
     m_SpawnSegmentOffset: 7
     m_SpawnSegmentRange: 3
     m_SparkSpawnSegmentDelay: 3
@@ -799,10 +799,10 @@ MonoBehaviour:
     m_BottomCircleCutoff: 0.55
     m_TopCircleCutoff: 0.7
     m_MaxWiresAtOnce: 6
-    m_MinSegments: 40
-    m_MaxSegments: 55
-    m_MinSpawnInterval: 0.5
-    m_MaxSpawnInterval: 1
+    m_MinSegments: 55
+    m_MaxSegments: 65
+    m_MinSpawnInterval: 1.4
+    m_MaxSpawnInterval: 2.4
     m_SpawnSegmentOffset: 8
     m_SpawnSegmentRange: 5
     m_SparkSpawnSegmentDelay: 3
@@ -817,10 +817,10 @@ MonoBehaviour:
     m_BottomCircleCutoff: 0.7
     m_TopCircleCutoff: 0.7
     m_MaxWiresAtOnce: 6
-    m_MinSegments: 55
-    m_MaxSegments: 70
-    m_MinSpawnInterval: 0.4
-    m_MaxSpawnInterval: 0.9
+    m_MinSegments: 60
+    m_MaxSegments: 72
+    m_MinSpawnInterval: 1.3
+    m_MaxSpawnInterval: 2.3
     m_SpawnSegmentOffset: 10
     m_SpawnSegmentRange: 5
     m_SparkSpawnSegmentDelay: 3
@@ -835,10 +835,10 @@ MonoBehaviour:
     m_BottomCircleCutoff: 0.7
     m_TopCircleCutoff: 0.7
     m_MaxWiresAtOnce: 7
-    m_MinSegments: 70
-    m_MaxSegments: 77
-    m_MinSpawnInterval: 0.3
-    m_MaxSpawnInterval: 0.7
+    m_MinSegments: 75
+    m_MaxSegments: 80
+    m_MinSpawnInterval: 1.2
+    m_MaxSpawnInterval: 2.2
     m_SpawnSegmentOffset: 5
     m_SpawnSegmentRange: 6
     m_SparkSpawnSegmentDelay: 6
@@ -892,8 +892,8 @@ MonoBehaviour:
   m_TopCircleCutoff: 0.7
   m_PacketProperties:
   - m_MinSpawnOffset: 75
-    m_MinSpawnInterval: 0.8
-    m_MaxSpawnInterval: 1
+    m_MinSpawnInterval: 1
+    m_MaxSpawnInterval: 2
     m_MinSpeed: 8
     m_MaxSpeed: 12
     m_Lifetime: 0
@@ -902,22 +902,22 @@ MonoBehaviour:
     m_MaxPacketsPerCluster: 2
     m_ClusterRate: 2
     m_ClusterSpawnRange: 1
-    m_MultiplierIncreaseInterval: 10
-    m_HandicapMultiplierIncreaseInterval: 7
-  - m_MinSpawnOffset: 85
-    m_MinSpawnInterval: 1.5
-    m_MaxSpawnInterval: 2.5
-    m_MinSpeed: 13
-    m_MaxSpeed: 30
+    m_MultiplierIncreaseInterval: 22
+    m_HandicapMultiplierIncreaseInterval: 13
+  - m_MinSpawnOffset: 75
+    m_MinSpawnInterval: 1
+    m_MaxSpawnInterval: 2
+    m_MinSpeed: 10
+    m_MaxSpeed: 15
     m_Lifetime: 5
     m_ClusterChance: 0.1
     m_MinPacketsPerCluster: 2
     m_MaxPacketsPerCluster: 4
     m_ClusterRate: 2
     m_ClusterSpawnRange: 1
-    m_MultiplierIncreaseInterval: 12
-    m_HandicapMultiplierIncreaseInterval: 9
-  - m_MinSpawnOffset: 100
+    m_MultiplierIncreaseInterval: 22
+    m_HandicapMultiplierIncreaseInterval: 13
+  - m_MinSpawnOffset: 90
     m_MinSpawnInterval: 1
     m_MaxSpawnInterval: 2
     m_MinSpeed: 15
@@ -928,47 +928,47 @@ MonoBehaviour:
     m_MaxPacketsPerCluster: 4
     m_ClusterRate: 2
     m_ClusterSpawnRange: 1
-    m_MultiplierIncreaseInterval: 14
-    m_HandicapMultiplierIncreaseInterval: 11
-  - m_MinSpawnOffset: 130
+    m_MultiplierIncreaseInterval: 22
+    m_HandicapMultiplierIncreaseInterval: 13
+  - m_MinSpawnOffset: 100
     m_MinSpawnInterval: 1
     m_MaxSpawnInterval: 2
-    m_MinSpeed: 20
-    m_MaxSpeed: 30
+    m_MinSpeed: 15
+    m_MaxSpeed: 20
     m_Lifetime: 5
     m_ClusterChance: 0.05
     m_MinPacketsPerCluster: 3
     m_MaxPacketsPerCluster: 3
     m_ClusterRate: 2
     m_ClusterSpawnRange: 2
-    m_MultiplierIncreaseInterval: 16
+    m_MultiplierIncreaseInterval: 22
     m_HandicapMultiplierIncreaseInterval: 13
-  - m_MinSpawnOffset: 150
-    m_MinSpawnInterval: 0.7
-    m_MaxSpawnInterval: 1.3
-    m_MinSpeed: 25
-    m_MaxSpeed: 35
+  - m_MinSpawnOffset: 120
+    m_MinSpawnInterval: 1
+    m_MaxSpawnInterval: 2
+    m_MinSpeed: 15
+    m_MaxSpeed: 20
     m_Lifetime: 5
     m_ClusterChance: 0.05
     m_MinPacketsPerCluster: 3
     m_MaxPacketsPerCluster: 4
     m_ClusterRate: 2
     m_ClusterSpawnRange: 2
-    m_MultiplierIncreaseInterval: 18
-    m_HandicapMultiplierIncreaseInterval: 15
-  - m_MinSpawnOffset: 170
-    m_MinSpawnInterval: 1.6
-    m_MaxSpawnInterval: 1.1
-    m_MinSpeed: 30
-    m_MaxSpeed: 35
+    m_MultiplierIncreaseInterval: 22
+    m_HandicapMultiplierIncreaseInterval: 13
+  - m_MinSpawnOffset: 140
+    m_MinSpawnInterval: 1
+    m_MaxSpawnInterval: 2
+    m_MinSpeed: 15
+    m_MaxSpeed: 20
     m_Lifetime: 10
     m_ClusterChance: 0.08
-    m_MinPacketsPerCluster: 4
-    m_MaxPacketsPerCluster: 6
+    m_MinPacketsPerCluster: 3
+    m_MaxPacketsPerCluster: 4
     m_ClusterRate: 2
     m_ClusterSpawnRange: 7
-    m_MultiplierIncreaseInterval: 20
-    m_HandicapMultiplierIncreaseInterval: 17
+    m_MultiplierIncreaseInterval: 22
+    m_HandicapMultiplierIncreaseInterval: 13
   m_PacketSpawnSound: {fileID: 8300000, guid: 05a9b8a29ac7a024c8739b54e6d8e22b, type: 3}
   m_PacketClusterSpawnSound: {fileID: 8300000, guid: c912b9e24aba07d4f8c5e6d37c7c01ec,
     type: 3}
@@ -979,7 +979,7 @@ MonoBehaviour:
   m_BoostChargeRate: 2
   m_BoostDepletionRate: 12
   m_BoostMultiplier: 2
-  m_BoostPerPacket: 8
+  m_BoostPerPacket: 6.5
   m_BoostAudioSource: {fileID: 1420648253490766540}
   m_BoostLoopingAudioSource: {fileID: 8280543612210784032}
   m_BoostActivatedSound: {fileID: 8300000, guid: 23afa94d8ff8f6b438c095747d9551a5,
