@@ -514,6 +514,11 @@ PrefabInstance:
       propertyPath: m_SparkJumper
       value: 
       objectReference: {fileID: 4081323773829006848}
+    - target: {fileID: 3763885994031084875, guid: a5a33f51ce935c547bd9d87b27f3a6a2,
+        type: 3}
+      propertyPath: m_LookAtTarget
+      value: 
+      objectReference: {fileID: 4081323772982013144}
     - target: {fileID: 6653541786956647586, guid: a5a33f51ce935c547bd9d87b27f3a6a2,
         type: 3}
       propertyPath: m_Name
@@ -659,7 +664,7 @@ PrefabInstance:
     - target: {fileID: 7056042624343486680, guid: fc2594087951949439d8a97c6d0184ed,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -100
       objectReference: {fileID: 0}
     - target: {fileID: 7056042624343486680, guid: fc2594087951949439d8a97c6d0184ed,
         type: 3}
@@ -721,10 +726,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4081323773829006849}
     m_Modifications:
-    - target: {fileID: 2037080, guid: 126d619cf4daa52469682f85c1378b4a, type: 3}
-      propertyPath: m_ForceIntoRT
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 400004, guid: 126d619cf4daa52469682f85c1378b4a, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -773,6 +774,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: OVRCameraRig
       objectReference: {fileID: 0}
+    - target: {fileID: 2037080, guid: 126d619cf4daa52469682f85c1378b4a, type: 3}
+      propertyPath: m_ForceIntoRT
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 126d619cf4daa52469682f85c1378b4a, type: 3}
 --- !u!4 &4083683970387684378 stripped
@@ -812,11 +817,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4081323774656870565}
     m_Modifications:
-    - target: {fileID: 3036212007980189417, guid: 6ff9b63ab7594684fb4d6137e189a41f,
-        type: 3}
-      propertyPath: m_Name
-      value: FireworksHandler
-      objectReference: {fileID: 0}
     - target: {fileID: 3036212007980189423, guid: 6ff9b63ab7594684fb4d6137e189a41f,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -871,6 +871,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3036212007980189417, guid: 6ff9b63ab7594684fb4d6137e189a41f,
+        type: 3}
+      propertyPath: m_Name
+      value: FireworksHandler
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6ff9b63ab7594684fb4d6137e189a41f, type: 3}
