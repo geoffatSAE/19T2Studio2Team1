@@ -48,16 +48,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_StartingState:
     m_Position: {x: 0, y: 250, z: 600}
-    m_Scale: {x: 100, y: 100, z: 100}
+    m_Scale: {x: 75, y: 75, z: 75}
   m_EndingState:
     m_Position: {x: 0, y: -250, z: 500}
-    m_Scale: {x: 150, y: 150, z: 150}
+    m_Scale: {x: 125, y: 125, z: 125}
   m_OverrideAnchor: {fileID: 5134141384927370640}
   m_GameMode: {fileID: 0}
   m_FallbackDuration: 30
   m_EndGameState:
     m_Position: {x: 0, y: 0, z: 200}
-    m_Scale: {x: 150, y: 150, z: 150}
+    m_Scale: {x: 125, y: 125, z: 125}
   m_EndGameFallbackDuration: 10
   m_StartRotationInterval: 2
   m_EndRotationInterval: 0.5
@@ -211,17 +211,17 @@ PrefabInstance:
     - target: {fileID: 629665655112169772, guid: c555c9465e0d21544b0c1bdc6aadee06,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 629665655112169772, guid: c555c9465e0d21544b0c1bdc6aadee06,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 629665655112169772, guid: c555c9465e0d21544b0c1bdc6aadee06,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 629665655112169772, guid: c555c9465e0d21544b0c1bdc6aadee06,
         type: 3}
@@ -251,17 +251,17 @@ PrefabInstance:
     - target: {fileID: 629665655112169772, guid: c555c9465e0d21544b0c1bdc6aadee06,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.226365
+      value: 0.22636501
       objectReference: {fileID: 0}
     - target: {fileID: 629665655112169772, guid: c555c9465e0d21544b0c1bdc6aadee06,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.226365
+      value: 0.22636501
       objectReference: {fileID: 0}
     - target: {fileID: 629665655112169772, guid: c555c9465e0d21544b0c1bdc6aadee06,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.226365
+      value: 0.22636501
       objectReference: {fileID: 0}
     - target: {fileID: 629665655112169773, guid: c555c9465e0d21544b0c1bdc6aadee06,
         type: 3}
@@ -441,12 +441,12 @@ PrefabInstance:
     - target: {fileID: 629665655112169773, guid: c555c9465e0d21544b0c1bdc6aadee06,
         type: 3}
       propertyPath: EmissionModule.rateOverTime.minScalar
-      value: 200
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 629665655112169773, guid: c555c9465e0d21544b0c1bdc6aadee06,
         type: 3}
       propertyPath: EmissionModule.rateOverTime.scalar
-      value: 100
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c555c9465e0d21544b0c1bdc6aadee06, type: 3}
@@ -471,10 +471,6 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2300000, guid: d410ef23520b14a4e9df547e2466899e, type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: ef9bbbb1a74e65946bd225fc9d33c6e1, type: 2}
     - target: {fileID: 400000, guid: d410ef23520b14a4e9df547e2466899e, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0
@@ -531,6 +527,10 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2300000, guid: d410ef23520b14a4e9df547e2466899e, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: ef9bbbb1a74e65946bd225fc9d33c6e1, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d410ef23520b14a4e9df547e2466899e, type: 3}
 --- !u!4 &5134141384374063775 stripped
