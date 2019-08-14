@@ -726,6 +726,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4081323773829006849}
     m_Modifications:
+    - target: {fileID: 2037080, guid: 126d619cf4daa52469682f85c1378b4a, type: 3}
+      propertyPath: m_ForceIntoRT
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 400004, guid: 126d619cf4daa52469682f85c1378b4a, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -773,10 +777,6 @@ PrefabInstance:
     - target: {fileID: 100004, guid: 126d619cf4daa52469682f85c1378b4a, type: 3}
       propertyPath: m_Name
       value: OVRCameraRig
-      objectReference: {fileID: 0}
-    - target: {fileID: 2037080, guid: 126d619cf4daa52469682f85c1378b4a, type: 3}
-      propertyPath: m_ForceIntoRT
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 126d619cf4daa52469682f85c1378b4a, type: 3}
@@ -964,56 +964,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
         type: 3}
-      propertyPath: m_StartingState.m_Position.z
-      value: 450
-      objectReference: {fileID: 0}
-    - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
-        type: 3}
-      propertyPath: m_StartingState.m_Scale.x
-      value: 250
-      objectReference: {fileID: 0}
-    - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
-        type: 3}
-      propertyPath: m_StartingState.m_Scale.y
-      value: 250
-      objectReference: {fileID: 0}
-    - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
-        type: 3}
-      propertyPath: m_StartingState.m_Scale.z
-      value: 250
-      objectReference: {fileID: 0}
-    - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
-        type: 3}
-      propertyPath: m_EndingState.m_Position.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
-        type: 3}
-      propertyPath: m_EndingState.m_Position.z
-      value: 600
-      objectReference: {fileID: 0}
-    - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
-        type: 3}
-      propertyPath: m_EndingState.m_Scale.x
-      value: 275
-      objectReference: {fileID: 0}
-    - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
-        type: 3}
-      propertyPath: m_EndingState.m_Scale.y
-      value: 275
-      objectReference: {fileID: 0}
-    - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
-        type: 3}
-      propertyPath: m_EndingState.m_Scale.z
-      value: 275
-      objectReference: {fileID: 0}
-    - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
-        type: 3}
-      propertyPath: m_FallbackDuration
-      value: 300
-      objectReference: {fileID: 0}
-    - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
-        type: 3}
       propertyPath: m_OverrideAnchor
       value: 
       objectReference: {fileID: 988699986689996307}
@@ -1021,36 +971,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_RotationOverride
       value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
-        type: 3}
-      propertyPath: m_EndGameState.m_Position.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
-        type: 3}
-      propertyPath: m_EndGameState.m_Position.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
-        type: 3}
-      propertyPath: m_EndGameState.m_Scale.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
-        type: 3}
-      propertyPath: m_EndGameState.m_Scale.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
-        type: 3}
-      propertyPath: m_EndGameState.m_Scale.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5134141384661580595, guid: 24679e943130bb24e8e396828a93b8bc,
-        type: 3}
-      propertyPath: m_EndGameState.m_Position.x
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4019624321145973867, guid: 24679e943130bb24e8e396828a93b8bc,
         type: 3}
