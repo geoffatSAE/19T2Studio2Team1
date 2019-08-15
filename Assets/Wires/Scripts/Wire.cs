@@ -135,5 +135,13 @@ namespace TO5.Wires
             Gizmos.DrawLine(transform.position, end);
         }
         #endif
+
+        public void SetFactory(WireFactory factory)
+        {
+            m_Factory = factory;
+
+            if (m_WireMesh)
+                m_WireMesh.material.color = factory.color;
+        }
     }
 }

@@ -130,7 +130,6 @@ namespace TO5.Wires
                             m_TutorialUI.skipButton.onClick.AddListener(SkipTutorial);
                     }
 
-                    SparkJumper sparkJumper = m_WireManager.sparkJumper;
                     if (sparkJumper.companion)
                     {
                         CompanionUI companion = sparkJumper.companion;
@@ -167,7 +166,6 @@ namespace TO5.Wires
 
                 if (m_WireManager.scoreManager)
                 {
-                    ScoreManager scoreManager = m_WireManager.scoreManager;
                     scoreManager.OnPacketDespawned -= TutorialPacketDespawned;
                     scoreManager.OnBoostModeUpdated -= TutorialBoostModeUpdated;
                 }
@@ -184,7 +182,6 @@ namespace TO5.Wires
                         Destroy(m_TutorialUI);
                     }
 
-                    SparkJumper sparkJumper = m_WireManager.sparkJumper;
                     if (sparkJumper.companion)
                     {
                         CompanionUI companion = sparkJumper.companion;
@@ -261,7 +258,6 @@ namespace TO5.Wires
                     // We play first tutorial dialogue when first wire spawns in
                     if (m_TutorialWiresSpawned <= 0)
                     {
-                        SparkJumper sparkJumper = m_WireManager.sparkJumper;
                         if (sparkJumper && sparkJumper.companionVoice)
                             sparkJumper.companionVoice.PlayTutorialDialogue(0);
                     }
@@ -316,7 +312,6 @@ namespace TO5.Wires
                 score = m_WireManager.scoreManager.score;
             }
 
-            SparkJumper sparkJumper = m_WireManager.sparkJumper;
             if (sparkJumper)
             {
                 sparkJumper.m_JumpingEnabled = false;
@@ -350,7 +345,6 @@ namespace TO5.Wires
         /// <param name="endAlpha">Last alpha of screen fade</param>
         private void TutorialFadeFinished(float endAlpha)
         {
-            SparkJumper sparkJumper = m_WireManager.sparkJumper;
             if (sparkJumper)
             {
                 sparkJumper.m_ScreenFade.OnFadeFinished -= TutorialFadeFinished;
@@ -391,7 +385,6 @@ namespace TO5.Wires
         /// <param name="wasCollected"></param>
         private void TutorialPacketDespawned(DataPacket packet, bool wasCollected)
         {
-            ScoreManager scoreManager = m_WireManager.scoreManager;
             if (!scoreManager)
                 EndTutorial(false);
 
@@ -429,7 +422,6 @@ namespace TO5.Wires
             {
                 StartCoroutine(DisplayStatsAndExitRoutine());
 
-                SparkJumper sparkJumper = m_WireManager.sparkJumper;
                 if (sparkJumper && sparkJumper.companionVoice)
                     sparkJumper.companionVoice.PlayGameFinishedDialogue();
 
@@ -497,7 +489,6 @@ namespace TO5.Wires
                 if (m_TutorialUI)
                     m_TutorialUI.NextSlide();
 
-                SparkJumper sparkJumper = m_WireManager.sparkJumper;
                 if (sparkJumper && sparkJumper.companionVoice)
                     sparkJumper.companionVoice.PlayTutorialDialogue(step);
             }
@@ -524,8 +515,6 @@ namespace TO5.Wires
 
             if (m_WireManager.scoreManager)
             {
-                ScoreManager scoreManager = m_WireManager.scoreManager;
-
                 // Custom properties (we can ignore intervals as we will handle it)
                 PacketStageProperties tutorialProps = new PacketStageProperties();
                 tutorialProps.m_MinSpawnOffset = m_TutorialPacketOffset;
@@ -557,7 +546,6 @@ namespace TO5.Wires
 
             if (m_WireManager.scoreManager)
             {
-                ScoreManager scoreManager = m_WireManager.scoreManager;
                 scoreManager.OnPacketDespawned -= TutorialPacketDespawned;
                 scoreManager.OnBoostModeUpdated += TutorialBoostModeUpdated;
 
@@ -578,7 +566,6 @@ namespace TO5.Wires
         {
             m_TutorialStep = TutorialStep.Defective;
 
-            ScoreManager scoreManager = m_WireManager.scoreManager;
             if (scoreManager)
                 scoreManager.OnBoostModeUpdated -= TutorialBoostModeUpdated;
         }

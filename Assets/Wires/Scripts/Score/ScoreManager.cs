@@ -1097,5 +1097,11 @@ namespace TO5.Wires
             Wires.DrawCutoffGizmo(m_TopCircleCutoff, center, m_MaxPacketSpawnRadius, false);
         }
         #endif
+
+        public void SetScoreAndStage(float score, int stage)
+        {
+            m_Score = score;
+            SetMultiplierStage(stage);
+        }
     }
 }

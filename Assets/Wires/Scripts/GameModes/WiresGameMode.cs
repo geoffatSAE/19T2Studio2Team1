@@ -24,6 +24,18 @@ namespace TO5.Wires
         protected float m_GameStart = -1f;          // When the game started
         protected float m_GameLength = -1f;         // Time game lasted for
 
+        // Wire manager we manage
+        public WireManager wireManager { get { return m_WireManager; } }
+
+        // World theme we manage
+        public WorldTheme worldTheme { get { return m_WorldTheme; } }
+
+        // Score manager we manage
+        public ScoreManager scoreManager { get { return m_WireManager ? m_WireManager.scoreManager : null; } }
+
+        // Players spark jumper
+        public SparkJumper sparkJumper { get { return m_WireManager ? m_WireManager.sparkJumper : null; } }
+
         // Time that has passed since starting game
         public float gameTime { get { return m_GameStart >= 0f ? Time.time - m_GameStart : 0f; } }
 

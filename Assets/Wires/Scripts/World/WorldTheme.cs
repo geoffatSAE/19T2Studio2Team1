@@ -193,5 +193,21 @@ namespace TO5.Wires
                 yield return null;
             }
         }
+
+        public void SetActiveTheme(WireFactory factory)
+        {
+            if (!m_CurrentWire || !factory)
+                return;
+
+            m_CurrentWire.SetFactory(factory);
+
+            m_WorldAesthetics.SetActiveAesthetics(m_CurrentWire);
+
+            m_WorldMusic.SetActiveTrack(factory.GetMusicTrack(m_MultiplierStage));
+            m_WorldColor.SetActiveColor(factory.skyboxColor);
+
+            // Colors does not automatically update itself
+            m_WorldColor.BlendColors(1f);
+        }
     }
 }
