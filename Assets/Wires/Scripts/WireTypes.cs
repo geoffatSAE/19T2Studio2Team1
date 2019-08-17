@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Profiling;
 
 namespace TO5.Wires
@@ -9,11 +10,7 @@ namespace TO5.Wires
     [System.Serializable]
     public class WireStageProperties
     {
-        public float m_InnerSpawnRadius = 5f;                           // Inner radius of spawn circle (wires do not spawn inside this radius)
-        public float m_OuterSpawnRadius = 20f;                          // Outer radius of spawn circle (wires do not spawn outside this radius)
-        [Range(0, 1)] public float m_BottomCircleCutoff = 0.7f;         // Cutoff from bottom of spawn circle (no wires will spawn in cutoff)
-        [Range(0, 1)] public float m_TopCircleCutoff = 1f;              // Cutoff from top of spawn circle (no wires will spawn in cutoff)
-        public int m_MaxWiresAtOnce = 5;                                // Max wires that can be active at once
+        [Header("Wire Properties")]
         public int m_MinSegments = 8;                                   // Min segments per wire
         public int m_MaxSegments = 12;                                  // Max segments per wire
         public float m_MinSpawnInterval = 2f;                           // Min seconds between spawning wires
@@ -21,6 +18,14 @@ namespace TO5.Wires
         public int m_SpawnSegmentOffset = 5;                            // Offset from current segment to spawn wires
         [Min(0)] public int m_SpawnSegmentRange = 3;                    // Range from offset to spawn wires (between -Value and Value + 1)
 
+        [Header("Wire Spawn Properties")]
+        public float m_InnerSpawnRadius = 5f;                           // Inner radius of spawn circle (wires do not spawn inside this radius)
+        public float m_OuterSpawnRadius = 20f;                          // Outer radius of spawn circle (wires do not spawn outside this radius)
+        [Range(0, 1)] public float m_BottomCircleCutoff = 0.7f;         // Cutoff from bottom of spawn circle (no wires will spawn in cutoff)
+        [Range(0, 1)] public float m_TopCircleCutoff = 1f;              // Cutoff from top of spawn circle (no wires will spawn in cutoff)
+        public int m_MaxWiresAtOnce = 5;                                // Max wires that can be active at once
+
+        [Header("Wire Spark Properties")]
         [Min(0)] public int m_SparkSpawnSegmentDelay = 3;               // Max segments to wait before spawning spark for wire
         [Range(0, 1)] public float m_DefectiveWireChance = 0.1f;        // Chance of wire be defective (0 for never, 1 for always)
         [Min(0)] public float m_SparkSpeed = 1f;                        // Speed of sparks  
@@ -30,6 +35,7 @@ namespace TO5.Wires
 
         // This is the easiest place to put these for now
 
+        [Header("Obsolete")]
         [Min(0)] public float m_JumpTime = 0.75f;                       // Jump time for player
     }
 
@@ -39,13 +45,17 @@ namespace TO5.Wires
     [System.Serializable]
     public class PacketStageProperties
     {
-        public int m_MinSpawnOffset = 20;                               // Min segments in front of player to spawn
-        public float m_MinSpawnInterval = 4;                            // Min seconds between spawning packets
-        public float m_MaxSpawnInterval = 6;                            // Max seconds between spawning packets
+        [Header("Packet Properties")]
         public float m_MinSpeed = 1f;                                   // Min speed of a packet
         public float m_MaxSpeed = 2.5f;                                 // Max speed of a packet
         [Min(0)] public float m_Lifetime = 10f;                         // How long data packets last for before expiring (zero for do not spawn)
 
+        [Header("Packet Spawn Properties")]
+        public int m_MinSpawnOffset = 20;                               // Min segments in front of player to spawn
+        public float m_MinSpawnInterval = 4;                            // Min seconds between spawning packets
+        public float m_MaxSpawnInterval = 6;                            // Max seconds between spawning packets
+
+        [Header("Cluster Spawn Properties")]
         [Range(0, 1)] public float m_ClusterChance = 0.1f;              // Chance for packets spawning in a cluster (when spawn interval elapses)
         public int m_MinPacketsPerCluster = 3;                          // Min packets to try and spawn in a cluster
         public int m_MaxPacketsPerCluster = 6;                          // Max packets to try and spawn in a cluster
@@ -54,9 +64,20 @@ namespace TO5.Wires
 
         // This is the easiet place to put these for now
 
+        // Obsolete TODO: Remove
+
+        [Header("Obsolete")]
         public float m_MultiplierIncreaseInterval = 15f;                // Time to reach next stage   
         public float m_HandicapMultiplierIncreaseInterval = 10f;        // Time to reach next stage after failing X times
     }
+
+    [System.Serializable]
+    public class MultiplierStageProperties
+    {
+        [Min(0)] public float m_Duration = 30f;                                             // Duration of the multiplier stage (in seconds)
+        public PacketStageProperties m_PacketProperties = new PacketStageProperties();      // Properties for packets and packet generation
+    }
+
 
     /// <summary>
     /// Helper functions used by Wires
@@ -64,6 +85,33 @@ namespace TO5.Wires
     struct Wires
     {
         private static readonly float CutoffThreshold = 0.1f;       // Threshold for where random offset is most likely to loop for too long     
+
+        /// <summary>
+        /// Shuffles the given list
+        /// </summary>
+        /// <typeparam name="T">Type of lists values</typeparam>
+        /// <param name="list">List to shuffle</param>
+        public static void Shuffle<T>(ref List<T> list)
+        {
+            if (list == null)
+                return;
+
+            Random random = new Random();
+            int count = list.Count;
+
+            while (count-- > 1)
+            {
+                int index = Random.Range(0, count);
+
+                // Swap
+                {
+                    T l = list[count];
+                    T r = list[index];
+                    list[count] = r;
+                    list[index] = l;
+                }        
+            }
+        }
 
         /// <summary>
         /// Generates a random offset of a circle (assuming origin is 0,0)

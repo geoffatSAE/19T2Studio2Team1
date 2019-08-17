@@ -128,7 +128,10 @@ namespace TO5.Wires
         #endif
 
         // If tutorial settings should be used
-        public bool tutorialMode { get; private set; }      
+        public bool tutorialMode { get; private set; }
+
+        private WireFactory m_ActiveFactory = null;
+        private List<WireFactory> m_FactoryOrder = null;
         
         void Awake()
         {
@@ -136,7 +139,15 @@ namespace TO5.Wires
             {
                 m_ScoreManager.Initialize(this);
                 m_ScoreManager.OnMultiplierUpdated += MultiplierUpdated;
+
+                if (m_Factories != null)
+                {
+                    m_FactoryOrder = new List<WireFactory>(m_Factories);
+                    Wires.Shuffle(ref m_FactoryOrder);
+                }
             }
+
+            UpdateActiveWireFactory(0);
         }
 
         void Update()
@@ -502,7 +513,7 @@ namespace TO5.Wires
             if (!wire)
                 return null;
 
-            wire.ActivateWire(start, segments, m_CachedSegmentDistance, factory);
+            wire.ActivateWire(start, segments, m_CachedSegmentDistance, m_ActiveFactory);
 
             if (sparkDelay > 0)
                 StartCoroutine(DelaySparkActivation(sparkDelay, wire, onInterval, offInterval));
@@ -560,7 +571,7 @@ namespace TO5.Wires
                 // Scoring is disabled in tutorial mode
                 if (!tutorialMode && m_ScoreManager)
                 {
-                    m_ScoreManager.TryDecreaseMultiplier();
+                    m_ScoreManager.DecreaseMultiplier();
 
                     if (m_DriftingEnabled)
                         m_ScoreManager.DisableScoring();
@@ -751,7 +762,7 @@ namespace TO5.Wires
         /// </summary>
         /// <returns>Random factory or null if empty</returns>
         public WireFactory GetRandomWireFactory()
-        {
+        {           
             if (m_Factories != null && m_Factories.Length > 0)
             {
                 int index = Random.Range(0, m_Factories.Length);
@@ -759,6 +770,14 @@ namespace TO5.Wires
             }
 
             return null;
+        }
+
+        private void UpdateActiveWireFactory(int index)
+        {
+            if (m_FactoryOrder != null && index < m_FactoryOrder.Count)
+                m_ActiveFactory = m_FactoryOrder[index];
+            else
+                m_ActiveFactory = GetRandomWireFactory();            
         }
 
         /// <summary>
@@ -1030,6 +1049,8 @@ namespace TO5.Wires
         /// </summary>
         private void MultiplierUpdated(float multiplier, int stage)
         {
+            UpdateActiveWireFactory(stage);
+
             m_ActiveWireProperties = GetWireProperties(stage);
 
             if (m_SparkJumper)

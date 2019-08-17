@@ -11,6 +11,8 @@ namespace TO5.Wires
     /// </summary>
     public class ScoreManager : MonoBehaviour
     {
+        private static readonly string m_TickAutoMultiplierIncrease = "TickAutoMultiplierIncrease";
+
         /// <summary>
         /// Delegate to notify the players multiplier has changed
         /// </summary>
@@ -52,13 +54,19 @@ namespace TO5.Wires
 
         [Header("Multiplier")]
         [SerializeField, Range(0, 32)] private int m_MultiplierStages = 2;      // The amount of stages for the multiplier
-        [SerializeField, Min(1)] private int m_StageLives = 4;                  // Amount of 'lives' player has per stage before multiplier decrease
-        [SerializeField] private int m_StageHandicap = 2;                       // Handicap is applied when stage resets is less or greater to this
+        [SerializeField] private bool m_AllowDecrease = false;                  // If player can lose their multiplier
+
+        [SerializeField] private MultiplierStageProperties[] m_MultiplierStageProperties;       // Properties releated to a multiplier stage
+
         public AudioSource m_MultiplierAudioSource;                             // Audio source to play multiplier sounds with
         public AudioClip m_MultiplierIncreaseClip;                              // Sound to play when multiplier increases
+        public ParticleSystem m_MultiplierIncreaseParticles;                    // Root particle system to all increase particles (longest system should be root)
+
+        [Header("Multiplier|Decrease")]
+        [SerializeField, Min(1)] private int m_StageLives = 4;                  // Amount of 'lives' player has per stage before multiplier decrease
+        [SerializeField] private int m_StageHandicap = 2;                       // Handicap is applied when stage resets is less or greater to this
         public AudioClip m_MultiplierDecreaseClip;                              // Sound to play when multiplier decreases
         public AudioClip m_LifeLostClip;                                        // Clip to play when a live has been lost
-        public ParticleSystem m_MultiplierIncreaseParticles;                    // Root particle system to all increase particles (longest system should be root)
         public ParticleSystem m_MultiplierDecreaseParticles;                    // Root particle system to all decrease particles (longest system should be root)
 
         private float m_MultiplierStart = -1f;                      // Time multiplier increase interval started
@@ -84,6 +92,7 @@ namespace TO5.Wires
 
         private ObjectPool<ParticleSystem> m_PacketCollectedSystems = new ObjectPool<ParticleSystem>();     // Pool of particle systems used for packet collection
 
+        // TODO: Remove (at least to different component)
         [Header("Boost")]
         [SerializeField] private float m_BoostChargeRate = 0.83f;           // Boost player earns per second
         [SerializeField] private float m_BoostDepletionRate = 10f;          // Boost player consumes per second (when active)
@@ -97,6 +106,7 @@ namespace TO5.Wires
         public AudioClip m_BoostActiveSound;                                // Sound to play while boost is active
         public ParticleSystem m_BoostReadyParticles;                        // Particles to play when boost is ready
 
+        private MultiplierStageProperties m_ActiveMultiplierProperties;                 // Properties for current stage
         private ObjectPool<DataPacket> m_DataPackets = new ObjectPool<DataPacket>();    // Packets being managed
         private PacketStageProperties m_ActivePacketProperties;                         // Properties for current stage
         private int m_PacketSpawnsSinceLastCluster = 0;                                 // Amount of random packets spawn attempts since the last packet cluster
@@ -315,6 +325,7 @@ namespace TO5.Wires
                 m_StageResets = 0;
                 SetRemainingLives(m_StageLives);
 
+                m_ActiveMultiplierProperties = GetMultiplierProperties(m_Stage);
                 m_ActivePacketProperties = GetPacketProperties(m_Stage);
 
                 m_Boost = 0f;
@@ -336,8 +347,8 @@ namespace TO5.Wires
                 }
             }
 
-            m_MultiplierTick = StartCoroutine(MultiplierTickRoutine());
-            SetPacketGenerationEnabled(true);
+            ActivateMultiplierTick(reset);
+            SetPacketGenerationEnabled(false);
         }
 
         /// <summary>
@@ -349,12 +360,11 @@ namespace TO5.Wires
                 return;
 
             SetPacketGenerationEnabled(false);
+            //CancelInvoke(m_TickAutoMultiplierIncrease);
 
-            StopCoroutine(m_MultiplierTick);
-            m_MultiplierTick = null;
             m_PacketSpawn = null;
 
-            m_IsRunning = false;
+            //m_IsRunning = false;
             tutorialMode = false;
         }
 
@@ -397,6 +407,9 @@ namespace TO5.Wires
         /// <param name="stages"></param>
         public void DecreaseMultiplier(int stages = 1)
         {
+            if (!m_AllowDecrease)
+                return;
+
             if (!m_IsRunning || tutorialMode)
                 return;
 
@@ -404,8 +417,7 @@ namespace TO5.Wires
                 PlayMultiplierAesthetics(false);
 
             // Reset the multiplier tick routine (resets regardless of if stage actually changed)
-            StopCoroutine(m_MultiplierTick);
-            m_MultiplierTick = StartCoroutine(MultiplierTickRoutine());
+            ActivateMultiplierTick(true);
         }
 
         /// <summary>
@@ -418,12 +430,17 @@ namespace TO5.Wires
             stage = Mathf.Clamp(stage, 0, m_MultiplierStages);
             if (stage != m_Stage)
             {
+                // Multiplier decrease might be disabled
+                if (!m_AllowDecrease && stage < m_Stage)
+                    return false;
+
                 m_Stage = stage;
                 m_Multiplier = 1 << m_Stage;
 
                 m_StageResets = 0;
                 SetRemainingLives(m_StageLives);
 
+                m_ActiveMultiplierProperties = GetMultiplierProperties(m_Stage);
                 m_ActivePacketProperties = GetPacketProperties(m_Stage);
 
                 if (OnMultiplierUpdated != null)
@@ -505,6 +522,39 @@ namespace TO5.Wires
             return 1f - ((end - Time.time) / m_MultiplierInterval);
         }
 
+        private void ActivateMultiplierTick(bool reset = true)
+        {
+            if (m_IsRunning && !tutorialMode)
+            {
+                if (m_Stage >= m_MultiplierStages)
+                    return;
+
+                if (reset)
+                    CancelInvoke(m_TickAutoMultiplierIncrease);
+                else if (IsInvoking(m_TickAutoMultiplierIncrease))
+                    return;
+
+                MultiplierStageProperties mulStage = GetStageMultiplierProperties();
+                float interval = mulStage.m_Duration;
+
+                m_MultiplierStart = Time.time;
+                m_MultiplierInterval = interval;
+
+                Invoke(m_TickAutoMultiplierIncrease, interval);
+            }
+        }
+
+        private void TickAutoMultiplierIncrease()
+        {
+            if (m_IsRunning && !tutorialMode)
+            {
+                IncreaseMultiplier(1);
+
+                // This will fall out if at max multiplier stage
+                ActivateMultiplierTick();
+            }
+        }
+
         /// <summary>
         /// Tick routine for increasing multiplier
         /// </summary>
@@ -513,12 +563,8 @@ namespace TO5.Wires
         {
             while (m_IsRunning && !tutorialMode)
             {
-                PacketStageProperties packetProps = GetStagePacketProperties();
-                float interval = packetProps.m_MultiplierIncreaseInterval;
-
-                // Handicap
-                if (m_StageResets >= m_StageHandicap)
-                    interval = packetProps.m_HandicapMultiplierIncreaseInterval;
+                MultiplierStageProperties mulProps = GetStageMultiplierProperties();
+                float interval = mulProps.m_Duration;
 
                 m_MultiplierStart = Time.time;
                 m_MultiplierInterval = interval;
@@ -746,6 +792,25 @@ namespace TO5.Wires
                 OnPacketDespawned.Invoke(packet, wasCollected);
         }
 
+        private MultiplierStageProperties GetMultiplierProperties(int index)
+        {
+            if (m_MultiplierStageProperties == null || m_MultiplierStageProperties.Length == 0)
+                return new MultiplierStageProperties();
+
+            // We use the latest properties if index is still out of range
+            index = Mathf.Clamp(index, 0, m_MultiplierStageProperties.Length - 1);
+            return m_MultiplierStageProperties[index];
+        }
+
+        private MultiplierStageProperties GetStageMultiplierProperties()
+        {
+            if (m_ActiveMultiplierProperties != null)
+                return m_ActiveMultiplierProperties;
+
+            m_ActiveMultiplierProperties = GetMultiplierProperties(m_Stage);
+            return m_ActiveMultiplierProperties;
+        }
+
         /// <summary>
         /// Gets packet generation properties for index. Checks if properties exist for
         /// index, either creating a new set or getting best replacement if it doesn't
@@ -754,12 +819,15 @@ namespace TO5.Wires
         /// <returns>Valid properties</returns>
         private PacketStageProperties GetPacketProperties(int index)
         {
-            if (m_PacketProperties == null || m_PacketProperties.Length == 0)
-                return new PacketStageProperties();
+            //if (m_PacketProperties == null || m_PacketProperties.Length == 0)
+            //    return new PacketStageProperties();
 
-            // We use the latest properties if index is still out of range
-            index = Mathf.Clamp(index, 0, m_PacketProperties.Length - 1);
-            return m_PacketProperties[index];
+            //// We use the latest properties if index is still out of range
+            //index = Mathf.Clamp(index, 0, m_PacketProperties.Length - 1);
+            //return m_PacketProperties[index];
+
+            MultiplierStageProperties mulProps = GetMultiplierProperties(index);
+            return mulProps.m_PacketProperties;
         }
 
         /// <summary>
@@ -768,11 +836,24 @@ namespace TO5.Wires
         /// <returns>Valid properties</returns>
         private PacketStageProperties GetStagePacketProperties()
         {
-            if (m_ActivePacketProperties != null)
-                return m_ActivePacketProperties;
+            //if (m_ActivePacketProperties != null)
+            //    return m_ActivePacketProperties;
 
-            m_ActivePacketProperties = GetPacketProperties(m_Stage);
-            return m_ActivePacketProperties;
+            //m_ActivePacketProperties = GetPacketProperties(m_Stage);
+            //return m_ActivePacketProperties;
+
+            // Packets properties are overriden during tutorial mode
+            PacketStageProperties packetProps = null;
+            if (tutorialMode)
+                packetProps = m_ActivePacketProperties;
+            else
+                packetProps = GetStageMultiplierProperties().m_PacketProperties;
+
+            // We must always return valid properties
+            if (packetProps == null)
+                packetProps = new PacketStageProperties();
+
+            return packetProps;
         }
 
         /// <summary>
@@ -889,7 +970,9 @@ namespace TO5.Wires
 
                 yield return new WaitForSeconds(delay);
 
-                GenerateRandomPacket(true);
+                //GenerateRandomPacket(true);
+
+                Debug.Log("Spawning Packet");
             }
         }
 
