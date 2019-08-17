@@ -11,7 +11,8 @@ namespace TO5.Wires
     /// </summary>
     public class ScoreManager : MonoBehaviour
     {
-        private static readonly string m_TickAutoMultiplierIncrease = "TickAutoMultiplierIncrease";
+        private static readonly string m_TickAutoMultiplierIncrease = "TickAutoMultiplierIncrease";     // Name of function to invoke for auto multiplier increase
+        private static readonly string m_TickAutoSpawnPacket = "TickAutoSpawnPacket";                   // Name of function to invoke for auto spawning packets
 
         /// <summary>
         /// Delegate to notify the players multiplier has changed
@@ -159,8 +160,6 @@ namespace TO5.Wires
         private int m_Stage;                            // Multiplier stage
         private float m_Boost;                          // Players boost (Between 0 and 100)
         private bool m_BoostActive;                     // If boost is active
-        private Coroutine m_MultiplierTick;             // Coroutine for multipliers tick
-        private Coroutine m_PacketSpawn;                // Coroutine for spawning packets
 
         // If tutorial settings should be used
         public bool tutorialMode { get; private set; }
@@ -311,8 +310,8 @@ namespace TO5.Wires
         /// <param name="reset">If properties should reset</param>
         public void EnableScoring(bool reset)
         {
-            if (m_IsRunning && !tutorialMode)
-                return;
+            //if (m_IsRunning && !tutorialMode)
+            //    return;
 
             m_IsRunning = true;
             tutorialMode = false;
@@ -348,23 +347,25 @@ namespace TO5.Wires
             }
 
             ActivateMultiplierTick(reset);
-            SetPacketGenerationEnabled(false);
+            SetPacketGenerationEnabled(true);
         }
 
         /// <summary>
         /// Disables scoring functionality
         /// </summary>
-        public void DisableScoring()
+        /// <param name="partial">If scoring is only partially disabled</param>
+        public void DisableScoring(bool partial = false)
         {
             if (!m_IsRunning)
                 return;
 
             SetPacketGenerationEnabled(false);
-            //CancelInvoke(m_TickAutoMultiplierIncrease);
 
-            m_PacketSpawn = null;
+            if (partial)
+                CancelInvoke(m_TickAutoSpawnPacket);
 
-            //m_IsRunning = false;
+            // We need this to be true for the new multiplier increase routine
+            m_IsRunning = partial;
             tutorialMode = false;
         }
 
@@ -379,14 +380,9 @@ namespace TO5.Wires
                 m_GeneratingPackets = enable;
 
                 if (m_GeneratingPackets)
-                {
-                    m_PacketSpawn = StartCoroutine(PacketSpawnRoutine());
-                }
+                    ActivateSpawnPacketTick();
                 else
-                {
-                    StopCoroutine(m_PacketSpawn);
-                    m_PacketSpawn = null;
-                }
+                    CancelInvoke(m_TickAutoSpawnPacket);
             }
         }
 
@@ -440,8 +436,8 @@ namespace TO5.Wires
                 m_StageResets = 0;
                 SetRemainingLives(m_StageLives);
 
-                m_ActiveMultiplierProperties = GetMultiplierProperties(m_Stage);
-                m_ActivePacketProperties = GetPacketProperties(m_Stage);
+                // Update both multiplier and packet properties
+                RefreshActiveStageProperties();
 
                 if (OnMultiplierUpdated != null)
                     OnMultiplierUpdated.Invoke(m_Multiplier, m_Stage);
@@ -521,7 +517,11 @@ namespace TO5.Wires
             float end = m_MultiplierStart + m_MultiplierInterval;
             return 1f - ((end - Time.time) / m_MultiplierInterval);
         }
-
+        
+        /// <summary>
+        /// Activates the auto multiplier tick routine
+        /// </summary>
+        /// <param name="reset">If active tick should be reset</param>
         private void ActivateMultiplierTick(bool reset = true)
         {
             if (m_IsRunning && !tutorialMode)
@@ -544,6 +544,9 @@ namespace TO5.Wires
             }
         }
 
+        /// <summary>
+        /// Notify that multiplier interval has elapsed
+        /// </summary>
         private void TickAutoMultiplierIncrease()
         {
             if (m_IsRunning && !tutorialMode)
@@ -552,29 +555,6 @@ namespace TO5.Wires
 
                 // This will fall out if at max multiplier stage
                 ActivateMultiplierTick();
-            }
-        }
-
-        /// <summary>
-        /// Tick routine for increasing multiplier
-        /// </summary>
-        /// <returns></returns>
-        private IEnumerator MultiplierTickRoutine()
-        {
-            while (m_IsRunning && !tutorialMode)
-            {
-                MultiplierStageProperties mulProps = GetStageMultiplierProperties();
-                float interval = mulProps.m_Duration;
-
-                m_MultiplierStart = Time.time;
-                m_MultiplierInterval = interval;
-
-                yield return new WaitForSeconds(interval);
-                IncreaseMultiplier(1);
-
-                // No point in looping if at max stage
-                if (m_Stage == m_MultiplierStages)
-                    break;
             }
         }
 
@@ -792,6 +772,21 @@ namespace TO5.Wires
                 OnPacketDespawned.Invoke(packet, wasCollected);
         }
 
+        /// <summary>
+        /// Refreshes the active properties references based on current multiplier
+        /// </summary>
+        private void RefreshActiveStageProperties()
+        {
+            m_ActiveMultiplierProperties = GetMultiplierProperties(m_Stage);
+            m_ActivePacketProperties = m_ActiveMultiplierProperties.m_PacketProperties;
+        }
+
+        /// <summary>
+        /// Gets properties that relate to stage specified by index. This handles if index
+        /// or properties is valid and will always return a valid properties instance
+        /// </summary>
+        /// <param name="index">Index of properties</param>
+        /// <returns>Valid properties</returns>
         private MultiplierStageProperties GetMultiplierProperties(int index)
         {
             if (m_MultiplierStageProperties == null || m_MultiplierStageProperties.Length == 0)
@@ -802,6 +797,10 @@ namespace TO5.Wires
             return m_MultiplierStageProperties[index];
         }
 
+        /// <summary>
+        /// Get multiplier properties for current multiplier stage
+        /// </summary>
+        /// <returns>Valid properties</returns>
         private MultiplierStageProperties GetStageMultiplierProperties()
         {
             if (m_ActiveMultiplierProperties != null)
@@ -819,13 +818,6 @@ namespace TO5.Wires
         /// <returns>Valid properties</returns>
         private PacketStageProperties GetPacketProperties(int index)
         {
-            //if (m_PacketProperties == null || m_PacketProperties.Length == 0)
-            //    return new PacketStageProperties();
-
-            //// We use the latest properties if index is still out of range
-            //index = Mathf.Clamp(index, 0, m_PacketProperties.Length - 1);
-            //return m_PacketProperties[index];
-
             MultiplierStageProperties mulProps = GetMultiplierProperties(index);
             return mulProps.m_PacketProperties;
         }
@@ -836,24 +828,11 @@ namespace TO5.Wires
         /// <returns>Valid properties</returns>
         private PacketStageProperties GetStagePacketProperties()
         {
-            //if (m_ActivePacketProperties != null)
-            //    return m_ActivePacketProperties;
+            if (m_ActivePacketProperties != null)
+                return m_ActivePacketProperties;
 
-            //m_ActivePacketProperties = GetPacketProperties(m_Stage);
-            //return m_ActivePacketProperties;
-
-            // Packets properties are overriden during tutorial mode
-            PacketStageProperties packetProps = null;
-            if (tutorialMode)
-                packetProps = m_ActivePacketProperties;
-            else
-                packetProps = GetStageMultiplierProperties().m_PacketProperties;
-
-            // We must always return valid properties
-            if (packetProps == null)
-                packetProps = new PacketStageProperties();
-
-            return packetProps;
+            m_ActivePacketProperties = GetPacketProperties(m_Stage);
+            return m_ActivePacketProperties;
         }
 
         /// <summary>
@@ -891,7 +870,7 @@ namespace TO5.Wires
         {
             if (!m_BoostActive && m_Boost < 100f)
             {
-                m_Boost = Mathf.Min(100f, m_Boost + amount);
+                //m_Boost = Mathf.Min(100f, m_Boost + amount);
                 if (m_Boost >= 100f)
                 {
                     PlayLoopingBoostSound(m_BoostReadySound, 1f);
@@ -959,6 +938,32 @@ namespace TO5.Wires
         }
 
         /// <summary>
+        /// Activates the packet spawning routine 
+        /// </summary>
+        private void ActivateSpawnPacketTick()
+        {
+            if (m_IsRunning && !tutorialMode)
+            {
+                if (IsInvoking(m_TickAutoSpawnPacket))
+                    return;
+
+                PacketStageProperties packetProps = GetStagePacketProperties();
+                float delay = Random.Range(packetProps.m_MinSpawnInterval, packetProps.m_MaxSpawnInterval);
+
+                Invoke(m_TickAutoSpawnPacket, delay);
+            }
+        }
+
+        /// <summary>
+        /// Notify the interval between spawning packets has elapsed
+        /// </summary>
+        private void TickAutoSpawnPacket()
+        {
+            GenerateRandomPacket(true);
+            ActivateSpawnPacketTick();
+        }
+
+        /// <summary>
         /// Routine for spawning packets
         /// </summary>
         private IEnumerator PacketSpawnRoutine()
@@ -970,9 +975,7 @@ namespace TO5.Wires
 
                 yield return new WaitForSeconds(delay);
 
-                //GenerateRandomPacket(true);
-
-                Debug.Log("Spawning Packet");
+                GenerateRandomPacket(true);
             }
         }
 

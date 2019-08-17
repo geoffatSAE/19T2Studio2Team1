@@ -283,6 +283,9 @@ namespace TO5.Wires
         /// </summary>
         private IEnumerator SpawnEndingWireRoutine()
         {
+            for (int i = 0; i < 20; ++i)
+                m_WireManager.GenerateRandomWire(true);
+
             while (true)
             {
                 m_FinalWire = m_WireManager.GenerateRandomFixedWire(10000, true, false);
@@ -479,9 +482,9 @@ namespace TO5.Wires
                         break;
 
                     case TutorialStep.Packets:
-                        StartBoostTutorial();
-                        step = 2;
-                        break;
+                        //StartBoostTutorial();
+                        //step = 2;
+                        //break;
 
                     case TutorialStep.Boost:
                         StartDefectiveTutorial();

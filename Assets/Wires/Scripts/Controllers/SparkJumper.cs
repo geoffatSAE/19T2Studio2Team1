@@ -183,14 +183,14 @@ namespace TO5.Wires
         /// <returns>If boost was activated</returns>
         public bool ActivateBoost()
         {
-            bool activated = false;
+            //bool activated = false;
 
-            if (!m_IsDrifting && m_JumpingEnabled)
-                if (OnActivateBoost != null)
-                    activated = OnActivateBoost.Invoke();
+            //if (!m_IsDrifting && m_JumpingEnabled)
+            //    if (OnActivateBoost != null)
+            //        activated = OnActivateBoost.Invoke();
 
-            if (!activated)
-                PlaySelectionSound(m_BoostFailSound, false);
+            //if (!activated)
+            //    PlaySelectionSound(m_BoostFailSound, false);
 
             return false;
         }

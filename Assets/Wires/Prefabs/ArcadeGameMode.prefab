@@ -299,13 +299,13 @@ MonoBehaviour:
   - {x: 100, y: 80}
   m_BorderParticles: {fileID: 0}
   m_ParticleSimulationSpeeds:
-  - 1.3
+  - 0.75
+  - 1
+  - 1.25
+  - 1.5
+  - 2
   - 2.5
-  - 2.8
-  - 3
-  - 3.2
-  - 3.4
-  - 3.6
+  - 3.25
   m_WarningPivot: {fileID: 3395505405431495115}
   m_BoostSpeedMultiplier: 1.2
   m_BoostActivationParticles: {fileID: 0}
@@ -542,11 +542,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3395505406176328845}
     m_Modifications:
-    - target: {fileID: 7073827610055723652, guid: e32fe8fb7b98c504496925a909ffecc7,
-        type: 3}
-      propertyPath: m_Name
-      value: WarningSign
-      objectReference: {fileID: 0}
     - target: {fileID: 7073827610055723655, guid: e32fe8fb7b98c504496925a909ffecc7,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -616,6 +611,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 1.0309154
+      objectReference: {fileID: 0}
+    - target: {fileID: 7073827610055723652, guid: e32fe8fb7b98c504496925a909ffecc7,
+        type: 3}
+      propertyPath: m_Name
+      value: WarningSign
       objectReference: {fileID: 0}
     - target: {fileID: 7073827611407674365, guid: e32fe8fb7b98c504496925a909ffecc7,
         type: 3}
