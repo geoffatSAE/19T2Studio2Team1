@@ -544,6 +544,11 @@ namespace TO5.Wires
             }
         }
 
+        public void DisableMultiplierTick()
+        {
+            CancelInvoke(m_TickAutoMultiplierIncrease);
+        }
+
         /// <summary>
         /// Notify that multiplier interval has elapsed
         /// </summary>

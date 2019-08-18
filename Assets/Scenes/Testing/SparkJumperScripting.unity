@@ -1007,26 +1007,6 @@ PrefabInstance:
       propertyPath: m_DriftingEnabled
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
-        type: 3}
-      propertyPath: m_WireProperties.Array.data[0].m_MaxWiresAtOnce
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
-        type: 3}
-      propertyPath: m_WireProperties.Array.data[0].m_TopCircleCutoff
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
-        type: 3}
-      propertyPath: m_WireProperties.Array.data[0].m_OuterSpawnRadius
-      value: 20
-      objectReference: {fileID: 0}
-    - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
-        type: 3}
-      propertyPath: m_WireProperties.Array.data[0].m_BottomCircleCutoff
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 8280543612210784032, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_Volume
@@ -1469,6 +1449,36 @@ PrefabInstance:
       propertyPath: m_Fireworks
       value: 
       objectReference: {fileID: 309829269}
+    - target: {fileID: 3395505406176328842, guid: 9a8c4600bb7ba224baddce08e9afd423,
+        type: 3}
+      propertyPath: m_EndingProperties.m_StartMinSpawnInterval
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3395505406176328842, guid: 9a8c4600bb7ba224baddce08e9afd423,
+        type: 3}
+      propertyPath: m_EndingProperties.m_StartMaxSpawnInterval
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3395505406176328842, guid: 9a8c4600bb7ba224baddce08e9afd423,
+        type: 3}
+      propertyPath: m_EndingProperties.m_EndMinSpawnInterval
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3395505406176328842, guid: 9a8c4600bb7ba224baddce08e9afd423,
+        type: 3}
+      propertyPath: m_EndingProperties.m_EndMaxSpawnInterval
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3395505406176328842, guid: 9a8c4600bb7ba224baddce08e9afd423,
+        type: 3}
+      propertyPath: m_EndingProperties.m_StartSparkSpeed
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 3395505406176328842, guid: 9a8c4600bb7ba224baddce08e9afd423,
+        type: 3}
+      propertyPath: m_EndingProperties.m_EndSparkSpeed
+      value: 20
+      objectReference: {fileID: 0}
     - target: {fileID: 3395505406176328845, guid: 9a8c4600bb7ba224baddce08e9afd423,
         type: 3}
       propertyPath: m_LocalPosition.x

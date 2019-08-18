@@ -962,7 +962,12 @@ namespace TO5.Wires
         public void OverrideStageProperties(WireStageProperties wireProps)
         {
             if (wireProps != null)
+            {
                 m_ActiveWireProperties = wireProps;
+
+                if (m_SparkJumper)
+                    m_SparkJumper.m_JumpTime = m_ActiveWireProperties.m_JumpTime;
+            }
         }
 
         /// <summary>
