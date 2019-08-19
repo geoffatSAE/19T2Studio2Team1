@@ -55,8 +55,8 @@ MonoBehaviour:
   m_GameMode: {fileID: 0}
   m_FallbackDuration: 30
   m_EndGameState:
-    m_Position: {x: 0, y: 0, z: 200}
-    m_Scale: {x: 200, y: 200, z: 200}
+    m_Position: {x: 0, y: 0, z: 500}
+    m_Scale: {x: 175, y: 175, z: 175}
   m_EndGameFallbackDuration: 10
   m_StartRotationInterval: 2
   m_EndRotationInterval: 0.5
@@ -99,14 +99,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5134141384661580594}
     m_Modifications:
-    - target: {fileID: 100000, guid: d82c6aa2cfd20ae438b570669b61f146, type: 3}
-      propertyPath: m_Name
-      value: SunVer2
-      objectReference: {fileID: 0}
-    - target: {fileID: 100000, guid: d82c6aa2cfd20ae438b570669b61f146, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: d82c6aa2cfd20ae438b570669b61f146, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -162,6 +154,14 @@ PrefabInstance:
     - target: {fileID: 400000, guid: d82c6aa2cfd20ae438b570669b61f146, type: 3}
       propertyPath: m_LocalScale.z
       value: 48.46458
+      objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: d82c6aa2cfd20ae438b570669b61f146, type: 3}
+      propertyPath: m_Name
+      value: SunVer2
+      objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: d82c6aa2cfd20ae438b570669b61f146, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2300000, guid: d82c6aa2cfd20ae438b570669b61f146, type: 3}
       propertyPath: m_Materials.Array.data[0]
