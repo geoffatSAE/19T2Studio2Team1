@@ -1627,10 +1627,10 @@ MonoBehaviour:
   m_MulIncAnim: MulIncrease
   m_MulDecAnim: MulDecrease
   m_GameAnchor:
-    m_Position: {x: 0, y: 0, z: 0}
+    m_Position: {x: 5, y: 3, z: 4}
     m_Scale: {x: 1, y: 1, z: 1}
   m_TutorialAnchor:
-    m_Position: {x: 2.8, y: 1.75, z: 0.6}
+    m_Position: {x: 2, y: 3, z: 1}
     m_Scale: {x: 1.5, y: 1.5, z: 1.5}
   m_SwitchAnchorSpeed: 0.5
   m_LookAtTarget: {fileID: 0}
