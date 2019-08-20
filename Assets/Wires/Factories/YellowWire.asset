@@ -49,7 +49,7 @@ MonoBehaviour:
     m_GradientMax:
       serializedVersion: 2
       key0: {r: 0.70218396, g: 0.745283, b: 0.13710396, a: 1}
-      key1: {r: 0.969113, g: 1, b: 0, a: 1}
+      key1: {r: 0.80414355, g: 0.8301887, b: 0, a: 1}
       key2: {r: 0, g: 0, b: 0, a: 0}
       key3: {r: 0, g: 0, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}
