@@ -116,10 +116,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3770911953066173349}
     m_Modifications:
-    - target: {fileID: 100000, guid: f00b79955544011418c14296565402b0, type: 3}
-      propertyPath: m_Name
-      value: Data_Packet
-      objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: f00b79955544011418c14296565402b0, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -176,6 +172,10 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 2.1
       objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: f00b79955544011418c14296565402b0, type: 3}
+      propertyPath: m_Name
+      value: Data_Packet
+      objectReference: {fileID: 0}
     - target: {fileID: 9500000, guid: f00b79955544011418c14296565402b0, type: 3}
       propertyPath: m_Controller
       value: 
@@ -195,11 +195,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1671077178524130718}
     m_Modifications:
-    - target: {fileID: 5057126839824135080, guid: 8814580eb1ba7cd45b2c24103033be16,
-        type: 3}
-      propertyPath: m_Name
-      value: EGO_BinaryExplosion
-      objectReference: {fileID: 0}
     - target: {fileID: 5057126839824135081, guid: 8814580eb1ba7cd45b2c24103033be16,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -255,6 +250,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5057126839824135080, guid: 8814580eb1ba7cd45b2c24103033be16,
+        type: 3}
+      propertyPath: m_Name
+      value: EGO_BinaryExplosion
+      objectReference: {fileID: 0}
     - target: {fileID: 5057126840215300822, guid: 8814580eb1ba7cd45b2c24103033be16,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -280,16 +280,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3770911953066173349}
     m_Modifications:
-    - target: {fileID: 8199349307518966382, guid: 751e1806deb7e77408cd9585c7ea760c,
-        type: 3}
-      propertyPath: m_Name
-      value: EGO Binary
-      objectReference: {fileID: 0}
-    - target: {fileID: 8199349307518966382, guid: 751e1806deb7e77408cd9585c7ea760c,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 8199349307518966383, guid: 751e1806deb7e77408cd9585c7ea760c,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -440,7 +430,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8199349307518966382, guid: 751e1806deb7e77408cd9585c7ea760c,
+        type: 3}
+      propertyPath: m_Name
+      value: EGO Binary
+      objectReference: {fileID: 0}
+    - target: {fileID: 8199349307518966382, guid: 751e1806deb7e77408cd9585c7ea760c,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8199349307001292546, guid: 751e1806deb7e77408cd9585c7ea760c,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8199349307470240421, guid: 751e1806deb7e77408cd9585c7ea760c,
         type: 3}
       propertyPath: m_IsActive
       value: 0
