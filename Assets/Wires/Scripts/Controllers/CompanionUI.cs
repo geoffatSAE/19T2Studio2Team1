@@ -66,7 +66,7 @@ namespace TO5.Wires
         // Would ideally use a dictionary for these mode settings but dictionaries aren't exposed to the editor
 
         [Header("Anchor")]
-        [SerializeField] private Anchor m_GameAnchor;               // Game anchor (overwritten on awake)
+        private Anchor m_GameAnchor;                                // Game anchor (overwritten on awake)
         [SerializeField] private Anchor m_TutorialAnchor;           // Anchor to use in tutorial mode
         public float m_SwitchAnchorSpeed = 1f;                      // Speed at which to switch anchors
         [SerializeField] private Transform m_LookAtTarget;          // Target for companion to look at (will not rotate if nothing is set)
