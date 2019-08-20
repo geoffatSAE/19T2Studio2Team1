@@ -1088,11 +1088,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Boost_Const
       objectReference: {fileID: 0}
-    - target: {fileID: 2566531738595326909, guid: 8c17724e2584b2848a7d96e6df4ab514,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 2566531738595326907, guid: 8c17724e2584b2848a7d96e6df4ab514,
         type: 3}
       propertyPath: playOnAwake
