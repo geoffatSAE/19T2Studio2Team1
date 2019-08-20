@@ -185,10 +185,10 @@ MonoBehaviour:
   m_ArcadeLength: 180
   m_PostArcadeLength: 7.5
   m_EndingProperties:
-    m_Duration: 20
+    m_Duration: 25
     m_AutoControlStart: 5
-    m_MinSegments: 75
-    m_MaxSegments: 80
+    m_MinSegments: 50
+    m_MaxSegments: 60
     m_SpawnSegmentOffset: 15
     m_SpawnSegmentRange: 10
     m_InnerSpawnRadius: 12
@@ -196,17 +196,17 @@ MonoBehaviour:
     m_BottomCircleCutoff: 0.7
     m_TopCircleCutoff: 0.7
     m_MaxWiresAtOnce: 100
-    m_StartMinSpawnInterval: 0.8
-    m_StartMaxSpawnInterval: 1.8
+    m_StartMinSpawnInterval: 0.3
+    m_StartMaxSpawnInterval: 0.4
     m_EndMinSpawnInterval: 0.05
     m_EndMaxSpawnInterval: 0.1
-    m_StartSparkSpeed: 3.6
-    m_EndSparkSpeed: 15
+    m_StartSparkSpeed: 4
+    m_EndSparkSpeed: 40
     m_StartJumpTime: 0.3
     m_EndJumpTime: 0.2
   m_Fireworks: {fileID: 3036212007980189422, guid: 6ff9b63ab7594684fb4d6137e189a41f,
     type: 3}
-  m_EnableTutorial: 1
+  m_EnableTutorial: 0
   m_TutorialInitialSegments: 20
   m_TutorialWireSegments: 20
   m_TutorialWireRadius: 5

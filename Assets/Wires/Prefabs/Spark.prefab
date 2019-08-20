@@ -65,7 +65,7 @@ MonoBehaviour:
   m_SwitchBlendDuration: 0.5
   m_OnColor: {r: 1, g: 0.93157786, b: 0.2216981, a: 1}
   m_OffColor: {r: 1, g: 0, b: 0, a: 1}
-  m_PossessedColor: {r: 0.997609, g: 1, b: 0.7877358, a: 1}
+  m_PossessedColor: {r: 0.9915269, g: 1, b: 0.5424528, a: 1}
   m_OnScale: {x: 1, y: 1, z: 1}
   m_OffScale: {x: 0.3, y: 0.3, z: 0.3}
   m_Rotate: 1
