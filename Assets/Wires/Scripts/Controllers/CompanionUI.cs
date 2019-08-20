@@ -477,7 +477,7 @@ namespace TO5.Wires
         void OnDrawGizmos()
         {
             Transform parent = transform.parent ? transform.parent : transform;
-            Vector3 gamePos = parent.TransformPoint(m_GameAnchor.m_Position);
+            Vector3 gamePos = Application.isPlaying ? parent.TransformPoint(m_GameAnchor.m_Position) : transform.position;
             Vector3 tutPos = parent.TransformPoint(m_TutorialAnchor.m_Position);
 
             // Travel line
