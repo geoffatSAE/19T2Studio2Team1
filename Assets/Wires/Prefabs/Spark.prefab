@@ -294,6 +294,21 @@ PrefabInstance:
       propertyPath: LightsModule.enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 198683964593574260, guid: 1e00a4340f4ae8a4b8253da4ffaa7c82,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 198683964593574260, guid: 1e00a4340f4ae8a4b8253da4ffaa7c82,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 198683964593574260, guid: 1e00a4340f4ae8a4b8253da4ffaa7c82,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.b
+      value: 0.5235849
+      objectReference: {fileID: 0}
     - target: {fileID: 1919913695092184, guid: 1e00a4340f4ae8a4b8253da4ffaa7c82, type: 3}
       propertyPath: m_Name
       value: Magic Orb
