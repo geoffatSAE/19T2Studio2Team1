@@ -93,7 +93,7 @@ namespace TO5.Wires
             if (finished)
             {
                 // Drifting can disable the boost particles even while active
-                if (m_BoostActive)
+                //if (m_BoostActive)
                     m_WorldAesthetics.SetBoostParticlesEnabled(true, m_WorldAesthetics.m_BoostParticlesSpeed);
 
                 StopCoroutine("BlendThemesRoutine");

@@ -47,10 +47,16 @@ namespace TO5.Wires
         [SerializeField] private ParticleSystem m_FlyingPacketsParticles;       // Particle system emitting the flying packets
         [SerializeField] private FlyingPacketsStage[] m_FlyingPacketsStages;    // Properties to set flying packets per multiplier level
 
+        [Header("Boost New")]
+        [SerializeField] private ParticleSystem m_NewBoostParticles;
+        [SerializeField] private FlyingPacketsStage[] m_NewBoostStages;
+
         private Wire m_ActiveWire;                              // Wire player is either on or travelling to
         private bool m_HaveSwitched = false;                    // If blend has switched (from old to new)
         private int m_Intensity = 0;                            // Intensity set last
         private bool m_BoostActive = false;                     // If boost is active
+
+        private bool m_NewBoostParticlesActive = false;
 
         void Awake()
         {
@@ -133,6 +139,35 @@ namespace TO5.Wires
 
                     ParticleSystem.MainModule main = m_BorderParticles.main;
                     main.simulationSpeed = speed;
+                }
+            }
+
+            if (m_NewBoostParticles)
+            {
+                if (intensity < m_NewBoostStages.Length)
+                {
+                    FlyingPacketsStage props = m_NewBoostStages[intensity];
+
+                    if (props.m_SimulationSpeed > 0f)
+                    {
+                        m_NewBoostParticles.gameObject.SetActive(true);
+                        m_NewBoostParticles.Play();
+
+                        ParticleSystem.MainModule main = m_FlyingPacketsParticles.main;
+                        main.simulationSpeed = props.m_SimulationSpeed;
+
+                        ParticleSystem.EmissionModule emission = m_FlyingPacketsParticles.emission;
+                        emission.rateOverTime = props.m_SpawnRate;
+
+                        m_NewBoostParticlesActive = true;
+                    }
+                    else
+                    {
+                        m_NewBoostParticles.gameObject.SetActive(false);
+                        m_NewBoostParticles.Stop();
+
+                        m_NewBoostParticlesActive = false;
+                    }
                 }
             }
 
@@ -249,6 +284,16 @@ namespace TO5.Wires
                 trails.colorOverLifetime = color;
                 trails.colorOverTrail = color;
             }
+
+            if (m_NewBoostParticles)
+            {
+                ParticleSystem.MainModule main = m_NewBoostParticles.main;
+                main.startColor = color;
+
+                ParticleSystem.TrailModule trails = m_NewBoostParticles.trails;
+                trails.colorOverLifetime = color;
+                trails.colorOverTrail = color;
+            }
         }
 
         /// <summary>
@@ -268,49 +313,64 @@ namespace TO5.Wires
         /// <param name="speed">Speed of simulation</param>
         public void SetBoostParticlesEnabled(bool enable, float speed)
         {
-            if (m_UpdateBoostParticles != enable)
+            //if (m_UpdateBoostParticles != enable)
             {
                 m_UpdateBoostParticles = enable;
 
-                // These play upon activation
-                if (m_BoostActivationParticles)
+                //// These play upon activation
+                //if (m_BoostActivationParticles)
+                //{
+                //    if (m_BoostActivationParticles.IsAlive())
+                //        m_BoostActivationParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+
+                //    if (m_UpdateBoostParticles)
+                //    {
+                //        WireFactory factory = m_ActiveWire ? m_ActiveWire.factory : null;
+                //        if (factory)
+                //        {
+                //            ParticleSystem.TrailModule trails = m_BoostActivationParticles.trails;
+                //            trails.colorOverLifetime = factory.boostColor;
+                //        }
+
+                //        m_BoostActivationParticles.Play();
+                //    }
+                //}
+
+                //// These play continuously
+                //if (m_BoostParticles)
+                //{
+                //    ParticleSystem.MainModule main = m_BoostParticles.main;
+                //    main.simulationSpeed = speed;
+
+                //    if (m_UpdateBoostParticles)
+                //    {
+                //        WireFactory factory = m_ActiveWire ? m_ActiveWire.factory : null;
+                //        if (factory)
+                //        {
+                //            ParticleSystem.TrailModule trails = m_BoostParticles.trails;
+                //            trails.colorOverLifetime = factory.boostColor;
+                //        }
+
+                //        m_BoostParticles.Play();
+                //    }
+                //    else
+                //    {
+                //        m_BoostParticles.Stop();
+                //    }
+                //}
+
+                if (m_NewBoostParticles)
                 {
-                    if (m_BoostActivationParticles.IsAlive())
-                        m_BoostActivationParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-
-                    if (m_UpdateBoostParticles)
+                    if (enable)
                     {
-                        WireFactory factory = m_ActiveWire ? m_ActiveWire.factory : null;
-                        if (factory)
+                        if (m_NewBoostParticlesActive)
                         {
-                            ParticleSystem.TrailModule trails = m_BoostActivationParticles.trails;
-                            trails.colorOverLifetime = factory.boostColor;
+                            m_NewBoostParticles.Play();
                         }
-
-                        m_BoostActivationParticles.Play();
-                    }
-                }
-
-                // These play continuously
-                if (m_BoostParticles)
-                {
-                    ParticleSystem.MainModule main = m_BoostParticles.main;
-                    main.simulationSpeed = speed;
-
-                    if (m_UpdateBoostParticles)
-                    {
-                        WireFactory factory = m_ActiveWire ? m_ActiveWire.factory : null;
-                        if (factory)
-                        {
-                            ParticleSystem.TrailModule trails = m_BoostParticles.trails;
-                            trails.colorOverLifetime = factory.boostColor;
-                        }
-
-                        m_BoostParticles.Play();
                     }
                     else
                     {
-                        m_BoostParticles.Stop();
+                        m_NewBoostParticles.Stop();
                     }
                 }
             }

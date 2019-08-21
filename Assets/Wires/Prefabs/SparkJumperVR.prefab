@@ -519,6 +519,21 @@ PrefabInstance:
       propertyPath: m_LookAtTarget
       value: 
       objectReference: {fileID: 4081323772982013144}
+    - target: {fileID: 3763885994031084875, guid: a5a33f51ce935c547bd9d87b27f3a6a2,
+        type: 3}
+      propertyPath: m_TutorialAnchor.m_Position.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3763885994031084875, guid: a5a33f51ce935c547bd9d87b27f3a6a2,
+        type: 3}
+      propertyPath: m_TutorialAnchor.m_Position.x
+      value: 2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3763885994031084875, guid: a5a33f51ce935c547bd9d87b27f3a6a2,
+        type: 3}
+      propertyPath: m_TutorialAnchor.m_Position.z
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6653541786956647586, guid: a5a33f51ce935c547bd9d87b27f3a6a2,
         type: 3}
       propertyPath: m_Name
@@ -527,17 +542,17 @@ PrefabInstance:
     - target: {fileID: 6653541786956647645, guid: a5a33f51ce935c547bd9d87b27f3a6a2,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1.5
+      value: 4.168
       objectReference: {fileID: 0}
     - target: {fileID: 6653541786956647645, guid: a5a33f51ce935c547bd9d87b27f3a6a2,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.7
+      value: 1.263
       objectReference: {fileID: 0}
     - target: {fileID: 6653541786956647645, guid: a5a33f51ce935c547bd9d87b27f3a6a2,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1.75
+      value: 1.198
       objectReference: {fileID: 0}
     - target: {fileID: 6653541786956647645, guid: a5a33f51ce935c547bd9d87b27f3a6a2,
         type: 3}
@@ -817,6 +832,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4081323774656870565}
     m_Modifications:
+    - target: {fileID: 3036212007980189417, guid: 6ff9b63ab7594684fb4d6137e189a41f,
+        type: 3}
+      propertyPath: m_Name
+      value: FireworksHandler
+      objectReference: {fileID: 0}
     - target: {fileID: 3036212007980189423, guid: 6ff9b63ab7594684fb4d6137e189a41f,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -871,11 +891,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3036212007980189417, guid: 6ff9b63ab7594684fb4d6137e189a41f,
-        type: 3}
-      propertyPath: m_Name
-      value: FireworksHandler
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6ff9b63ab7594684fb4d6137e189a41f, type: 3}
