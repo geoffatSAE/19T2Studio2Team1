@@ -185,7 +185,7 @@ MonoBehaviour:
   m_ArcadeLength: 180
   m_PostArcadeLength: 7.5
   m_EndingProperties:
-    m_Duration: 25
+    m_Duration: 15
     m_AutoControlStart: 5
     m_MinSegments: 50
     m_MaxSegments: 60
@@ -201,11 +201,10 @@ MonoBehaviour:
     m_EndMinSpawnInterval: 0.05
     m_EndMaxSpawnInterval: 0.1
     m_StartSparkSpeed: 4
-    m_EndSparkSpeed: 40
+    m_EndSparkSpeed: 25
     m_StartJumpTime: 0.3
-    m_EndJumpTime: 0.2
-  m_Fireworks: {fileID: 3036212007980189422, guid: 6ff9b63ab7594684fb4d6137e189a41f,
-    type: 3}
+    m_EndJumpTime: 0.05
+  m_Fireworks: {fileID: 0}
   m_EnableTutorial: 1
   m_TutorialInitialSegments: 20
   m_TutorialWireSegments: 20
@@ -253,30 +252,39 @@ MonoBehaviour:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
+      value: 0.0006790161
+      inSlope: 40.17937
+      outSlope: 40.17937
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0
-      outWeight: 0
+      outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.08522592
-      value: 2.9843023
-      inSlope: -0.6908032
-      outSlope: -0.6908032
+      time: 0.024890192
+      value: 1.0007513
+      inSlope: -0.07223213
+      outSlope: -0.07223213
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.04354354
+    - serializedVersion: 3
+      time: 0.41153347
+      value: 0.09959212
+      inSlope: -0.4382743
+      outSlope: -0.4382743
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
-      value: -0.0028305054
-      inSlope: -1
-      outSlope: -1
-      tangentMode: 0
+      value: -0.0025787354
+      inSlope: -0.1736222
+      outSlope: -0.1736222
+      tangentMode: 34
       weightedMode: 0
-      inWeight: 0
+      inWeight: 0.33333334
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
@@ -346,6 +354,20 @@ MonoBehaviour:
     m_SpawnRate: 10
   - m_SimulationSpeed: 5
     m_SpawnRate: 12
+  m_NewBoostParticles: {fileID: 0}
+  m_NewBoostStages:
+  - m_SimulationSpeed: 0
+    m_SpawnRate: 0
+  - m_SimulationSpeed: 0
+    m_SpawnRate: 0
+  - m_SimulationSpeed: 0
+    m_SpawnRate: 0
+  - m_SimulationSpeed: 1
+    m_SpawnRate: 15
+  - m_SimulationSpeed: 2
+    m_SpawnRate: 30
+  - m_SimulationSpeed: 3
+    m_SpawnRate: 45
 --- !u!1 &3395505407192623774
 GameObject:
   m_ObjectHideFlags: 0
