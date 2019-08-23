@@ -182,7 +182,7 @@ MonoBehaviour:
   m_WireManager: {fileID: 0}
   m_WorldTheme: {fileID: 3395505406176328832}
   m_AutoStart: 1
-  m_ArcadeLength: 5
+  m_ArcadeLength: 180
   m_PostArcadeLength: 7.5
   m_EndingProperties:
     m_Duration: 15
@@ -338,24 +338,7 @@ MonoBehaviour:
   m_BoostSpeedMultiplier: 1.2
   m_BoostActivationParticles: {fileID: 0}
   m_BoostParticles: {fileID: 0}
-  m_BoostParticlesSpeed: 2
-  m_BoostDissapateSpeed: 15
-  m_FlyingPacketsParticles: {fileID: 0}
-  m_FlyingPacketsStages:
-  - m_SimulationSpeed: 1
-    m_SpawnRate: 1
-  - m_SimulationSpeed: 1.25
-    m_SpawnRate: 1
-  - m_SimulationSpeed: 1.5
-    m_SpawnRate: 1
-  - m_SimulationSpeed: 1.75
-    m_SpawnRate: 2
-  - m_SimulationSpeed: 1.75
-    m_SpawnRate: 3
-  - m_SimulationSpeed: 2
-    m_SpawnRate: 4
-  m_NewBoostParticles: {fileID: 0}
-  m_NewBoostStages:
+  m_BoostStages:
   - m_SimulationSpeed: 0
     m_SpawnRate: 0
   - m_SimulationSpeed: 0
@@ -368,6 +351,21 @@ MonoBehaviour:
     m_SpawnRate: 10
   - m_SimulationSpeed: 2.5
     m_SpawnRate: 30
+  m_BoostDissapateSpeed: 15
+  m_FlyingPacketsParticles: {fileID: 0}
+  m_FlyingPacketsStages:
+  - m_SimulationSpeed: 1
+    m_SpawnRate: 1
+  - m_SimulationSpeed: 1.25
+    m_SpawnRate: 1
+  - m_SimulationSpeed: 1.5
+    m_SpawnRate: 1.5
+  - m_SimulationSpeed: 1.75
+    m_SpawnRate: 2
+  - m_SimulationSpeed: 1.75
+    m_SpawnRate: 3
+  - m_SimulationSpeed: 2
+    m_SpawnRate: 4
 --- !u!1 &3395505407192623774
 GameObject:
   m_ObjectHideFlags: 0
