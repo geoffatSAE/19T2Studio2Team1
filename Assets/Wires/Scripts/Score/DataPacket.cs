@@ -42,7 +42,7 @@ namespace TO5.Wires
             transform.position = position;
             m_Speed = speed;
 
-            StartCoroutine(ExpireRoutine(lifetime));
+            Invoke("Expire", lifetime);
         }
 
         /// <summary>
@@ -50,8 +50,7 @@ namespace TO5.Wires
         /// </summary>
         public void Deactivate()
         {
-            StopCoroutine("ExpireRoutine");
-
+            CancelInvoke();
             gameObject.SetActive(false);
         }
 
@@ -70,13 +69,10 @@ namespace TO5.Wires
         }
 
         /// <summary>
-        /// Routine for waiting for lifetime to expire
+        /// Notify from invoke that we have expired
         /// </summary>
-        /// <param name="lifetime">Packets lifetime</param>
-        private IEnumerator ExpireRoutine(float lifetime)
+        private void Expire()
         {
-            yield return new WaitForSeconds(lifetime);
-
             if (OnExpired != null)
                 OnExpired.Invoke(this);
         }

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8910129730801368193}
   - component: {fileID: 8910129730801368192}
   m_Layer: 0
-  m_Name: ZoomParticles
+  m_Name: P_Zoom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3879,13 +3879,13 @@ ParticleSystem:
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
-    minVertexDistance: 0.2
+    minVertexDistance: 100
     textureMode: 0
     ribbonCount: 1
     shadowBias: 0.04
     worldSpace: 0
     dieWithParticles: 1
-    sizeAffectsWidth: 1
+    sizeAffectsWidth: 0
     sizeAffectsLifetime: 0
     inheritParticleColor: 0
     generateLightingData: 0
@@ -3957,7 +3957,7 @@ ParticleSystem:
     widthOverTrail:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.51
+      scalar: 1
       minScalar: 1
       maxCurve:
         serializedVersion: 2

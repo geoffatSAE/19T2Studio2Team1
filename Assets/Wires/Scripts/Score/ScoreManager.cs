@@ -94,7 +94,7 @@ namespace TO5.Wires
         private ObjectPool<ParticleSystem> m_PacketCollectedSystems = new ObjectPool<ParticleSystem>();     // Pool of particle systems used for packet collection
 
         // TODO: Remove (at least to different component)
-        [Header("Boost")]
+        [Header("Boost (Obsolete)")]
         [SerializeField] private float m_BoostChargeRate = 0.83f;           // Boost player earns per second
         [SerializeField] private float m_BoostDepletionRate = 10f;          // Boost player consumes per second (when active)
         [SerializeField] private float m_BoostMultiplier = 2f;              // Multipler all score is scaled by when boost is active

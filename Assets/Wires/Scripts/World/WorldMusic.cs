@@ -30,8 +30,6 @@ namespace TO5.Wires
         private float m_PendingBeatRate = 1f;                                           // Beat rate of pending music
         private float m_PendingBeatDelay = 0f;                                          // Beat delay of pending music
 
-        //[Header("Finale")]
-
         void Awake()
         {
             if (!m_MusicSource1 || !m_MusicSource2)

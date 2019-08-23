@@ -268,7 +268,7 @@ namespace TO5.Wires
         /// <param name="enable">Display sign</param>
         public void SetWarningSignEnabled(bool enable)
         {
-            if (m_WarningPivot && m_WarningSignLocked)
+            if (m_WarningPivot && !m_WarningSignLocked)
                 m_WarningPivot.gameObject.SetActive(enable);
         }
 
@@ -347,6 +347,8 @@ namespace TO5.Wires
             {
                 ParticleSystem.TrailModule trails = m_BoostParticles.trails;
                 trails.colorOverLifetime = color;
+
+                Debug.Log(color.color.ToString());
             }
         }
 
@@ -371,7 +373,7 @@ namespace TO5.Wires
                         if (m_UpdateBoostParticles)
                         {
                             if (m_ActiveWire && m_ActiveWire.factory)
-                                SetBoostColor(m_ActiveWire.factory.boostColor);
+                                SetBoostColor(m_ActiveWire.factory.color);
 
                             if (m_BoostActivationParticles)
                                 m_BoostActivationParticles.Play();
