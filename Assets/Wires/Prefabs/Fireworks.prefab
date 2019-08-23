@@ -4810,6 +4810,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BurstSounds:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 8300000, guid: 8bacc35fe7cffd0469a0a22c0e844a04, type: 3}
+  - {fileID: 8300000, guid: 497bbfb92c4fa944b9dff958d0b8894f, type: 3}
+  - {fileID: 8300000, guid: 672301771c1e105498398f6c9aaba7c1, type: 3}
