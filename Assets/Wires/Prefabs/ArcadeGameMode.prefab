@@ -342,15 +342,15 @@ MonoBehaviour:
   - m_SimulationSpeed: 0
     m_SpawnRate: 0
   - m_SimulationSpeed: 0
-    m_SpawnRate: 0
+    m_SpawnRate: 3
   - m_SimulationSpeed: 2
-    m_SpawnRate: 2.5
+    m_SpawnRate: 6
   - m_SimulationSpeed: 2.1
-    m_SpawnRate: 5
+    m_SpawnRate: 8
   - m_SimulationSpeed: 2.25
     m_SpawnRate: 10
   - m_SimulationSpeed: 2.5
-    m_SpawnRate: 30
+    m_SpawnRate: 12
   m_BoostDissapateSpeed: 15
   m_FlyingPacketsParticles: {fileID: 0}
   m_FlyingPacketsStages:
@@ -359,13 +359,13 @@ MonoBehaviour:
   - m_SimulationSpeed: 1.25
     m_SpawnRate: 1
   - m_SimulationSpeed: 1.5
-    m_SpawnRate: 1.5
+    m_SpawnRate: 2
   - m_SimulationSpeed: 1.75
     m_SpawnRate: 2
   - m_SimulationSpeed: 1.75
-    m_SpawnRate: 3
+    m_SpawnRate: 2
   - m_SimulationSpeed: 2
-    m_SpawnRate: 4
+    m_SpawnRate: 2
 --- !u!1 &3395505407192623774
 GameObject:
   m_ObjectHideFlags: 0
