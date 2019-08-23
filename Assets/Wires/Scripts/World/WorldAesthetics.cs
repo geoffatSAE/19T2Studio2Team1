@@ -10,10 +10,10 @@ namespace TO5.Wires
     public class WorldAesthetics : MonoBehaviour
     {
         /// <summary>
-        /// Properties to set when player reaches new multiplier for flying packets
+        /// Properties to set when player reaches new multiplier for certain particles
         /// </summary>
         [Serializable]
-        public struct FlyingPacketsStage
+        public struct ParticleStageProperties
         {
             public float m_SimulationSpeed;         // Speed of particle simulation
             public float m_SpawnRate;               // Spawn rate of particles
@@ -35,28 +35,27 @@ namespace TO5.Wires
         [Header("Warning")]
         [SerializeField] private Transform m_WarningPivot;              // Pivot for the end of wire sign
 
+        private bool m_WarningSignLocked = false;                       // If warning sign is locked in an off state
+
         [Header("Boost")]
         [SerializeField] private float m_BoostSpeedMultiplier = 1.5f;           // Amount to scale panning and simulation speed when boost is active
         [SerializeField] private ParticleSystem m_BoostActivationParticles;     // Particle system to play when boost is activated
         [SerializeField] private ParticleSystem m_BoostParticles;               // Particle system to play during boost     
-        public float m_BoostParticlesSpeed = 2f;                                // Speed of boost particles
+        [SerializeField] private ParticleStageProperties[] m_BoostStages;       // Properties to set boost particles per multiplier level
         public float m_BoostDissapateSpeed = 15f;                               // Speed at which boost particles disappear (when stopping due to jumping/drifting)
-        private bool m_UpdateBoostParticles = false;                            // If boost particles need to be updated
+
+        [NonSerialized] public float m_BoostParticlesSpeed = 0f;                // Current speed of the boost particles
+        private bool m_EnableBoostParticles = false;                            // If boost particles should be enabled
+        private bool m_UpdateBoostParticles = true;                            // If boost particles need to be updated     
 
         [Header("Flying Packets")]
-        [SerializeField] private ParticleSystem m_FlyingPacketsParticles;       // Particle system emitting the flying packets
-        [SerializeField] private FlyingPacketsStage[] m_FlyingPacketsStages;    // Properties to set flying packets per multiplier level
-
-        [Header("Boost New")]
-        [SerializeField] private ParticleSystem m_NewBoostParticles;
-        [SerializeField] private FlyingPacketsStage[] m_NewBoostStages;
+        [SerializeField] private ParticleSystem m_FlyingPacketsParticles;               // Particle system emitting the flying packets
+        [SerializeField] private ParticleStageProperties[] m_FlyingPacketsStages;       // Properties to set flying packets per multiplier level
 
         private Wire m_ActiveWire;                              // Wire player is either on or travelling to
         private bool m_HaveSwitched = false;                    // If blend has switched (from old to new)
         private int m_Intensity = 0;                            // Intensity set last
         private bool m_BoostActive = false;                     // If boost is active
-
-        private bool m_NewBoostParticlesActive = false;
 
         void Awake()
         {
@@ -142,33 +141,10 @@ namespace TO5.Wires
                 }
             }
 
-            if (m_NewBoostParticles)
+            if (m_BoostParticles)
             {
-                if (intensity < m_NewBoostStages.Length)
-                {
-                    FlyingPacketsStage props = m_NewBoostStages[intensity];
-
-                    if (props.m_SimulationSpeed > 0f)
-                    {
-                        m_NewBoostParticles.gameObject.SetActive(true);
-                        m_NewBoostParticles.Play();
-
-                        ParticleSystem.MainModule main = m_FlyingPacketsParticles.main;
-                        main.simulationSpeed = props.m_SimulationSpeed;
-
-                        ParticleSystem.EmissionModule emission = m_FlyingPacketsParticles.emission;
-                        emission.rateOverTime = props.m_SpawnRate;
-
-                        m_NewBoostParticlesActive = true;
-                    }
-                    else
-                    {
-                        m_NewBoostParticles.gameObject.SetActive(false);
-                        m_NewBoostParticles.Stop();
-
-                        m_NewBoostParticlesActive = false;
-                    }
-                }
+                // This will handle turning particles on/off
+                SetBoostStage(intensity);
             }
 
             SetFlyingPacketsStage(intensity);
@@ -243,7 +219,7 @@ namespace TO5.Wires
             }
 
             // Place warning
-            if (m_WarningPivot)
+            if (m_WarningPivot && !m_WarningSignLocked)
             {
                 m_WarningPivot.gameObject.SetActive(true);
                 m_WarningPivot.position = m_ActiveWire.end;
@@ -284,16 +260,6 @@ namespace TO5.Wires
                 trails.colorOverLifetime = color;
                 trails.colorOverTrail = color;
             }
-
-            if (m_NewBoostParticles)
-            {
-                ParticleSystem.MainModule main = m_NewBoostParticles.main;
-                main.startColor = color;
-
-                ParticleSystem.TrailModule trails = m_NewBoostParticles.trails;
-                trails.colorOverLifetime = color;
-                trails.colorOverTrail = color;
-            }
         }
 
         /// <summary>
@@ -302,8 +268,22 @@ namespace TO5.Wires
         /// <param name="enable">Display sign</param>
         public void SetWarningSignEnabled(bool enable)
         {
-            if (m_WarningPivot)
+            if (m_WarningPivot && m_WarningSignLocked)
                 m_WarningPivot.gameObject.SetActive(enable);
+        }
+
+        /// <summary>
+        /// Set if warning sign is toggable or not
+        /// </summary>
+        /// <param name="locked">If sign is locked in an off state</param>
+        public void LockWarningSign(bool locked)
+        {
+            if (locked != m_WarningSignLocked)
+            {
+                m_WarningSignLocked = locked;
+                if (m_WarningSignLocked && m_WarningPivot)
+                    m_WarningPivot.gameObject.SetActive(false);
+            }
         }
 
         /// <summary>
@@ -313,65 +293,40 @@ namespace TO5.Wires
         /// <param name="speed">Speed of simulation</param>
         public void SetBoostParticlesEnabled(bool enable, float speed)
         {
-            //if (m_UpdateBoostParticles != enable)
+            if (enable != m_UpdateBoostParticles)
             {
                 m_UpdateBoostParticles = enable;
 
-                //// These play upon activation
-                //if (m_BoostActivationParticles)
-                //{
-                //    if (m_BoostActivationParticles.IsAlive())
-                //        m_BoostActivationParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+                if (!m_EnableBoostParticles)
+                    return;
 
-                //    if (m_UpdateBoostParticles)
-                //    {
-                //        WireFactory factory = m_ActiveWire ? m_ActiveWire.factory : null;
-                //        if (factory)
-                //        {
-                //            ParticleSystem.TrailModule trails = m_BoostActivationParticles.trails;
-                //            trails.colorOverLifetime = factory.boostColor;
-                //        }
-
-                //        m_BoostActivationParticles.Play();
-                //    }
-                //}
-
-                //// These play continuously
-                //if (m_BoostParticles)
-                //{
-                //    ParticleSystem.MainModule main = m_BoostParticles.main;
-                //    main.simulationSpeed = speed;
-
-                //    if (m_UpdateBoostParticles)
-                //    {
-                //        WireFactory factory = m_ActiveWire ? m_ActiveWire.factory : null;
-                //        if (factory)
-                //        {
-                //            ParticleSystem.TrailModule trails = m_BoostParticles.trails;
-                //            trails.colorOverLifetime = factory.boostColor;
-                //        }
-
-                //        m_BoostParticles.Play();
-                //    }
-                //    else
-                //    {
-                //        m_BoostParticles.Stop();
-                //    }
-                //}
-
-                if (m_NewBoostParticles)
+                if (m_UpdateBoostParticles)
                 {
-                    if (enable)
-                    {
-                        if (m_NewBoostParticlesActive)
-                        {
-                            m_NewBoostParticles.Play();
-                        }
-                    }
+                    WireFactory factory = m_ActiveWire ? m_ActiveWire.factory : null;
+                    if (factory)
+                        SetBoostColor(factory.boostColor);
+                }
+
+                // These play upon activation
+                if (m_BoostActivationParticles)
+                {
+                    if (m_BoostActivationParticles.IsAlive())
+                        m_BoostActivationParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+
+                    if (m_UpdateBoostParticles)
+                        m_BoostActivationParticles.Play();
+                }
+
+                // These play continuously
+                if (m_BoostParticles)
+                {
+                    ParticleSystem.MainModule main = m_BoostParticles.main;
+                    main.simulationSpeed = speed;
+
+                    if (m_UpdateBoostParticles)
+                        m_BoostParticles.Play();
                     else
-                    {
-                        m_NewBoostParticles.Stop();
-                    }
+                        m_BoostParticles.Stop();
                 }
             }
         }
@@ -382,10 +337,56 @@ namespace TO5.Wires
         /// <param name="color">Color to use</param>
         private void SetBoostColor(ParticleSystem.MinMaxGradient color)
         {
+            if (m_BoostActivationParticles)
+            {
+                ParticleSystem.TrailModule trails = m_BoostActivationParticles.trails;
+                trails.colorOverLifetime = color;
+            }
+
             if (m_BoostParticles)
             {
                 ParticleSystem.TrailModule trails = m_BoostParticles.trails;
                 trails.colorOverLifetime = color;
+            }
+        }
+
+        /// <summary>
+        /// Sets the boost stage properties to use
+        /// </summary>
+        /// <param name="index">Index of stage</param>
+        private void SetBoostStage(int index)
+        {
+            if (m_BoostParticles)
+            {
+                if (index < m_BoostStages.Length)
+                {
+                    ParticleStageProperties props = m_BoostStages[index];
+                    m_EnableBoostParticles = props.m_SimulationSpeed > 0f;
+
+                    if (m_EnableBoostParticles)
+                    {
+                        SetParticlesStage(m_BoostParticles, props);
+
+                        // We don't want to start playing the boost if currently jumping
+                        if (m_UpdateBoostParticles)
+                        {
+                            if (m_ActiveWire && m_ActiveWire.factory)
+                                SetBoostColor(m_ActiveWire.factory.boostColor);
+
+                            if (m_BoostActivationParticles)
+                                m_BoostActivationParticles.Play();
+
+                            m_BoostParticles.Play();
+                        }       
+                    }
+                    else if (m_BoostParticles.isPlaying)
+                    {
+                        m_BoostParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+
+                    }
+
+                    m_BoostParticlesSpeed = props.m_SimulationSpeed;
+                }
             }
         }
 
@@ -395,18 +396,24 @@ namespace TO5.Wires
         /// <param name="index">Index of stage</param>
         private void SetFlyingPacketsStage(int index)
         {
-            if (m_FlyingPacketsParticles)
+            if (index < m_FlyingPacketsStages.Length)
+                SetParticlesStage(m_FlyingPacketsParticles, m_FlyingPacketsStages[index]);
+        }
+
+        /// <summary>
+        /// Helper function for setting certain particle module properties
+        /// </summary>
+        /// <param name="system">Particle system to modify</param>
+        /// <param name="props">Properties to set</param>
+        private void SetParticlesStage(ParticleSystem system, ParticleStageProperties props)
+        {
+            if (system)
             {
-                if (index < m_FlyingPacketsStages.Length)
-                {
-                    FlyingPacketsStage stage = m_FlyingPacketsStages[index];
+                ParticleSystem.MainModule main = system.main;
+                main.simulationSpeed = props.m_SimulationSpeed;
 
-                    ParticleSystem.MainModule main = m_FlyingPacketsParticles.main;
-                    main.simulationSpeed = stage.m_SimulationSpeed;
-
-                    ParticleSystem.EmissionModule emission = m_FlyingPacketsParticles.emission;
-                    emission.rateOverTime = stage.m_SpawnRate;
-                }
+                ParticleSystem.EmissionModule emission = system.emission;
+                emission.rateOverTime = props.m_SpawnRate;
             }
         }
     }

@@ -40,10 +40,10 @@ namespace TO5.Wires
         /// <param name="active">If boost mode is active</param>
         public delegate void BoostModeUpdated(bool active);
 
-        public MultiplierStageUpdated OnMultiplierUpdated;      // Event for when multiplier has changed
-        public StageLivesUpdated OnStageLivesUpdated;           // Event for when lives has changed
-        public PacketDespawned OnPacketDespawned;               // Event for when a packet despawns
-        public BoostModeUpdated OnBoostModeUpdated;             // Event for when boost mode has changed
+        public MultiplierStageUpdated OnMultiplierUpdated;                      // Event for when multiplier has changed
+        public StageLivesUpdated OnStageLivesUpdated;                           // Event for when lives has changed
+        public PacketDespawned OnPacketDespawned;                               // Event for when a packet despawns
+        [System.Obsolete] public BoostModeUpdated OnBoostModeUpdated;           // Event for when boost mode has changed
 
         private bool m_IsRunning = false;               // If scoring is enabled (including packet generation)
         private bool m_GeneratingPackets = false;       // If packets are being generated automatically
@@ -201,8 +201,8 @@ namespace TO5.Wires
                             if (voice)
                                 voice.PlayBoostEndDialogue();
 
-                            if (OnBoostModeUpdated != null)
-                                OnBoostModeUpdated.Invoke(false);
+                            //if (OnBoostModeUpdated != null)
+                            //    OnBoostModeUpdated.Invoke(false);
                         }
                         else if (aboveCutoff && m_Boost < cutoff)
                         {
@@ -341,8 +341,8 @@ namespace TO5.Wires
                     if (OnMultiplierUpdated != null)
                         OnMultiplierUpdated.Invoke(m_Multiplier, m_Stage);
 
-                    if (OnBoostModeUpdated != null)
-                        OnBoostModeUpdated.Invoke(false);
+                    //if (OnBoostModeUpdated != null)
+                    //    OnBoostModeUpdated.Invoke(false);
                 }
             }
 

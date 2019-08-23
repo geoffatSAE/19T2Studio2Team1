@@ -66,6 +66,9 @@ namespace TO5.Wires
         {
             m_GameLength = gameTime;
 
+            if (m_WorldTheme)
+                m_WorldTheme.NotifyGameFinished();
+
             if (OnGameFinished != null)
                 OnGameFinished.Invoke();
         }

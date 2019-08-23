@@ -12,6 +12,7 @@ namespace TO5.Wires
     {
         static public readonly string BeatTimeShaderName = "_BeatTime";
 
+        [Header("Music")]
         [SerializeField] private AudioSource m_MusicSource1;                // First source for audio
         [SerializeField] private AudioSource m_MusicSource2;                // Second source for audio
         [SerializeField, Min(0f)] private float m_MusicFadeTime = 1.5f;     // Time at which music fades when drifting
@@ -28,6 +29,8 @@ namespace TO5.Wires
         private float m_ActiveBeatDelay = 0f;                                           // Beat delay of active music
         private float m_PendingBeatRate = 1f;                                           // Beat rate of pending music
         private float m_PendingBeatDelay = 0f;                                          // Beat delay of pending music
+
+        //[Header("Finale")]
 
         void Awake()
         {

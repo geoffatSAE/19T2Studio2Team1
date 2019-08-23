@@ -16,10 +16,11 @@ namespace TO5.Wires
         private WorldAesthetics m_WorldAesthetics;      // Handler for games aesthetics
         private Wire m_CurrentWire;                     // Current wire player is on
 
-        private bool m_IsJumping;               // If player is jumping
-        private bool m_IsDrifting;              // If player is drifting
-        private int m_MultiplierStage;          // Stage of multiplier
-        private bool m_BoostActive;             // If boost is active
+        private bool m_GameActive = false;                  // If the game is active
+        private bool m_IsJumping;                           // If player is jumping
+        private bool m_IsDrifting;                          // If player is drifting
+        private int m_MultiplierStage;                      // Stage of multiplier
+        [System.Obsolete] private bool m_BoostActive;       // If boost is active (Obsolete)
 
         void Awake()
         {
@@ -79,8 +80,10 @@ namespace TO5.Wires
                     }
                 }
 
-                m_WorldAesthetics.SetBoostParticlesEnabled(m_BoostActive, m_WorldAesthetics.m_BoostParticlesSpeed);
+                m_WorldAesthetics.SetBoostParticlesEnabled(true, m_WorldAesthetics.m_BoostParticlesSpeed);
             }
+
+            m_GameActive = true;
         }
 
         /// <summary>
@@ -192,6 +195,17 @@ namespace TO5.Wires
                 BlendThemes(jumper.jumpProgress);
                 yield return null;
             }
+        }
+
+        /// <summary>
+        /// Notify that the game has finished
+        /// </summary>
+        public void NotifyGameFinished()
+        {
+            m_GameActive = false;
+
+            if (m_WorldAesthetics)
+                m_WorldAesthetics.LockWarningSign(true);
         }
     }
 }
