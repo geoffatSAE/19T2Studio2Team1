@@ -49,14 +49,16 @@ namespace TO5.Wires
         [Header("Game")]
         public AudioClip m_IntroDialogue;                               // Initial dialogue player hears
         public CompanionVoiceLines m_MultiplierIncreaseDialogue;        // Dialogue for multiplier increase
-        public CompanionVoiceLines m_MultiplierDecreaseDialogue;        // Dialogue for multiplier decrease
+        //public CompanionVoiceLines m_MultiplierDecreaseDialogue;      // Dialogue for multiplier decrease
         public CompanionVoiceLines m_EndOfWireDialogue;                 // Dialogue for reaching the end of a wire
-        public CompanionVoiceLines m_BoostReadyDialogue;                // Dialogue for when boost is ready
-        public CompanionVoiceLines m_BoostStartDialogue;                // Dialogue for when boost is activated
-        public CompanionVoiceLines m_BoostActiveDialogue;               // Dialogue for when boost is active
-        public CompanionVoiceLines m_BoostEndDialogue;                  // Dialogue for when boost has finished
+        //public CompanionVoiceLines m_BoostReadyDialogue;              // Dialogue for when boost is ready
+        //public CompanionVoiceLines m_BoostStartDialogue;              // Dialogue for when boost is activated
+        //public CompanionVoiceLines m_BoostActiveDialogue;             // Dialogue for when boost is active
+        //public CompanionVoiceLines m_BoostEndDialogue;                // Dialogue for when boost has finished
         public CompanionVoiceLines m_PacketCollectedDialogue;           // Dialogue for when a packet has been collected
         public CompanionVoiceLines m_JumpDialogue;                      // Dialogue for when player has jumped to a spark
+        public CompanionVoiceLines m_FinaleDialogue;                    // Dialogue for when the finale starts
+        public CompanionVoiceLines m_FinaleCheerDialogue;               // Dialogue for when finale is in progress
         public CompanionVoiceLines m_GameFinishedDialogue;              // Dialogue for when the game has finished
 
         [Header("Tutorial")]
@@ -88,7 +90,7 @@ namespace TO5.Wires
 
         public void PlayMultiplierDecreaseDialogue()
         {
-            PlayDialogue(ref m_MultiplierDecreaseDialogue);
+            //PlayDialogue(ref m_MultiplierDecreaseDialogue);
         }
 
         public void PlayEndOfWireDialogue()
@@ -98,22 +100,22 @@ namespace TO5.Wires
 
         public void PlayBoostReadyDialogue()
         {
-            PlayDialogue(ref m_BoostReadyDialogue);
+            //PlayDialogue(ref m_BoostReadyDialogue);
         }
 
         public void PlayBoostStartDialogue()
         {
-            PlayDialogue(ref m_BoostStartDialogue);
+            //PlayDialogue(ref m_BoostStartDialogue);
         }
 
         public void PlayBoostActiveDialogue(float delay = 1f)
         {
-            PlayDialogue(ref m_BoostActiveDialogue, true, delay);
+            //PlayDialogue(ref m_BoostActiveDialogue, true, delay);
         }
 
         public void PlayBoostEndDialogue()
         {
-            PlayDialogue(ref m_BoostEndDialogue);
+            //PlayDialogue(ref m_BoostEndDialogue);
         }
 
         public void PlayPacketCollectedDialogue()
@@ -124,6 +126,16 @@ namespace TO5.Wires
         public void PlayJumpDialogue()
         {
             PlayDialogue(ref m_JumpDialogue);
+        }
+
+        public void PlayFinaleDialogue()
+        {
+            PlayDialogue(ref m_FinaleDialogue);
+        }
+
+        public void PlayFinaleCheerDialogue()
+        {
+            PlayDialogue(ref m_FinaleCheerDialogue);
         }
 
         public void PlayGameFinishedDialogue()

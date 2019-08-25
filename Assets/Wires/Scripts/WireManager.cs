@@ -51,7 +51,7 @@ namespace TO5.Wires
     /// </summary>
     public class WireManager : MonoBehaviour
     {
-        public static readonly Vector3 WirePlane = Vector3.forward;
+        public static readonly Vector3 WirePlane = Vector3.forward;                     // Plane to move sparks along
         
         /// <summary>
         /// Delegate for when the player has jumped off a wire
@@ -308,11 +308,11 @@ namespace TO5.Wires
                         m_SparkJumper.m_JumpTime = m_ActiveWireProperties.m_JumpTime;
                 }
 
+                m_IsRunning = true;
+                enabled = true;
+
                 // We set this after to use the correct wire properties
                 SetWireGenerationEnabled(true);
-
-                m_IsRunning = true;                
-                enabled = true;
 
                 return true;
             }
@@ -354,9 +354,10 @@ namespace TO5.Wires
 
                 if (m_GeneratingWires)
                 {
-                    m_WireSpawnRoutine = StartCoroutine(WireSpawnRoutine());
+                    if (m_WireSpawnRoutine == null)
+                        m_WireSpawnRoutine = StartCoroutine(WireSpawnRoutine());
                 }
-                else
+                else if (m_WireSpawnRoutine != null)
                 {
                     StopCoroutine(m_WireSpawnRoutine);
                     m_WireSpawnRoutine = null;
@@ -977,6 +978,18 @@ namespace TO5.Wires
         {
             if (m_ScoreManager)
                 m_ActiveWireProperties = GetWireProperties(m_ScoreManager.multiplierStage);
+        }
+
+        /// <summary>
+        /// Resets the active spawn wire tick if any
+        /// </summary>
+        public void ResetSpawnWireTick()
+        {
+            if (m_WireSpawnRoutine != null)
+            {
+                StopCoroutine(m_WireSpawnRoutine);
+                m_WireSpawnRoutine = StartCoroutine(WireSpawnRoutine());
+            }
         }
 
         /// <summary>

@@ -37,11 +37,11 @@ namespace TO5.Wires
         [SerializeField] private Text m_ScoreText;              // Text block for writing players score
         [SerializeField] private Text m_MultiplierText;         // Text block for writing players multiplier
         [SerializeField] private Image m_MultiplierImage;       // Image to manipulate based on auto multiplier increase
-        [SerializeField] private Slider m_BoostSlider;          // Slider for displaying built boost
+        //[SerializeField] private Slider m_BoostSlider;        // Slider for displaying built boost
         [SerializeField] private Slider m_WireSlider;           // Slider for displaying wire progress
-        [SerializeField] private Image[] m_LivesList;           // Images used for displaying lives 
-        public Color m_LifeActiveColor = Color.white;           // Color to use for active lives
-        public Color m_LifeInactiveColor = Color.gray;          // Color to use for inactive lives
+        //[SerializeField] private Image[] m_LivesList;         // Images used for displaying lives 
+        //public Color m_LifeActiveColor = Color.white;         // Color to use for active lives
+        //public Color m_LifeInactiveColor = Color.gray;        // Color to use for inactive lives
 
         // TODO: Polish
         public FloatingMovement m_FloatMove;
@@ -94,7 +94,7 @@ namespace TO5.Wires
             // Disable text in non development builds
             #if !UNITY_EDITOR && !DEVELOPMENT_BUILD
             if (m_FPSText)
-                m_FPSText.gameObject.SetActive(false);
+                Destroy(m_FPSText.gameObject);
             #endif
 
             m_Voice = GetComponent<CompanionVoice>();
@@ -127,9 +127,9 @@ namespace TO5.Wires
                 if (m_ScoreManager)
                 {
                     RefreshScoreText(m_ScoreManager.score);
-                    RefreshMultiplierText((int)m_ScoreManager.totalMultiplier);
+                    //RefreshMultiplierText((int)m_ScoreManager.totalMultiplier);
                     RefreshMultiplierProgress(m_ScoreManager.multiplierProgress);
-                    RefreshBoostProgress(m_ScoreManager.boost);
+                    //RefreshBoostProgress(m_ScoreManager.boost);
                 }
             }
 
@@ -143,7 +143,7 @@ namespace TO5.Wires
                 {
                     m_FPS = m_Frames;
                     m_Frames = 0;
-                    m_FrameTime = Mathf.Repeat(m_FrameTime, 1f);
+                    m_FrameTime -= 1f;
                 }
 
                 if (m_FPSText)
@@ -159,11 +159,11 @@ namespace TO5.Wires
         {
             ToggleEnabledUI(m_DisplayGameUI);
 
-            if (m_ScoreManager)
-            {
-                m_ScoreManager.OnStageLivesUpdated += StageLivesUpdated;
-                RefreshLivesList(m_ScoreManager.remainingLives);
-            }
+            //if (m_ScoreManager)
+            //{
+            //    m_ScoreManager.OnStageLivesUpdated += StageLivesUpdated;
+            //    RefreshLivesList(m_ScoreManager.remainingLives);
+            //}
         }
 
         /// <summary>
@@ -173,8 +173,8 @@ namespace TO5.Wires
         {
             SetDisplayCanvases(false, false);
 
-            if (m_ScoreManager)
-                m_ScoreManager.OnStageLivesUpdated -= StageLivesUpdated;
+            //if (m_ScoreManager)
+            //    m_ScoreManager.OnStageLivesUpdated -= StageLivesUpdated;
         }
 
         /// <summary>
@@ -313,11 +313,11 @@ namespace TO5.Wires
         /// Refreshes boost progress
         /// </summary>
         /// <param name="progress">Boost progress</param>
-        public void RefreshBoostProgress(float progress)
-        {
-            if (m_BoostSlider)
-                m_BoostSlider.value = progress;
-        }
+        //public void RefreshBoostProgress(float progress)
+        //{
+        //    if (m_BoostSlider)
+        //        m_BoostSlider.value = progress;
+        //}
 
         /// <summary>
         /// Refreshes wire progress
@@ -333,36 +333,36 @@ namespace TO5.Wires
         /// Refresh list of lives to match lives given
         /// </summary>
         /// <param name="lives">Lives remaining in stage</param>
-        public void RefreshLivesList(int lives)
-        {
-            if (lives == m_ActiveLives)
-                return;
+        //public void RefreshLivesList(int lives)
+        //{
+        //    if (lives == m_ActiveLives)
+        //        return;
 
-            // Activate disabled images
-            if (lives > m_ActiveLives)
-            {
-                int max = Mathf.Min(lives, m_LivesList.Length);
-                for (int i = m_ActiveLives; i < max; ++i)
-                {
-                    Image image = m_LivesList[i];
-                    if (image)
-                        image.color = m_LifeActiveColor;
-                }
-            }
-            // Deactivate enabled images
-            else if (lives < m_LivesList.Length)
-            {
-                int max = Mathf.Max(m_ActiveLives, m_LivesList.Length);
-                for (int i = lives; i < max; ++i)
-                {
-                    Image image = m_LivesList[i];
-                    if (image)
-                        image.color = m_LifeInactiveColor;
-                }
-            }
+        //    // Activate disabled images
+        //    if (lives > m_ActiveLives)
+        //    {
+        //        int max = Mathf.Min(lives, m_LivesList.Length);
+        //        for (int i = m_ActiveLives; i < max; ++i)
+        //        {
+        //            Image image = m_LivesList[i];
+        //            if (image)
+        //                image.color = m_LifeActiveColor;
+        //        }
+        //    }
+        //    // Deactivate enabled images
+        //    else if (lives < m_LivesList.Length)
+        //    {
+        //        int max = Mathf.Max(m_ActiveLives, m_LivesList.Length);
+        //        for (int i = lives; i < max; ++i)
+        //        {
+        //            Image image = m_LivesList[i];
+        //            if (image)
+        //                image.color = m_LifeInactiveColor;
+        //        }
+        //    }
 
-            m_ActiveLives = lives;
-        }
+        //    m_ActiveLives = lives;
+        //}
 
         /// <summary>
         /// Notify that player has entered drifting mode
@@ -384,10 +384,10 @@ namespace TO5.Wires
         /// Notify that players stage lives has changed
         /// </summary>
         /// <param name="lives">Current amount of lives</param>
-        private void StageLivesUpdated(int lives)
-        {
-            RefreshLivesList(lives);
-        }
+        //private void StageLivesUpdated(int lives)
+        //{
+        //    RefreshLivesList(lives);
+        //}
 
         /// <summary>
         /// Notify that multiplier stage has changed
@@ -396,6 +396,8 @@ namespace TO5.Wires
         /// <param name="stage">New stage</param>
         private void MultiplierUpdated(float multiplier, int stage)
         {
+            RefreshMultiplierText((int)multiplier);
+
             // Boost overrides these animations
             if (m_ScoreManager && m_ScoreManager.boostActive)
             {
@@ -472,6 +474,16 @@ namespace TO5.Wires
             }
 
             InterpolateAnchor(m_AtGameAnchor ? 0f : 1f);
+        }
+
+        /// <summary>
+        /// Sets if companion should enter boost mode
+        /// </summary>
+        /// <param name="enable">If boost made is enabled</param>
+        public void SetBoostModeEnabled(bool enable)
+        {
+            if (m_Animator)
+                m_Animator.SetBool("boostActive", enable);
         }
 
         void OnDrawGizmos()

@@ -99,6 +99,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5134141384661580594}
     m_Modifications:
+    - target: {fileID: 100000, guid: d82c6aa2cfd20ae438b570669b61f146, type: 3}
+      propertyPath: m_Name
+      value: SunVer2
+      objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: d82c6aa2cfd20ae438b570669b61f146, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: d82c6aa2cfd20ae438b570669b61f146, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -155,18 +163,26 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 48.46458
       objectReference: {fileID: 0}
-    - target: {fileID: 100000, guid: d82c6aa2cfd20ae438b570669b61f146, type: 3}
-      propertyPath: m_Name
-      value: SunVer2
-      objectReference: {fileID: 0}
-    - target: {fileID: 100000, guid: d82c6aa2cfd20ae438b570669b61f146, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 2300000, guid: d82c6aa2cfd20ae438b570669b61f146, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: ef9bbbb1a74e65946bd225fc9d33c6e1, type: 2}
+    - target: {fileID: 2300000, guid: d82c6aa2cfd20ae438b570669b61f146, type: 3}
+      propertyPath: m_ReceiveShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2300000, guid: d82c6aa2cfd20ae438b570669b61f146, type: 3}
+      propertyPath: m_CastShadows
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2300000, guid: d82c6aa2cfd20ae438b570669b61f146, type: 3}
+      propertyPath: m_MotionVectors
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2300000, guid: d82c6aa2cfd20ae438b570669b61f146, type: 3}
+      propertyPath: m_DynamicOccludee
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d82c6aa2cfd20ae438b570669b61f146, type: 3}
 --- !u!4 &2138667955544983926 stripped
@@ -182,6 +198,21 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5134141384661580594}
     m_Modifications:
+    - target: {fileID: 629665655112169775, guid: c555c9465e0d21544b0c1bdc6aadee06,
+        type: 3}
+      propertyPath: m_Name
+      value: P_Spark2
+      objectReference: {fileID: 0}
+    - target: {fileID: 629665655112169775, guid: c555c9465e0d21544b0c1bdc6aadee06,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 629665655112169774, guid: c555c9465e0d21544b0c1bdc6aadee06,
+        type: 3}
+      propertyPath: m_MotionVectors
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 629665655112169772, guid: c555c9465e0d21544b0c1bdc6aadee06,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -251,16 +282,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 0.22636501
-      objectReference: {fileID: 0}
-    - target: {fileID: 629665655112169775, guid: c555c9465e0d21544b0c1bdc6aadee06,
-        type: 3}
-      propertyPath: m_Name
-      value: P_Spark2
-      objectReference: {fileID: 0}
-    - target: {fileID: 629665655112169775, guid: c555c9465e0d21544b0c1bdc6aadee06,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 629665655112169773, guid: c555c9465e0d21544b0c1bdc6aadee06,
         type: 3}

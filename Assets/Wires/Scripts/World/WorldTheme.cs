@@ -29,6 +29,16 @@ namespace TO5.Wires
             m_WorldAesthetics = GetComponent<WorldAesthetics>();
         }
 
+        void Update()
+        {
+            if (m_WireManager && m_WireManager.sparkJumper)
+            {
+                SparkJumper sparkJumper = m_WireManager.sparkJumper;
+                if (sparkJumper.isJumping)
+                    BlendThemes(sparkJumper.jumpProgress);
+            }
+        }
+
         /// <summary>
         /// Initializes the world theme
         /// </summary>
@@ -99,7 +109,7 @@ namespace TO5.Wires
                 //if (m_BoostActive)
                     m_WorldAesthetics.SetBoostParticlesEnabled(true, m_WorldAesthetics.m_BoostParticlesSpeed);
 
-                StopCoroutine("BlendThemesRoutine");
+                //StopCoroutine("BlendThemesRoutine");
                 BlendThemes(1f);        
             }
             else
@@ -116,8 +126,8 @@ namespace TO5.Wires
                     m_WorldColor.SetActiveColor(factory.skyboxColor);
                 }
 
-                if (m_WireManager)
-                    StartCoroutine(BlendThemesRoutine(m_WireManager.sparkJumper));
+                //if (m_WireManager)
+                //    StartCoroutine(BlendThemesRoutine(m_WireManager.sparkJumper));
             }
         }
 

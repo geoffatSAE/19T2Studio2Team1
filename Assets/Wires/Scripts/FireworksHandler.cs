@@ -23,6 +23,7 @@ namespace TO5.Wires
             // We spawn one firework now so we can preload assets to avoid hitches
             GetFireworksObject();
 
+            // Must be manually activated
             enabled = false;
         }
 
@@ -34,7 +35,8 @@ namespace TO5.Wires
             if (!IsInvoking())
             {
                 enabled = true;
-                GenerateFireworks();
+                StartCoroutine(FireworksSpawnRoutine());
+                //GenerateFireworks();
             }
         }
 
@@ -61,7 +63,16 @@ namespace TO5.Wires
             }
 
             // Keep invoking till disabled
-            Invoke("GenerateFireworks", Random.Range(m_MinInterval, m_MaxInterval));
+            //Invoke("GenerateFireworks", Random.Range(m_MinInterval, m_MaxInterval));
+        }
+
+        private IEnumerator FireworksSpawnRoutine()
+        {
+            while (enabled)
+            {
+                GenerateFireworks();
+                yield return new WaitForSeconds(Random.Range(m_MinInterval, m_MaxInterval));
+            }
         }
 
         /// <summary>

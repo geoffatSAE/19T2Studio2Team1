@@ -18,6 +18,7 @@ namespace TO5.Wires
         private PostProcessVolume m_Volume;         // Volume for post processing
         private Grayscale m_Grayscale;              // Grayscale post processing effect
         private bool m_PulseEnabled = false;        // If grayscale pulse is enabled
+        private float m_PulseStart = -1f;           // Time grayscale started pulsing
 
         void Awake()
         {
@@ -30,6 +31,30 @@ namespace TO5.Wires
             m_Grayscale.blend.Override(0f);
 
             m_Volume = PostProcessManager.instance.QuickVolume(gameObject.layer, 100f, m_Grayscale);
+
+            // We don't pulse by default
+            enabled = false;
+        }
+
+        void Update()
+        {
+            // Right now, we only need Update for the grayscale
+            // If anything else is required, we most likely want to move this
+            if (m_PulseEnabled)
+            {
+                if (m_GrayscalePulseSpeed > 0f)
+                {
+                    // We don't use Mathf.Abs to allow grayscale to blend for a while
+                    float alpha = Mathf.Max(0, Mathf.Cos((Time.time - m_PulseStart) * m_GrayscalePulseSpeed));
+
+                    // Inversed as 'gray' is the default state
+                    m_Grayscale.blend.value = Mathf.Lerp(0f, m_GrayscaleBlend, 1f - alpha);
+                }
+                else
+                {
+                    m_Grayscale.blend.value = Mathf.Min(Time.time - m_PulseStart, m_GrayscaleBlend);
+                }
+            }
         }
 
         void OnDestroy()
@@ -63,16 +88,19 @@ namespace TO5.Wires
         /// <summary>
         /// Set if grayscale post process effect should be enabled
         /// </summary>
-        /// <param name="enable">Post poss process effect</param>
+        /// <param name="enable">Enable grayscale</param>
         public void SetGrayscaleEnabled(bool enable)
         {
-            if (m_PulseEnabled != enable)
+            if (m_Grayscale && m_PulseEnabled != enable)
             {
                 m_PulseEnabled = enable;
 
-                // This routine will exit itself upon completion
-                if (m_PulseEnabled)
-                    StartCoroutine(GrayscalePulseRoutine());
+                m_Grayscale.enabled.value = enable;
+                m_Grayscale.blend.value = 0f;
+
+                // Tick handles updating the pulse
+                m_PulseStart = Time.time;
+                enabled = enable;
             }
         }
 

@@ -45,7 +45,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Prefab: {fileID: 8031557244455201194, guid: 980d83303bd51f549965de24b4a6f829,
     type: 3}
-  m_InnerBorder: {x: 2.5, y: 5, z: 10}
-  m_OuterBorder: {x: 10, y: 5, z: 10}
+  m_InnerBorder: {x: 2.5, y: 2, z: 0}
+  m_OuterBorder: {x: 5, y: 3, z: 5}
   m_MinInterval: 0.25
   m_MaxInterval: 0.75

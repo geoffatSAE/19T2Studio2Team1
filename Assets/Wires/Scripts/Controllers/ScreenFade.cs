@@ -27,12 +27,14 @@ namespace TO5.Wires
         private MeshRenderer m_Renderer;                    // Plane renderer (created by us)
         private MeshFilter m_Filter;                        // Plane filter (created by us)
 
-        private Coroutine m_FadeRoutine;                    // Coroutine handling current fade
+        private float m_FadeStart = -1f;                    // Time we started fading
+        private float m_FadeFrom = 0f;                      // Alpha to fade from
+        private float m_FadeTo = 1f;                        // Alpha to fade to
 
         void Awake()
         {
             ConstructMesh();
-            SetFadeAlpha(0f);
+            SetIsFading(false);
         }
 
         void OnDestroy()
@@ -56,6 +58,37 @@ namespace TO5.Wires
                 AudioListener.volume = 1f;
         }
 
+        void Update()
+        {
+            if (m_FadeTime >= 0f)
+            {
+                float end = m_FadeStart + m_FadeTime;
+                float alpha = Mathf.Clamp01((end - Time.time) / m_FadeTime);
+
+                // Inversed (1 - alpha)
+                float fade = Mathf.Lerp(m_FadeTo, m_FadeFrom, alpha);
+
+                SetFadeAlpha(fade);
+
+                if (Time.time > end)
+                {
+                    // We can disable renderer is fully transparent
+                    if (m_FadeTo <= 0f)
+                        SetIsFading(false);
+
+                    if (OnFadeFinished != null)
+                        OnFadeFinished.Invoke(m_FadeTo);
+
+                    enabled = false;
+                }
+            }
+        }
+
+        void OnDisable()
+        {
+            m_FadeStart = -1f;
+        }
+
         /// <summary>
         /// Fades in from blocked screen to transparent screen
         /// </summary>
@@ -77,12 +110,6 @@ namespace TO5.Wires
         /// </summary>
         public void ClearFade()
         {
-            if (m_FadeRoutine != null)
-            {
-                StopCoroutine(m_FadeRoutine);
-                m_FadeRoutine = null;
-            }
-
             SetIsFading(false);
             SetFadeAlpha(0f);
         }
@@ -94,10 +121,11 @@ namespace TO5.Wires
         /// <param name="endAlpha">Alpha to fade to</param>
         public void StartFading(float startAlpha, float endAlpha)
         {
-            if (m_FadeRoutine != null)
-                StopCoroutine(m_FadeRoutine);
+            m_FadeFrom = startAlpha;
+            m_FadeTo = endAlpha;
 
-            m_FadeRoutine = StartCoroutine(FadeRoutine(startAlpha, endAlpha));
+            m_FadeStart = Time.time;
+            SetIsFading(true);
         }
 
         /// <summary>
@@ -127,37 +155,8 @@ namespace TO5.Wires
         {
             if (m_Renderer)
                 m_Renderer.enabled = isFading;
-        }
 
-        /// <summary>
-        /// Routine that handles fading between two alphas
-        /// </summary>
-        /// <param name="startFade">Alpha to fade from</param>
-        /// <param name="endFade">Alpha to fade to</param>
-        private IEnumerator FadeRoutine(float startFade, float endFade)
-        {
-            SetIsFading(true);
-
-            float end = Time.time + m_FadeTime;
-            while (Time.time <= end)
-            {
-                float alpha = Mathf.Clamp01((end - Time.time) / m_FadeTime);
-                float fade = Mathf.Lerp(endFade, startFade, alpha);
-                SetFadeAlpha(fade);
-
-                yield return new WaitForEndOfFrame();
-            }
-
-            SetFadeAlpha(endFade);
-
-            // We can disable renderer is fully transparent
-            if (endFade <= 0f)
-                SetIsFading(false);
-
-            if (OnFadeFinished != null)
-                OnFadeFinished.Invoke(endFade);
-
-            m_FadeRoutine = null;
+            enabled = isFading;
         }
 
         /// <summary>

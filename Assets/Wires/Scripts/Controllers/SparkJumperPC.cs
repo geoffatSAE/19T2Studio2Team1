@@ -32,8 +32,10 @@ namespace TO5.Wires
             Cursor.visible = false;
         }
 
-        void Update()
+        protected override void Update()
         {
+            base.Update();
+
             // The transform to rotate and base tracing with
             Transform trans = m_Camera ? m_Camera.transform : transform;
 

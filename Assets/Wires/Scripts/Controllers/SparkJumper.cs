@@ -32,12 +32,12 @@ namespace TO5.Wires
         /// <returns>If activation was successful</returns>
         public delegate bool TryActivateBoost();
 
-        public JumpedToSpark OnJumpToSpark;             // Event for when jumping to new spark
-        public DriftingUpdated OnDriftingUpdated;       // Event for when entering/exiting drifting
-        public TryActivateBoost OnActivateBoost;        // Event for when attempting boost activation
+        public JumpedToSpark OnJumpToSpark;                                 // Event for when jumping to new spark
+        public DriftingUpdated OnDriftingUpdated;                           // Event for when entering/exiting drifting
+        [System.Obsolete] public TryActivateBoost OnActivateBoost;          // Event for when attempting boost activation
 
         public Transform m_Anchor;                                                          // Anchor to move instead of gameObject
-        public bool m_JumpingEnabled = true;                                                // If player is allowed to jump
+        public bool m_ControlsEnabled = true;                                               // If player controls are enabled
         public float m_JumpTime = 0.75f;                                                    // Transition time between sparks
         [SerializeField, Min(0.1f)] protected float m_TraceRadius = 0.5f;                   // Radius of sphere cast
         [SerializeField] private LayerMask m_InteractiveLayer = Physics.AllLayers;          // Layer for interactives
@@ -54,7 +54,7 @@ namespace TO5.Wires
         public CompanionVoice companionVoice { get { return m_Companion ? m_Companion.voice : null; } }
 
         // If the player is allowed to request a jump
-        public bool canJump { get { return m_JumpingEnabled && !m_IsJumping; } }
+        public bool canJump { get { return m_ControlsEnabled && !m_IsJumping; } }
 
         // If the player is drifting in space
         public bool isDrifting { get { return m_IsDrifting; } }
@@ -79,9 +79,43 @@ namespace TO5.Wires
 
         private Spark m_Spark;                          // Spark we are on
         private bool m_IsJumping = false;               // If transition is in progress
+        private float m_JumpStart = -1f;                // Time at which jump started
+        private Vector3 m_JumpFrom = Vector3.zero;      // Position we jumped from
         private bool m_IsDrifting = false;              // If drifting in space
         private float m_CachedJumpProgress = -1f;       // Cached progress of jump
         private float m_WireDistanceTravelled = 0f;     // Distance jumper has travelled while on wires
+
+        protected virtual void Update()
+        {
+            if (m_IsJumping)
+            {
+                // Possibility that spark was deactivated while jumping to it
+                if (m_Spark)
+                {
+                    float end = m_JumpStart + m_JumpTime;
+                    float alpha = 1f - Mathf.Clamp01((end - Time.time) / m_JumpTime);
+                    Vector3 position = Vector3.Lerp(m_JumpFrom, m_Spark.transform.position, alpha);
+
+                    SetPosition(position);
+
+                    // Have we finished jumping?
+                    m_CachedJumpProgress = alpha;
+                    if (m_CachedJumpProgress >= 1f)
+                    {
+                        m_Spark.AttachJumper(this);
+
+                        if (OnJumpToSpark != null)
+                            OnJumpToSpark.Invoke(m_Spark, true);
+
+                        m_IsJumping = false;
+                    }
+                }
+                else
+                {
+                    m_IsJumping = false;
+                }
+            }
+        }
 
         /// <summary>
         /// Jumps to given spark
@@ -95,10 +129,8 @@ namespace TO5.Wires
             if (m_Spark)
                 m_Spark.DetachJumper();
 
-            m_Spark = spark;
-
-            m_Spark.FreezeSwitching();
-            m_Spark.AttachJumper(this);
+            spark.FreezeSwitching();
+            spark.AttachJumper(this);
 
             // Can't be drifting while jumping
             SetDriftingEnabled(false);
@@ -107,10 +139,7 @@ namespace TO5.Wires
             if (voice)
                 voice.PlayJumpDialogue();
 
-            StartCoroutine(JumpRoutine());
-
-            if (OnJumpToSpark != null)
-                OnJumpToSpark(m_Spark, false);
+            InitiateJump(spark);
         }
 
         /// <summary>
@@ -162,7 +191,7 @@ namespace TO5.Wires
         /// <param name="ray">Ray of the trace</param>
         public void TraceWorld(Ray ray)
         {
-            if (!m_JumpingEnabled)
+            if (!m_ControlsEnabled)
                 return;
 
             RaycastHit hit;
@@ -244,48 +273,26 @@ namespace TO5.Wires
         }
 
         /// <summary>
-        /// Routine for jumping between sparks
+        /// Initiates a jump to new location
         /// </summary>
-        private IEnumerator JumpRoutine()
+        private void InitiateJump(Spark spark)
         {
-            if (m_Spark)
+            if (!spark)
             {
-                m_IsJumping = true;
-
-                Vector3 from = GetPosition();
-                float start = Time.time;
-
-                while (Time.time < start + m_JumpTime)
-                {       
-                    // Possibility that spark was deactivated while jumping to it
-                    if (m_Spark)
-                    {
-                        float end = start + m_JumpTime;
-                        float alpha = 1f - Mathf.Clamp01((end - Time.time) / m_JumpTime);
-                        Vector3 position = Vector3.Lerp(from, m_Spark.transform.position, alpha);
-
-                        SetPosition(position);
-
-                        m_CachedJumpProgress = alpha;
-
-                        yield return null;
-                    }
-                    else
-                    {
-                        // TODO:
-                        Debug.LogAssertion("Aborting jump");
-                        break;
-                    }
-                }
-
-                if (m_Spark)
-                    m_Spark.AttachJumper(this);
-
-                if (OnJumpToSpark != null)
-                    OnJumpToSpark.Invoke(m_Spark, true);
-
-                m_IsJumping = false;
+                Debug.Log("Failed to initiate jump as spark was null", this);
+                return;
             }
+
+            m_Spark = spark;
+
+            m_JumpFrom = GetPosition();
+            m_JumpStart = Time.time;
+            m_IsJumping = true;
+
+            m_CachedJumpProgress = 0f;
+
+            if (OnJumpToSpark != null)
+                OnJumpToSpark(m_Spark, false);
         }
 
         /// <summary>

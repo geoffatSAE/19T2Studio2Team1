@@ -5,70 +5,6 @@ using UnityEngine.SceneManagement;
 
 namespace TO5.Wires
 {
-    [System.Serializable]
-    public class WiresArcadeEndingProperties
-    {
-        public float m_Duration = 15f;
-        public float m_AutoControlStart = 7.5f;
-
-        [Header("Fixed")]
-        public int m_MinSegments = 18;
-        public int m_MaxSegments = 22;
-        public int m_SpawnSegmentOffset = 10;
-        [Min(0)] public int m_SpawnSegmentRange = 3;
-
-        public float m_InnerSpawnRadius = 3f;
-        public float m_OuterSpawnRadius = 20f;
-        [Range(0, 1)] public float m_BottomCircleCutoff = 0.7f;
-        [Range(0, 1)] public float m_TopCircleCutoff = 1f;
-        public int m_MaxWiresAtOnce = 20;
-
-        [Header("Dynamic")]
-        public float m_StartMinSpawnInterval = 2f;
-        public float m_StartMaxSpawnInterval = 3f;
-        public float m_EndMinSpawnInterval = 1f;
-        public float m_EndMaxSpawnInterval = 2f;
-
-        public float m_StartSparkSpeed = 1f;
-        public float m_EndSparkSpeed = 2f;
-
-        public float m_StartJumpTime = 0.75f;
-        public float m_EndJumpTime = 0.5f;
-
-        [System.NonSerialized] public WireStageProperties m_WireProperties = null;
-
-        public void Initialize()
-        {
-            m_WireProperties = new WireStageProperties();
-            m_WireProperties.m_MinSegments = m_MinSegments;
-            m_WireProperties.m_MaxSegments = m_MaxSegments;
-            m_WireProperties.m_SpawnSegmentOffset = m_SpawnSegmentOffset;
-            m_WireProperties.m_SpawnSegmentRange = m_SpawnSegmentRange;
-
-            m_WireProperties.m_InnerSpawnRadius = m_InnerSpawnRadius;
-            m_WireProperties.m_OuterSpawnRadius = m_OuterSpawnRadius;
-            m_WireProperties.m_BottomCircleCutoff = m_BottomCircleCutoff;
-            m_WireProperties.m_TopCircleCutoff = m_TopCircleCutoff;
-            m_WireProperties.m_MaxWiresAtOnce = m_MaxWiresAtOnce;
-
-            m_WireProperties.m_SparkSpawnSegmentDelay = 0;
-            m_WireProperties.m_DefectiveWireChance = 0f;
-
-            Interpolate(0f);
-        }
-
-        public void Interpolate(float alpha)
-        {
-            if (m_WireProperties != null)
-            {
-                m_WireProperties.m_MinSpawnInterval = Mathf.Lerp(m_StartMinSpawnInterval, m_EndMinSpawnInterval, alpha);
-                m_WireProperties.m_MaxSpawnInterval = Mathf.Lerp(m_StartMaxSpawnInterval, m_EndMaxSpawnInterval, alpha);
-                m_WireProperties.m_SparkSpeed = Mathf.Lerp(m_StartSparkSpeed, m_EndSparkSpeed, alpha);
-                m_WireProperties.m_JumpTime = Mathf.Lerp(m_StartJumpTime, m_EndJumpTime, alpha);
-            }
-        }
-    }
-
     /// <summary>
     /// Game mode for the arcade version of wires
     /// </summary>
@@ -89,10 +25,14 @@ namespace TO5.Wires
         [Header("Arcade")]
         [SerializeField] private float m_ArcadeLength = 480f;                                                               // How long the game lasts for (in seconds)
         [SerializeField] private float m_PostArcadeLength = 10f;                                                            // How long to display game stats for before exiting
-        [SerializeField] private WiresArcadeEndingProperties m_EndingProperties = new WiresArcadeEndingProperties();        // Properties for wire generation during the ending
-        [SerializeField] private FireworksHandler m_Fireworks;                                                              // Fireworks to activate during post game
 
         private float m_StartingDistance = 0f;          // Distance player had already travelled at the start of the game
+
+        [Header("Finale")]
+        [SerializeField] private FinaleSequence m_FinaleSequence;                                                           // Script for handling the finale
+        [SerializeField] private bool m_SkipFinale = false;                                                                 // If finale sequence should be skipped
+        [SerializeField] private FireworksHandler m_Fireworks;                                                              // Fireworks to activate during post game
+     
         private Wire m_FinalWire;                       // The final wire (exit wire)
 
         [Header("Tutorial")]
@@ -156,7 +96,19 @@ namespace TO5.Wires
             base.EndGame();
 
             StopCoroutine("GameTimerRoutine");
-            StartCoroutine(SpawnEndingWireRoutine());
+
+            if (scoreManager)
+                scoreManager.DisableMultiplierTick();
+
+            if (m_FinaleSequence && !m_SkipFinale)
+            {
+                m_FinaleSequence.OnSequenceFinished += FinaleSequenceFinished;
+                m_FinaleSequence.Activate(m_WireManager);
+            }
+            else
+            {
+                StartCoroutine(SpawnEndingWireRoutine());
+            }
         }
 
         /// <summary>
@@ -195,7 +147,6 @@ namespace TO5.Wires
                             m_TutorialUI.skipButton.onClick.AddListener(SkipTutorial);
                     }
 
-                    SparkJumper sparkJumper = m_WireManager.sparkJumper;
                     if (sparkJumper.companion)
                     {
                         CompanionUI companion = sparkJumper.companion;
@@ -230,9 +181,8 @@ namespace TO5.Wires
 
                 m_WireManager.PlayerJumpedOffWire -= TutorialJumpedOffWire;
 
-                if (m_WireManager.scoreManager)
+                if (scoreManager)
                 {
-                    ScoreManager scoreManager = m_WireManager.scoreManager;
                     scoreManager.OnPacketDespawned -= TutorialPacketDespawned;
                     scoreManager.OnBoostModeUpdated -= TutorialBoostModeUpdated;
                 }
@@ -246,10 +196,9 @@ namespace TO5.Wires
                         if (m_TutorialUI.skipButton)
                             m_TutorialUI.skipButton.onClick.RemoveListener(SkipTutorial);
 
-                        Destroy(m_TutorialUI);
+                        Destroy(m_TutorialUI.gameObject);
                     }
 
-                    SparkJumper sparkJumper = m_WireManager.sparkJumper;
                     if (sparkJumper.companion)
                     {
                         CompanionUI companion = sparkJumper.companion;
@@ -326,7 +275,6 @@ namespace TO5.Wires
                     // We play first tutorial dialogue when first wire spawns in
                     if (m_TutorialWiresSpawned <= 0)
                     {
-                        SparkJumper sparkJumper = m_WireManager.sparkJumper;
                         if (sparkJumper && sparkJumper.companionVoice)
                             sparkJumper.companionVoice.PlayTutorialDialogue(0);
                     }
@@ -348,41 +296,6 @@ namespace TO5.Wires
         /// </summary>
         private IEnumerator SpawnEndingWireRoutine()
         {
-            if (m_WireManager.scoreManager)
-                m_WireManager.scoreManager.DisableMultiplierTick();
-
-            if (m_EndingProperties.m_Duration > 0f)
-            {
-                m_EndingProperties.Initialize();
-                m_WireManager.OverrideStageProperties(m_EndingProperties.m_WireProperties);
-
-                // Quick way of resetting the wire spawn tick
-                m_WireManager.SetWireGenerationEnabled(false);
-                m_WireManager.SetWireGenerationEnabled(true);
-
-                float end = Time.time + m_EndingProperties.m_Duration;
-                while (Time.time < end)
-                {
-                    float remainingTime = end - Time.time;
-                    float alpha = Mathf.Clamp01(remainingTime / m_EndingProperties.m_Duration);
-                    m_EndingProperties.Interpolate(1f - alpha);
-
-                    bool manualControl = remainingTime >= m_EndingProperties.m_AutoControlStart;
-
-                    m_WireManager.m_DriftingEnabled = false;
-
-                    if (m_WireManager.sparkJumper)
-                    {
-                        m_WireManager.sparkJumper.m_JumpTime = m_EndingProperties.m_WireProperties.m_JumpTime;
-                        m_WireManager.sparkJumper.m_JumpingEnabled = manualControl;
-                    }
-
-                    yield return null;
-                }
-
-                m_EndingProperties.Interpolate(1f);
-            }
-
             while (true)
             {
                 m_FinalWire = m_WireManager.GenerateRandomFixedWire(10000, true, false);
@@ -393,13 +306,13 @@ namespace TO5.Wires
             }
 
             // We need to listen for when player actually jumps to this wire
-            if (m_WireManager.sparkJumper)
-                m_WireManager.sparkJumper.OnJumpToSpark += FinaleJumpToSpark;
+            if (sparkJumper)
+                sparkJumper.OnJumpToSpark += FinaleJumpToSpark;
 
             m_WireManager.SetWireGenerationEnabled(false);
 
-            if (m_WireManager.scoreManager)
-                m_WireManager.scoreManager.SetPacketGenerationEnabled(false);
+            if (scoreManager)
+                scoreManager.SetPacketGenerationEnabled(false);
         }
 
         /// <summary>
@@ -410,16 +323,15 @@ namespace TO5.Wires
             float score = 0f;
             float distance = 0f;
 
-            if (m_WireManager.scoreManager)
+            if (scoreManager)
             {
-                m_WireManager.scoreManager.DisableScoring();
+                scoreManager.DisableScoring();
                 score = m_WireManager.scoreManager.score;
             }
 
-            SparkJumper sparkJumper = m_WireManager.sparkJumper;
             if (sparkJumper)
             {
-                sparkJumper.m_JumpingEnabled = false;
+                sparkJumper.m_ControlsEnabled = false;
                 sparkJumper.OnJumpToSpark -= FinaleJumpToSpark;
 
                 distance = Mathf.Abs(sparkJumper.GetPosition().z - m_StartingDistance);
@@ -434,7 +346,7 @@ namespace TO5.Wires
             {
                 ScreenFade screenFade = sparkJumper.m_ScreenFade;
                 screenFade.OnFadeFinished += FinaleFadeFinished;
-                screenFade.m_FadeColor = Color.white;
+                screenFade.m_FadeColor = Color.gray;
                 screenFade.FadeOut();
             }
             else
@@ -450,7 +362,6 @@ namespace TO5.Wires
         /// <param name="endAlpha">Last alpha of screen fade</param>
         private void TutorialFadeFinished(float endAlpha)
         {
-            SparkJumper sparkJumper = m_WireManager.sparkJumper;
             if (sparkJumper)
             {
                 sparkJumper.m_ScreenFade.OnFadeFinished -= TutorialFadeFinished;
@@ -491,7 +402,6 @@ namespace TO5.Wires
         /// <param name="wasCollected"></param>
         private void TutorialPacketDespawned(DataPacket packet, bool wasCollected)
         {
-            ScoreManager scoreManager = m_WireManager.scoreManager;
             if (!scoreManager)
                 EndTutorial(false);
 
@@ -519,6 +429,14 @@ namespace TO5.Wires
         }
 
         /// <summary>
+        /// Notify that the finale sequence has finished
+        /// </summary>
+        private void FinaleSequenceFinished()
+        {
+            StartCoroutine(SpawnEndingWireRoutine());
+        }
+
+        /// <summary>
         /// Notify that player has jumped to a new spark during end game
         /// </summary>
         /// <param name="spark">Spark player jumped to</param>
@@ -529,7 +447,6 @@ namespace TO5.Wires
             {
                 StartCoroutine(DisplayStatsAndExitRoutine());
 
-                SparkJumper sparkJumper = m_WireManager.sparkJumper;
                 if (sparkJumper && sparkJumper.companionVoice)
                     sparkJumper.companionVoice.PlayGameFinishedDialogue();
 
@@ -597,7 +514,6 @@ namespace TO5.Wires
                 if (m_TutorialUI)
                     m_TutorialUI.NextSlide();
 
-                SparkJumper sparkJumper = m_WireManager.sparkJumper;
                 if (sparkJumper && sparkJumper.companionVoice)
                     sparkJumper.companionVoice.PlayTutorialDialogue(step);
             }
@@ -622,10 +538,8 @@ namespace TO5.Wires
         {
             m_TutorialStep = TutorialStep.Packets;
 
-            if (m_WireManager.scoreManager)
+            if (scoreManager)
             {
-                ScoreManager scoreManager = m_WireManager.scoreManager;
-
                 // Custom properties (we can ignore intervals as we will handle it)
                 PacketStageProperties tutorialProps = new PacketStageProperties();
                 tutorialProps.m_MinSpawnOffset = m_TutorialPacketOffset;
@@ -655,14 +569,13 @@ namespace TO5.Wires
         {
             m_TutorialStep = TutorialStep.Boost;
 
-            if (m_WireManager.scoreManager)
+            if (scoreManager)
             {
-                ScoreManager scoreManager = m_WireManager.scoreManager;
                 scoreManager.OnPacketDespawned -= TutorialPacketDespawned;
                 scoreManager.OnBoostModeUpdated += TutorialBoostModeUpdated;
 
                 scoreManager.SetPacketGenerationEnabled(false);
-                scoreManager.AddBoost(100f);
+                //scoreManager.AddBoost(100f);
             }
             else
             {
@@ -678,7 +591,6 @@ namespace TO5.Wires
         {
             m_TutorialStep = TutorialStep.Defective;
 
-            ScoreManager scoreManager = m_WireManager.scoreManager;
             if (scoreManager)
                 scoreManager.OnBoostModeUpdated -= TutorialBoostModeUpdated;
         }

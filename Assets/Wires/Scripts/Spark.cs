@@ -31,13 +31,16 @@ namespace TO5.Wires
         public AudioClip m_OnSelectedSound;                                 // Sound to play when selected while on
         public AudioClip m_OffSelectedSound;                                // Sound to play when selected while off
 
-        private Wire m_Wire;                        // Wire this spark is on
-        private bool m_CanJumpTo = true;            // If player can jump to this spark
-        private Vector3 m_OnTargetScale;            // Scale spark should be at when on
-        private bool m_IsSwitching = false;         // If spark is switching states
-        private SparkJumper m_SparkJumper;          // Player on this spark
-        private SphereCollider m_Collider;          // Collider for this spark
-        private Coroutine m_SwitchRoutine;          // Switch coroutine that is running
+        private Wire m_Wire;                                        // Wire this spark is on
+        private bool m_CanJumpTo = true;                            // If player can jump to this spark
+        private Vector3 m_OnTargetScale;                            // Scale spark should be at when on
+        private bool m_IsSwitching = false;                         // If spark is switching states
+        private SparkJumper m_SparkJumper;                          // Player on this spark
+        private SphereCollider m_Collider;                          // Collider for this spark
+        private Coroutine m_SwitchRoutine;                          // Switch coroutine that is running
+        private float m_RotateEnd = -1f;                            // Time rotation sequence should finish
+        private Quaternion m_RotateFrom = Quaternion.identity;      // Rotation to rotate from
+        private Quaternion m_RotateTo = Quaternion.identity;        // Rotation to rotate to
 
         void Awake()
         {
@@ -82,9 +85,6 @@ namespace TO5.Wires
             transform.position = wire.transform.position;
             m_OnTargetScale = m_OnScale;
             m_Collider.enabled = true;// m_CanJumpTo;
-
-            if (m_Rotate)
-                StartCoroutine(RotateRoutine());
         }
 
         /// <summary>
@@ -94,8 +94,6 @@ namespace TO5.Wires
         {
             if (m_SwitchRoutine != null)
                 StopCoroutine(m_SwitchRoutine);
-
-            StopCoroutine("RotateRoutine");
 
             m_CanJumpTo = false;
             gameObject.SetActive(false);
@@ -108,6 +106,23 @@ namespace TO5.Wires
         /// <param name="progress">Progress along wire</param>
         public void TickSpark(float step, float progress)
         {
+            if (m_Rotate && m_Renderer)
+            {
+                if (m_RotateEnd < 0f)
+                {
+                    m_RotateFrom = m_Renderer.transform.rotation;
+                    m_RotateTo = Random.rotation;
+                    m_RotateEnd = Time.time + m_RotationTime;
+                }
+
+                // We reverse target and from as alpha is also reversed
+                float alpha = Mathf.Clamp01((m_RotateEnd - Time.time) / m_RotationTime);
+                m_Renderer.transform.rotation = Quaternion.Slerp(m_RotateTo, m_RotateFrom, alpha);
+
+                if (Time.time > m_RotateEnd)
+                    m_RotateEnd = -1f;
+            }
+
             // InQuint easing function
             // See https://easings.net/en
             float ease = progress * progress * progress * progress * progress;
@@ -187,31 +202,6 @@ namespace TO5.Wires
                         BlendSwitchStatus(alpha);
                         yield return null;
                     }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Routine for rotating the sparks model round and round
-        /// </summary>
-        private IEnumerator RotateRoutine()
-        {
-            if (!m_Renderer)
-                yield break;
-
-            while (enabled)
-            {
-                Quaternion from = m_Renderer.transform.rotation;
-                Quaternion target = Random.rotation;
-                float end = Time.time + m_RotationTime;
-                
-                while (enabled && Time.time <= end)
-                {
-                    // We reverse target and from as alpha is also reversed
-                    float alpha = Mathf.Clamp01((end - Time.time) / m_RotationTime);
-                    m_Renderer.transform.rotation = Quaternion.Slerp(target, from, alpha);           
-
-                    yield return null;
                 }
             }
         }

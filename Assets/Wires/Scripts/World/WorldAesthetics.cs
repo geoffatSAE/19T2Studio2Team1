@@ -19,7 +19,6 @@ namespace TO5.Wires
             public float m_SpawnRate;               // Spawn rate of particles
         }
 
-
         [Header("Border")]
         [SerializeField] private Transform m_BorderPivot;               // Pivot for the outer wires border
         [SerializeField] private Renderer m_BorderRenderer;             // Renderer for the outer wires border
@@ -347,8 +346,6 @@ namespace TO5.Wires
             {
                 ParticleSystem.TrailModule trails = m_BoostParticles.trails;
                 trails.colorOverLifetime = color;
-
-                Debug.Log(color.color.ToString());
             }
         }
 

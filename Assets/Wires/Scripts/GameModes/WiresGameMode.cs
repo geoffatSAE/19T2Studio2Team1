@@ -30,6 +30,15 @@ namespace TO5.Wires
         // Length of the played match (-1 if game is still in progress)
         public float gameLength { get { return m_GameLength; } }
 
+        // Wire manager this game mode works with
+        public WireManager wireManager { get { return m_WireManager; } }
+
+        // Score manager of wire manager
+        public ScoreManager scoreManager { get { return m_WireManager ? m_WireManager.scoreManager : null; } }
+
+        // Spark jumper of wire manager
+        public SparkJumper sparkJumper { get { return m_WireManager ? m_WireManager.sparkJumper : null; } }
+
         void Start()
         {
             if (!m_WireManager)

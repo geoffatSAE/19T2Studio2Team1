@@ -16,8 +16,10 @@ namespace TO5.Wires
         public Transform m_HeadOrigin;                              // Origin of players head (headset)
         [SerializeField] private LaserPointer m_LaserPointer;       // Laser point that visualizes players aim
 
-        void Update()
+        protected override void Update()
         {
+            base.Update();
+
             // Rotation is handled for us by the OVRCameraRig
 
             Vector3 controllerPos = GetControllerPosition();

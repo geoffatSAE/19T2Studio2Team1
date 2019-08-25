@@ -20,6 +20,8 @@ namespace TO5.Wires
         [SerializeField] private float m_MusicFadePitch = 0.75f;            // Music speed when faded out
         private bool m_Source1Active = true;                                // Which source is active source
         private bool m_FadingMusic = false;                                 // If music is being faded out
+        private float m_FadingStart = -1f;                                  // When music started fading
+        private bool m_FadeIn = false;                                      // If music is fading in
         private Coroutine m_FadingMusicRoutine = null;                      // Routine for fading music
 
         public AnimationCurve m_BeatCurve = AnimationCurve.Linear(0f, 1f, 1f, 0f);      // Animation curve of beat (value provided to shaders)
@@ -55,6 +57,22 @@ namespace TO5.Wires
             float beatRate = m_ActiveBeatRate > 0f ? m_ActiveBeatRate : 1f;
             float beatTime = Mathf.Max(m_BeatTime - m_ActiveBeatDelay, 0f) / beatRate;
             Shader.SetGlobalFloat(BeatTimeShaderName, m_BeatCurve.Evaluate(Mathf.Repeat(beatTime, 1f)));
+
+            if (m_FadingStart >= 0f)
+            {
+                float end = m_FadingStart + m_MusicFadeTime;
+                float alpha = Mathf.Clamp01((end - Time.time) / m_MusicFadeTime);
+
+                // Revert inverse when fading in
+                if (!m_FadeIn)
+                    alpha = 1f - alpha;
+
+                InterpolateMusicFade(alpha);
+
+                // Finished fading
+                if (Time.time > end)
+                    m_FadingStart = -1f;
+            }
         }
 
         /// <summary>
@@ -146,9 +164,7 @@ namespace TO5.Wires
 
             // Disable inactive source when finished (as it should be mute)
             if (progress >= 1f)
-            {
-                fadingSource.enabled = false;
-            }         
+                fadingSource.enabled = false;     
         }
 
         /// <summary>
@@ -160,14 +176,8 @@ namespace TO5.Wires
             if (m_FadingMusic != fadeMusic)
             {
                 m_FadingMusic = fadeMusic;
-
-                if (m_FadingMusicRoutine != null)
-                {
-                    StopCoroutine(m_FadingMusicRoutine);
-                    m_FadingMusicRoutine = null;
-                }
-
-                m_FadingMusicRoutine = StartCoroutine(FadeMusicRoutine(!fadeMusic));
+                m_FadeIn = !fadeMusic;
+                m_FadingStart = Time.time;
             }
         }
 

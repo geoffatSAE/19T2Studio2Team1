@@ -12,52 +12,84 @@
     {
         Tags { "RenderType"="Transparent" "Queue" = "Transparent" }
 
-		CGPROGRAM
+		Lighting Off
+		Blend SrcAlpha OneMinusSrcAlpha
+		ZWrite Off
 
-		#pragma surface surf Lambert alpha:blend nolighting noshadow
-
-		struct Input 
+		Pass
 		{
-			float3 worldPos;
-			float3 worldNormal;
-		};
+			CGPROGRAM
 
-		half4 _Color;
-		half _Alpha;
-		sampler2D _MainTex;
-		half2 _PanningSpeed;
-		half _AlphaScale;
+			#pragma vertex vert
+			#pragma fragment frag           
 
-		float ease(float alpha)
-		{
-			// Ease Out Cubic
-			// See https://easings.net/en
-			return (--alpha) * alpha * alpha + 1;
-		}
+			#include "UnityCG.cginc"
 
-		void surf(Input IN, inout SurfaceOutput o) 
-		{
-			// Sum up weights to one
-			float3 blend = abs(IN.worldNormal);
-			blend /= dot(blend, 1.f);
+			struct appdata
+			{
+				float4 vertex : POSITION;
+				float3 normal : NORMAL;
+				float2 uv : TEXCOORD0;
+			};
 
-			// Move texture (we sample from different location)
-			float2 offset = _PanningSpeed * _Time.x;
+			struct v2f
+			{
+				float4 vertex : SV_POSITION;			
+				float2 uv : TEXCOORD0;
+				half3 objectPos : TEXCOORD1;
+				half3 worldPos : TEXCOORD2;
+				half3 worldNormal : TEXCOORD3;
+			};
 
-			fixed4 x = tex2D(_MainTex, IN.worldPos.yz + offset);
-			fixed4 y = tex2D(_MainTex, IN.worldPos.xz + offset);
-			fixed4 z = tex2D(_MainTex, IN.worldPos.xy + offset);
+			half4 _Color;
+			half _Alpha;
+			sampler2D _MainTex;
+			half2 _PanningSpeed;
+			half _AlphaScale;
 
-			// How close pixel is to center of outer border (we assume model being used is a cylinder
-			// facing upwards that vertices extend out to -0.5 and 0.5
-			fixed3 objectPos = mul(unity_WorldToObject, fixed4(IN.worldPos, 1)).xyz;
-			fixed centerRatio = 1 - (abs(objectPos.y) + 0.5);
+			float ease(float alpha)
+			{
+				// Ease Out Cubic
+				// See https://easings.net/en
+				return (--alpha) * alpha * alpha + 1;
+			}
 
-			fixed4 c = _Color * (x * blend.x + y * blend.y + z * blend.z);
-			o.Albedo = c.rgb;
-			o.Alpha = _Alpha * _AlphaScale * ease(centerRatio);
-		}
-		ENDCG
+			v2f vert(appdata v)
+			{
+				v2f o;
+				o.vertex = UnityObjectToClipPos(v.vertex);
+				o.uv = v.uv;
+				o.objectPos = v.vertex;
+				o.worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
+				o.worldNormal = UnityObjectToWorldNormal(v.normal).xyz;
+				return o;
+			}
+
+			fixed4 frag(v2f i) : SV_Target
+			{
+				// Sum up weights to one
+				float3 blend = abs(i.worldNormal);
+				blend /= dot(blend, 1.f);
+
+				// Move texture (we sample from different location)
+				float2 offset = _PanningSpeed * _Time.x;
+
+				fixed4 x = tex2D(_MainTex, i.worldPos.yz + offset);
+				fixed4 y = tex2D(_MainTex, i.worldPos.xz + offset);
+				fixed4 z = tex2D(_MainTex, i.worldPos.xy + offset);
+
+				// How close pixel is to center of outer border (we assume model being used 
+				// is a cylinder facing upwards that vertices extend out to -0.5 and 0.5)
+				fixed centerRatio = 1 - (abs(i.objectPos.y) + 0.5);
+
+				fixed4 col = _Color * (x * blend.x + y * blend.y + z * blend.z);
+				col.a = _Alpha * _AlphaScale * ease(centerRatio);
+
+				return col;
+			}
+
+			ENDCG
+		}	
 	}
 	Fallback "Diffuse"
 }

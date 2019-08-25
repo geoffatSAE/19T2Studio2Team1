@@ -41,7 +41,7 @@ namespace TO5.Wires
         {
             transform.localPosition = localPosition;
 
-            m_ParticleSystem.Play();
+            m_ParticleSystem.Play(true);
 
             if (m_BurstSounds != null && m_BurstSounds.Length > 0)
                 m_AudioSource.clip = m_BurstSounds[Random.Range(0, m_BurstSounds.Length)];

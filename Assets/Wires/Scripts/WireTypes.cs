@@ -16,7 +16,7 @@ namespace TO5.Wires
         public float m_MinSpawnInterval = 2f;                           // Min seconds between spawning wires
         public float m_MaxSpawnInterval = 3f;                           // Max seconds between spawning wires
         public int m_SpawnSegmentOffset = 5;                            // Offset from current segment to spawn wires
-        [Min(0)] public int m_SpawnSegmentRange = 3;                    // Range from offset to spawn wires (between -Value and Value + 1)
+        [Min(0)] public int m_SpawnSegmentRange = 3;                    // Range from offset to spawn wires (between -Value and Value)
 
         [Header("Wire Spawn Properties")]
         public float m_InnerSpawnRadius = 5f;                           // Inner radius of spawn circle (wires do not spawn inside this radius)
@@ -35,7 +35,6 @@ namespace TO5.Wires
 
         // This is the easiest place to put these for now
 
-        [Header("Obsolete")]
         [Min(0)] public float m_JumpTime = 0.75f;                       // Jump time for player
     }
 
@@ -96,9 +95,7 @@ namespace TO5.Wires
             if (list == null)
                 return;
 
-            Random random = new Random();
             int count = list.Count;
-
             while (count-- > 1)
             {
                 int index = Random.Range(0, count);
