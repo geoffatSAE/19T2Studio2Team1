@@ -43,12 +43,14 @@ namespace TO5.Wires
         //public Color m_LifeActiveColor = Color.white;         // Color to use for active lives
         //public Color m_LifeInactiveColor = Color.gray;        // Color to use for inactive lives
 
-        // TODO: Polish
-        public FloatingMovement m_FloatMove;
-        public Transform m_JumpPivot;
-        public float m_IncJumpTime = 1.25f;
-        public float m_IncHeight = 0.5f;
-        public float m_DecHeight = 0.2f;
+        [Header("Jump")]
+        [SerializeField] private FloatingMovement m_FloatingMovement;       // Floating movement to optionally disable when jumping
+        [SerializeField] private Transform m_JumpPivot;                     // Pivot to move when jumping
+        public float m_JumpTime = 1.25f;                                    // Time that a jumps last
+        public float m_IncHeight = 0.5f;                                    // Height of increase jump
+        public float m_DecHeight = 0.2f;                                    // Height of decrease jump
+
+        private Coroutine m_JumpRoutine = null;         // Jump routine currently running
 
         [Header("Stats")]
         public string m_ScoreStatsTextFormat = "Score: {0}";                // Formatting for score text on the stats UI ({0} is required, will be replaced by actual score)
@@ -59,9 +61,10 @@ namespace TO5.Wires
         [SerializeField] private Text m_DistanceStatsText;      // Text block for writing players distance travelled
 
         [Header("Animation")]
-        [SerializeField] private string m_EndWireAnim = "EndOfWire";        // Name of state for playing end of wire anim
-        [SerializeField] private string m_MulIncAnim = "MulIncrease";       // Name of state for playing multiplier increased anim
-        [SerializeField] private string m_MulDecAnim = "MulDecrease";       // Name of state for playing multiplier decreased anim
+        [SerializeField] private string m_EndWireAnim = "EndOfWire";            // Name of state for playing end of wire anim
+        [SerializeField] private string m_MulIncAnim = "MulIncrease";           // Name of state for playing multiplier increased anim
+        [SerializeField] private string m_MulDecAnim = "MulDecrease";           // Name of state for playing multiplier decreased anim
+        [SerializeField, Min(0f)] private float m_IdleSpeedIncrease = 0.25f;    // Extra speed applied to idle animation per stage
 
         // Would ideally use a dictionary for these mode settings but dictionaries aren't exposed to the editor
 
@@ -409,15 +412,16 @@ namespace TO5.Wires
             {
                 if (m_Animator)
                 {
-                    if (stage != m_PreviousStage)
-                    {
-                        string stateName = stage > m_PreviousStage ? m_MulIncAnim : m_MulDecAnim;
-                        m_Animator.Play(stateName);
-                    }
+                    string stateName = stage > m_PreviousStage ? m_MulIncAnim : m_MulDecAnim;
+                    m_Animator.Play(stateName);
+
+                    m_Animator.SetFloat("idleMultiplier", 1f + m_IdleSpeedIncrease * stage);
                 }
 
-                StopCoroutine("JumpRoutine");
-                StartCoroutine(JumpRoutine(stage > m_PreviousStage ? m_IncHeight : -m_DecHeight));
+                if (m_JumpRoutine != null)
+                    StopCoroutine(m_JumpRoutine);
+
+                m_JumpRoutine = StartCoroutine(JumpRoutine(stage > m_PreviousStage ? m_IncHeight : -m_DecHeight));
 
                 m_PreviousStage = stage;
             }
@@ -433,15 +437,19 @@ namespace TO5.Wires
                 m_Animator.SetBool("boostActive", active);
         }
 
+        /// <summary>
+        /// Routine for handling the companions jump
+        /// </summary>
+        /// <param name="offset">Offset from origin to move</param>
         private IEnumerator JumpRoutine(float offset)
         {
-            if (m_FloatMove)
-                m_FloatMove.enabled = false;
+            if (m_FloatingMovement)
+                m_FloatingMovement.enabled = false;
 
-            float end = Time.time + m_IncJumpTime;
+            float end = Time.time + m_JumpTime;
             while (Time.time < end)
             {
-                float alpha = Mathf.Clamp01((end - Time.time) / m_IncJumpTime);
+                float alpha = Mathf.Clamp01((end - Time.time) / m_JumpTime);
                 alpha = Mathf.Pow((alpha * 2f) - 1f, 2f);
 
                 if (m_JumpPivot)
@@ -453,8 +461,10 @@ namespace TO5.Wires
             if (m_JumpPivot)
                 m_JumpPivot.transform.localPosition = Vector3.zero;
 
-            if (m_FloatMove)
-                m_FloatMove.enabled = true;
+            if (m_FloatingMovement)
+                m_FloatingMovement.enabled = true;
+
+            m_JumpRoutine = null;
         }
 
         /// <summary>

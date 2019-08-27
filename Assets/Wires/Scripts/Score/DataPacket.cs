@@ -65,7 +65,17 @@ namespace TO5.Wires
             transform.position -= WireManager.WirePlane * step;
 
             if (m_FloatingMovement)
-                m_FloatingMovement.Move(step);
+                m_FloatingMovement.Move(Time.deltaTime);
+        }
+
+        /// <summary>
+        /// Set the animation speed of this packet
+        /// </summary>
+        /// <param name="speed">Speed of animation</param>
+        public void SetAnimationSpeed(float speed)
+        {
+            if (m_Animator)
+                m_Animator.speed = speed;
         }
 
         /// <summary>

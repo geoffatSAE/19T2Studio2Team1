@@ -48,6 +48,7 @@ namespace TO5.Wires
         public float m_MinSpeed = 1f;                                   // Min speed of a packet
         public float m_MaxSpeed = 2.5f;                                 // Max speed of a packet
         [Min(0)] public float m_Lifetime = 10f;                         // How long data packets last for before expiring (zero for do not spawn)
+        [Min(0.1f)] public float m_AnimSpeed = 1f;                      // Speed of animation
 
         [Header("Packet Spawn Properties")]
         public int m_MinSpawnOffset = 20;                               // Min segments in front of player to spawn
@@ -70,6 +71,9 @@ namespace TO5.Wires
         public float m_HandicapMultiplierIncreaseInterval = 10f;        // Time to reach next stage after failing X times
     }
 
+    /// <summary>
+    /// Properties for a multiplier stage
+    /// </summary>
     [System.Serializable]
     public class MultiplierStageProperties
     {

@@ -106,8 +106,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75439ae7f2ac55444ae38db45a0a4393, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_FloatingMovement: {fileID: 0}
-  m_Animator: {fileID: 0}
+  m_FloatingMovement: {fileID: 407622591707420134}
+  m_Animator: {fileID: 932160140199279266}
   m_SelectedSound: {fileID: 8300000, guid: 523ecf70d29f6a041a67945886bca297, type: 3}
 --- !u!1001 &932160140206657474
 PrefabInstance:
@@ -213,6 +213,12 @@ PrefabInstance:
 --- !u!4 &932160140206789954 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: f00b79955544011418c14296565402b0,
+    type: 3}
+  m_PrefabInstance: {fileID: 932160140206657474}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &932160140199279266 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 9500000, guid: f00b79955544011418c14296565402b0,
     type: 3}
   m_PrefabInstance: {fileID: 932160140206657474}
   m_PrefabAsset: {fileID: 0}

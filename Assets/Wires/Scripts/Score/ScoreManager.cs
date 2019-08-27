@@ -82,7 +82,6 @@ namespace TO5.Wires
         [SerializeField] private float m_MaxPacketSpawnRadius = 15f;                // Max radius from active wire packets should spawn 
         [SerializeField, Range(0, 1)] public float m_BottomCircleCutoff = 0.7f;     // Cutoff from bottom of spawn circle (no packets will spawn in cutoff)
         [SerializeField, Range(0, 1)] public float m_TopCircleCutoff = 1f;          // Cutoff from top of spawn circle (no packets will spawn in cutoff)
-        [SerializeField] private PacketStageProperties[] m_PacketProperties;        // Properties for packet behavior for each multiplier stage
 
         public AudioClip m_PacketSpawnSound;                    // Spawn sound for an individual packet
         public AudioClip m_PacketClusterSpawnSound;             // Spawn sound for a cluster of packets
@@ -652,6 +651,9 @@ namespace TO5.Wires
                 return null;
 
             packet.Activate(position, speed, lifetime);
+
+            if (m_ActivePacketProperties != null)
+                packet.SetAnimationSpeed(m_ActivePacketProperties.m_AnimSpeed);
 
             if (!forCluster)
                 PlayPacketSpawnSound(false);
