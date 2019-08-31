@@ -30,9 +30,14 @@ namespace TO5.Wires
         [SerializeField] private State m_EndGameState;                  // State to transition to after game has finished
         [SerializeField] private float m_EndGameFallbackDuration = 10f; // Fallback duration to use if end game state has no same length
 
+        [Header("Dynamic")]
         [Min(0.1f)] public float m_StartRotationInterval = 1.5f;        // Initial rotation interval
         [Min(0.1f)] public float m_EndRotationInterval = 0.5f;          // Rotation interval to interpolate to during rise   
         public Transform m_RotationOverride;                            // Override transform to rotate
+
+        [SerializeField] private Orbiter m_Orbiter;                     // Orbiter to update over cause of state change
+        public float m_StartOrbiterSpeed = 0.25f;                       // Starting speed of orbiter
+        public float m_EndOrbiterSpeed = 1f;                            // Finishing speed of orbiter
 
         private State m_FinishingState;             // State we were at when game finished
         private float m_RotationInterval = 1.5f;    // Time for a full rotation (lerped between start and end based on rise)
@@ -90,6 +95,9 @@ namespace TO5.Wires
             transform.localPosition = Vector3.Lerp(m_StartingState.m_Position, m_EndingState.m_Position, alpha);
             transform.localScale = Vector3.Lerp(m_StartingState.m_Scale, m_EndingState.m_Scale, alpha);
             m_RotationInterval = Mathf.Lerp(m_StartRotationInterval, m_EndRotationInterval, alpha);
+
+            if (m_Orbiter)
+                m_Orbiter.m_Speed = Mathf.Lerp(m_StartOrbiterSpeed, m_EndOrbiterSpeed, alpha);
         }
 
         /// <summary>

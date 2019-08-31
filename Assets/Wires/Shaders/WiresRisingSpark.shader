@@ -19,7 +19,9 @@
         {
             CGPROGRAM
             #pragma vertex vert
-            #pragma fragment frag           
+            #pragma fragment frag     
+
+			#pragma multi_compile_instancing
 
             #include "UnityCG.cginc"
 
@@ -27,6 +29,8 @@
             {
                 float4 vertex : POSITION;
                 float2 uv : TEXCOORD0;
+
+				UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
             struct v2f
@@ -46,6 +50,8 @@
 
             v2f vert (appdata v)
             {
+				UNITY_SETUP_INSTANCE_ID(v);
+
 				fixed3 center = mul(unity_ObjectToWorld, fixed4(0, 0, 0, 1)).xyz;
 				fixed3 vertex = mul(unity_ObjectToWorld, v.vertex).xyz;
 
