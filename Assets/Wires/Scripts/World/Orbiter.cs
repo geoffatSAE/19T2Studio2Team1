@@ -9,7 +9,7 @@ namespace TO5.Wires
     /// </summary>
     public class Orbiter : MonoBehaviour
     {
-        [SerializeField] private Transform[] m_Transforms;              // Transform to orbit around
+        [SerializeField] private Renderer m_OrbiterPrefab;              // Object to spawn for each stage
         public float m_Speed = 1f;                                      // Speed of orbiting
 
         [Header("Lissajous")]
@@ -18,7 +18,8 @@ namespace TO5.Wires
         public float m_Offset = 2.5f;                                   // Amount to offset transforms by from origin
         public float m_Step = 2.5f;                                     // Step in between each transform
 
-        private float m_Time = 0f;          // Time that we have ticked
+        private List<Renderer> m_Orbiters = new List<Renderer>();       // All the orbiters we are managing
+        private float m_Time = 0f;                                      // Time that we have ticked
 
         void Awake()
         {
@@ -33,17 +34,47 @@ namespace TO5.Wires
         }
 
         /// <summary>
+        /// Creates a new orbiter and adds it to end of list
+        /// </summary>
+        /// <param name="factory">Factory to use to determine colors of orbiter</param>
+        public void CreateNewOrbiter(WireFactory factory)
+        {
+            if (!m_OrbiterPrefab)
+            {
+                Debug.LogError("Unable to create orbiter as no prefab has been specified");
+                return;
+            }
+
+            Renderer orbiter = Instantiate(m_OrbiterPrefab, transform);
+
+            int orbiterNumber = m_Orbiters.Count;
+            m_Orbiters.Add(orbiter);
+
+            if (factory)
+            {
+                Material material = orbiter.material;
+
+                OrbiterColorSet colorSet = factory.orbiterColors;
+                material.SetColor("_LowColor", colorSet.m_LowColor);
+                material.SetColor("_HighColor", colorSet.m_HighColor);
+            }
+
+            // Initial move orbiter to match its correct position
+            orbiter.transform.localPosition = LissajousKnot(m_LissajousN, m_LissajousO, m_Time + m_Step * orbiterNumber, m_Offset);
+        }
+
+        /// <summary>
         /// Interpolates the transforms
         /// </summary>
         /// <param name="time">Time of interpolation (can be any value)</param>
         private void Interpolate(float time)
         {
-            if (m_Transforms == null || m_Transforms.Length == 0)
+            if (m_Orbiters == null || m_Orbiters.Count == 0)
                 return;
 
-            for (int i = 0; i < m_Transforms.Length; ++i)
+            for (int i = 0; i < m_Orbiters.Count; ++i)
             {
-                Transform trans = m_Transforms[i];
+                Transform trans = m_Orbiters[i].transform;
                 float transTime = time + m_Step * i;
 
                 trans.localPosition = LissajousKnot(m_LissajousN, m_LissajousO, transTime, m_Offset);

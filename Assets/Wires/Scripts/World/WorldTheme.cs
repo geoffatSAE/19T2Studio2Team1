@@ -10,6 +10,8 @@ namespace TO5.Wires
     [RequireComponent(typeof(WorldMusic), typeof(WorldColor), typeof(WorldAesthetics))]
     public class WorldTheme : MonoBehaviour
     {
+        [SerializeField] private RisingSpark m_RisingSpark;     // Games rising spark, is optional to interact with
+
         private WireManager m_WireManager;              // Wire manager we associate with
         private WorldMusic m_WorldMusic;                // Handler for games music
         private WorldColor m_WorldColor;                // Handler for games color
@@ -216,6 +218,16 @@ namespace TO5.Wires
 
             if (m_WorldAesthetics)
                 m_WorldAesthetics.LockWarningSign(true);
+        }
+
+        // TODO:
+        // Quick method of getting orbiters to spawn
+        public void NotifyOverrideFactoryChanged(WireFactory factory)
+        {
+            if (m_RisingSpark && m_RisingSpark.orbiter)
+            {
+                m_RisingSpark.orbiter.CreateNewOrbiter(factory);
+            }
         }
     }
 }

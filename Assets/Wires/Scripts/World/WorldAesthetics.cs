@@ -51,7 +51,7 @@ namespace TO5.Wires
         [SerializeField] private ParticleSystem m_FlyingPacketsParticles;               // Particle system emitting the flying packets
         [SerializeField] private ParticleStageProperties[] m_FlyingPacketsStages;       // Properties to set flying packets per multiplier level
 
-        private Wire m_ActiveWire;                              // Wire player is either on or travelling to
+        private Wire m_ActiveWire;                              // Wire player is either on or travelling to 
         private bool m_HaveSwitched = false;                    // If blend has switched (from old to new)
         private int m_Intensity = 0;                            // Intensity set last
         private bool m_BoostActive = false;                     // If boost is active
@@ -100,12 +100,12 @@ namespace TO5.Wires
         {
             if (wire)
             {
-                m_ActiveWire = wire;
-                m_HaveSwitched = false;
-
                 // Cache previous color now for blending
                 if (m_ActiveWire && m_ActiveWire.factory)
                     m_ParticleColor = m_ActiveWire.factory.particleColor;
+
+                m_ActiveWire = wire;
+                m_HaveSwitched = false;
 
                 if (m_BorderRenderer)
                     m_BorderRenderer.enabled = true;
@@ -381,7 +381,6 @@ namespace TO5.Wires
                     else if (m_BoostParticles.isPlaying)
                     {
                         m_BoostParticles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-
                     }
 
                     m_BoostParticlesSpeed = props.m_SimulationSpeed;

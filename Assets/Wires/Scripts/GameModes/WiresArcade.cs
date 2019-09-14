@@ -494,28 +494,39 @@ namespace TO5.Wires
                         StartPacketTutorial();
                         step = 1;
                         break;
-
+                    
+                    // Boost has been removed
                     case TutorialStep.Packets:
                         //StartBoostTutorial();
                         //step = 2;
                         //break;
 
                     case TutorialStep.Boost:
-                        StartDefectiveTutorial();
-                        step = 3;
-                        break;
+                        if (wireManager.m_EnableDefectiveWires)
+                        {
+                            StartDefectiveTutorial();
+                            step = 3;
+                            break;
+                        }
+                        else
+                        {
+                            EndTutorial(false);
+                            break;
+                        }        
 
                     case TutorialStep.Defective:
                         EndTutorial(false);
                         break;
                 }
 
+                if (m_TutorialActive)
+                {
+                    if (m_TutorialUI)
+                        m_TutorialUI.NextSlide();
 
-                if (m_TutorialUI)
-                    m_TutorialUI.NextSlide();
-
-                if (sparkJumper && sparkJumper.companionVoice)
-                    sparkJumper.companionVoice.PlayTutorialDialogue(step);
+                    if (sparkJumper && sparkJumper.companionVoice)
+                        sparkJumper.companionVoice.PlayTutorialDialogue(step);
+                }
             }
         }
 

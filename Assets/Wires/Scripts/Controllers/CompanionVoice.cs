@@ -189,7 +189,7 @@ namespace TO5.Wires
         /// <param name="delay">Delay before starting audio playback</param>
         private void PlayDialogue(AudioClip clip, int priority, bool overrideActive = true, float delay = 0f)
         {
-            if (!clip)
+            if (!enabled || !clip)
                 return;
 
             bool playVoiceline = false;

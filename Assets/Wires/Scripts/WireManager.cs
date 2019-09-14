@@ -74,7 +74,6 @@ namespace TO5.Wires
 
         [Header("Wires")]
         [SerializeField] private int m_InitialSegments = 10;            // Segments for initial starting wire
-        [SerializeField] WireAnimator m_WireAnimator;                   // Animator for the wire
         [SerializeField] WireFactory[] m_Factories;                     // Factories for generating wire types
         public bool m_DriftingEnabled = true;                           // If drifting is enabled
         [SerializeField] private float m_MaxDriftTime = 5f;             // Max time player can be drifting for before auto jump
@@ -86,6 +85,7 @@ namespace TO5.Wires
 
         [Header("Generation")]
         [SerializeField] private float m_WireSpace = 4f;                        // Space needed for wires to spawn
+        public bool m_EnableDefectiveWires = true;                              // If defective wires should be able to spawn
         [SerializeField] private WireStageProperties[] m_WireProperties;        // Properties for wire behavior for each multiplier stage
 
         #if UNITY_EDITOR
@@ -130,9 +130,11 @@ namespace TO5.Wires
         // If tutorial settings should be used
         public bool tutorialMode { get; private set; }
 
-        private WireFactory m_OverrideFactory = null;
-        private List<WireFactory> m_FactoryOrder = null;
-        
+        private WireFactory m_OverrideFactory = null;           // Factory that takes priority, this factory is used over a random one if set
+        private List<WireFactory> m_FactoryOrder = null;        // Order of factories to use. This is ordered by stage
+
+        [SerializeField] private WorldTheme m_WorldTheme; // TODO: This is a cheap way to get orbiter to generate a new orbiter correctly
+
         void Awake()
         {
             if (m_ScoreManager)
@@ -482,7 +484,8 @@ namespace TO5.Wires
             // Wires can never be defective if switch interval is zero
             float onInterval = 0f;
             float offInterval = 0f;
-            if (tryDefective && wireProps.m_SparkOnSwitchInterval > 0f && wireProps.m_SparkOffSwitchInterval > 0f)
+            if (m_EnableDefectiveWires && tryDefective && 
+                wireProps.m_SparkOnSwitchInterval > 0f && wireProps.m_SparkOffSwitchInterval > 0f)
             {    
                 float defectiveChance = wireProps.m_DefectiveWireChance;
 
@@ -783,10 +786,30 @@ namespace TO5.Wires
         /// <param name="stage">Stage of multiplier</param>
         private void UpdateOverrideWireFactory(int stage)
         {
+            bool notify = false;
+
             if (m_FactoryOrder != null && stage < m_FactoryOrder.Count)
-                m_OverrideFactory = m_FactoryOrder[stage];
+            {
+                WireFactory stageFactory = m_FactoryOrder[stage];
+                if (stageFactory != m_OverrideFactory)
+                {
+                    m_OverrideFactory = stageFactory;
+                    notify = true;
+                }
+            }
             else
-                m_OverrideFactory = null;           
+            {
+                m_OverrideFactory = null;
+            }
+
+            if (notify)
+            {
+                // TODO:
+                // This is the easiet method to quickly notify orbiter handler that
+                // the override factory has changed and a new orbiter should be spawned
+                if (m_WorldTheme)
+                    m_WorldTheme.NotifyOverrideFactoryChanged(m_OverrideFactory);
+            }
         }
 
         /// <summary>
@@ -823,13 +846,6 @@ namespace TO5.Wires
             if (m_Debug && m_UseDebugMesh && m_DebugMesh)
                 return m_DebugMesh.bounds.size.z;
             #endif
-
-            if (m_WireAnimator)
-            {
-                Mesh wireMesh = m_WireAnimator.wireMesh;
-                if (wireMesh)
-                    return wireMesh.bounds.size.z;
-            }
 
             return 1f;
         }

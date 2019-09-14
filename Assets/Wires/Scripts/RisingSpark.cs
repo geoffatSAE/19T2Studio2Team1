@@ -45,6 +45,9 @@ namespace TO5.Wires
         private Quaternion m_FromOrientation;       // Orientation to rotate from
         private Quaternion m_ToOrientation;         // Orientation to rotate to
 
+        // This rising sparks orbiter
+        public Orbiter orbiter { get { return m_Orbiter; } }
+
         void Awake()
         {
             if (!m_OverrideAnchor)

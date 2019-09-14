@@ -19,9 +19,7 @@ namespace TO5.Wires
         public float m_OnSwitchInterval = 2f;                               // Interval spark will remain on
         public float m_OffSwitchInterval = 0.5f;                            // Interval spark will remain off
         [Min(0.1f)] public float m_SwitchBlendDuration = 0.5f;              // Time for blending between on and off (visually)
-        public Color m_OnColor = Color.yellow;                              // Color to use when on
-        public Color m_OffColor = Color.red;                                // Color to use when off
-        public Color m_PossessedColor = Color.green;                        // Color to use when player is on spark
+        public Color m_DeactivatedColor = Color.red;                        // Color to use when we can't be jumped to
         public Vector3 m_OnScale = Vector3.one;                             // Scale to use when on
         public Vector3 m_OffScale = new Vector3(0.5f, 0.5f, 0.5f);          // Scale to use when off
         public bool m_Rotate = true;                                        // If spark should rotate
@@ -85,6 +83,9 @@ namespace TO5.Wires
             transform.position = wire.transform.position;
             m_OnTargetScale = m_OnScale;
             m_Collider.enabled = true;// m_CanJumpTo;
+
+            if (m_Wire.factory)
+                SetSparkColor(m_Wire.factory.sparkColor);
         }
 
         /// <summary>
@@ -161,7 +162,7 @@ namespace TO5.Wires
                 m_CanJumpTo = false;
                 m_Collider.enabled = false;
 
-                SetSparkColor(m_PossessedColor);
+                //SetSparkColor(m_PossessedColor);
             }
         }
 
@@ -212,8 +213,11 @@ namespace TO5.Wires
         /// <param name="progress">Progress of blend</param>
         private void BlendSwitchStatus(float progress)
         {
-            Color color = Color.Lerp(m_OffColor, m_OnColor, progress);
-            SetSparkColor(color);
+            if (m_Wire && m_Wire.factory)
+            {
+                Color color = Color.Lerp(m_DeactivatedColor, m_Wire.factory.sparkColor, progress);
+                SetSparkColor(color);
+            }
 
             transform.localScale = Vector3.Lerp(m_OffScale, m_OnTargetScale, progress);
         }

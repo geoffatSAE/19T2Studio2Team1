@@ -131,8 +131,6 @@ namespace TO5.Wires
                 return new Vector2(Random.Range(minOffset, maxOffset), 0f);
             }
 
-            Profiler.BeginSample("GetRandomCircleOffset");
-
             const float PI2 = Mathf.PI * 2f;
 
             // We only need to check Y axis since cutoffs are on top and bottom of circle
@@ -146,9 +144,6 @@ namespace TO5.Wires
             }
 
             Vector2 direction = new Vector2(Mathf.Sin(rad), yDir);
-
-            Profiler.EndSample();
-
             return direction * Random.Range(minOffset, maxOffset);
         }
 
