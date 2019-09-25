@@ -26,6 +26,20 @@ namespace TO5.Wires
         private Material m_BorderMaterial;                              // Material of the outer wires border (expects _Color, _MainTex, _PanningSpeed and _AlphaScale)
         private float m_CachedBorderSize = 1f;                          // Cached size of border when starting
 
+        public float borderAlpha
+        {
+            set
+            {
+                if (m_BorderMaterial)
+                    m_BorderMaterial.SetFloat("_Alpha", value);
+            }
+
+            get
+            {
+                return m_BorderMaterial ? m_BorderMaterial.GetFloat("_Alpha") : 0.5f;
+            }
+        }
+
         [Header("Zoom")]
         [SerializeField] private ParticleSystem m_BorderParticles;      // Particle system for the outer wires particles
         [SerializeField] private float[] m_ParticleSimulationSpeeds;    // Velocity of particles for each multiplier stage

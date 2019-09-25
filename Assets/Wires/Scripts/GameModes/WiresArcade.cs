@@ -103,7 +103,7 @@ namespace TO5.Wires
             if (m_FinaleSequence && !m_SkipFinale)
             {
                 m_FinaleSequence.OnSequenceFinished += FinaleSequenceFinished;
-                m_FinaleSequence.Activate(m_WireManager);
+                m_FinaleSequence.Activate(m_WireManager, m_WorldTheme);
             }
             else
             {

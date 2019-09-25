@@ -24,6 +24,10 @@ namespace TO5.Wires
         private int m_MultiplierStage;                      // Stage of multiplier
         [System.Obsolete] private bool m_BoostActive;       // If boost is active (Obsolete)
 
+        public WorldMusic worldMusic { get { return m_WorldMusic; } }
+        public WorldColor worldColor { get { return m_WorldColor; } }
+        public WorldAesthetics worldAesthetics { get { return m_WorldAesthetics; } }
+
         void Awake()
         {
             m_WorldMusic = GetComponent<WorldMusic>();

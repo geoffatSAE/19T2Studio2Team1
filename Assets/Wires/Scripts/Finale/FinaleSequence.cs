@@ -23,6 +23,10 @@ namespace TO5.Wires
         [Min(0f)] public float m_AutoControlStart = 7.5f;       // At what point we take control of the player
         public bool m_AutoDisable = false;                      // If sequence automatically disables itself (audio)
 
+        [Header("Aesthetics")]
+        [Range(0f, 1f)] public float m_FinalBorderAlpha = 0.5f;     // Final alpha of the outer border when finale is done
+        private float m_StartBorderAlpha = 0.1f;                    // Value of borders alpha when we started
+
         [Header("Generation|Fixed")]
         public int m_MinSegments = 18;                              // Min segments per during finale
         public int m_MaxSegments = 22;                              // Max segments per during finale
@@ -53,6 +57,7 @@ namespace TO5.Wires
         [SerializeField, Range(0f, 3f)] private float m_EndingPitch = 2f;           // Ending pitch of buildup sound
 
         private WireManager m_WireManager;                      // Wire manager to manipulate
+        private WorldTheme m_WorldTheme;                        // World theme to manipulate
         private float m_StartTime = -1f;                        // Time at which finale was activated
         private WireStageProperties m_WireProperties = null;    // Wire generation properties we set
 
@@ -87,6 +92,7 @@ namespace TO5.Wires
                     sparkJumper.m_JumpTime = m_WireProperties.m_JumpTime;
                 }
 
+                InterpolateAesthetics(alpha);
                 InterpolateStageProps(alpha);
                 InterpolateBuildup(alpha);
 
@@ -108,7 +114,8 @@ namespace TO5.Wires
         /// Activates the finale sequence. This will override the current stage
         /// </summary>
         /// <param name="wireManager">Wire manager to control</param>
-        public void Activate(WireManager wireManager)
+        /// <param name="worldTheme">World theme to control</param>
+        public void Activate(WireManager wireManager, WorldTheme worldTheme)
         {
             if (m_StartTime < 0f)
             {
@@ -118,8 +125,17 @@ namespace TO5.Wires
                     return;
                 }
 
+                if (!worldTheme)
+                {
+                    Debug.Log("Invalid WorldTheme passed to Activate()", this);
+                    return;
+                }
+
                 m_WireManager = wireManager;
                 m_WireManager.m_DriftingEnabled = false;
+
+                m_WorldTheme = worldTheme;
+                m_StartBorderAlpha = m_WorldTheme.worldAesthetics.borderAlpha;
 
                 // Setup custom stage
                 GenerateStageProperties();
@@ -164,6 +180,7 @@ namespace TO5.Wires
         {
             if (m_StartTime >= 0f)
             {
+                InterpolateAesthetics(1f);
                 InterpolateStageProps(1f);
                 InterpolateBuildup(1f);
 
@@ -174,7 +191,8 @@ namespace TO5.Wires
                         sparkJumper.companion.SetBoostModeEnabled(false);
                 }
 
-                    m_WireManager = null;
+                m_WireManager = null;
+                m_WorldTheme = null;
                 m_StartTime = -1f;
 
                 if (OnSequenceFinished != null)
@@ -206,6 +224,18 @@ namespace TO5.Wires
             m_WireProperties.m_DefectiveWireChance = 0f;
 
             InterpolateStageProps(0f);
+        }
+
+        /// <summary>
+        /// Interpolates the aesthetics of the world we change during finale
+        /// </summary>
+        /// <param name="alpha">Alpha of interpolation</param>
+        private void InterpolateAesthetics(float alpha)
+        {
+            if (m_WorldTheme)
+            {
+                m_WorldTheme.worldAesthetics.borderAlpha = Mathf.Lerp(m_StartBorderAlpha, m_FinalBorderAlpha, alpha);
+            }
         }
 
         /// <summary>
