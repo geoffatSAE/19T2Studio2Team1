@@ -5,6 +5,7 @@
 		_Color ("Color", Color) = (1, 1, 1, 1)
 		_Alpha ("Alpha", Range(0, 1)) = 0.2
         _MainTex ("Texture", 2D) = "white" {}
+		_TexScalar ("Texture Scalar", Float) = 1
 		_PanningSpeed ("Panning Speed (X, Y)", Vector) = (1, 0, 0, 0)
 		_AlphaScale ("Alpha Scale", Range(0, 1)) = 1
     }
@@ -44,6 +45,7 @@
 			half4 _Color;
 			half _Alpha;
 			sampler2D _MainTex;
+			half _TexScalar;
 			half2 _PanningSpeed;
 			half _AlphaScale;
 
@@ -74,9 +76,9 @@
 				// Move texture (we sample from different location)
 				float2 offset = _PanningSpeed * _Time.x;
 
-				fixed4 x = tex2D(_MainTex, i.worldPos.yz + offset);
-				fixed4 y = tex2D(_MainTex, i.worldPos.xz + offset);
-				fixed4 z = tex2D(_MainTex, i.worldPos.xy + offset);
+				fixed4 x = tex2D(_MainTex, (i.worldPos.yz + offset) * _TexScalar);
+				fixed4 y = tex2D(_MainTex, (i.worldPos.xz + offset) * _TexScalar);
+				fixed4 z = tex2D(_MainTex, (i.worldPos.xy + offset) * _TexScalar);
 
 				// How close pixel is to center of outer border (we assume model being used 
 				// is a cylinder facing upwards that vertices extend out to -0.5 and 0.5)

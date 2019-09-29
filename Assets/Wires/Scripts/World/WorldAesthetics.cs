@@ -25,20 +25,7 @@ namespace TO5.Wires
         [SerializeField] private Vector2[] m_BorderPanningSpeeds;       // Panning speeds for outer borders material for each multiplier stage
         private Material m_BorderMaterial;                              // Material of the outer wires border (expects _Color, _MainTex, _PanningSpeed and _AlphaScale)
         private float m_CachedBorderSize = 1f;                          // Cached size of border when starting
-
-        public float borderAlpha
-        {
-            set
-            {
-                if (m_BorderMaterial)
-                    m_BorderMaterial.SetFloat("_Alpha", value);
-            }
-
-            get
-            {
-                return m_BorderMaterial ? m_BorderMaterial.GetFloat("_Alpha") : 0.5f;
-            }
-        }
+        private Color m_BorderColor = Color.white;                      // Color of border before blending
 
         [Header("Zoom")]
         [SerializeField] private ParticleSystem m_BorderParticles;      // Particle system for the outer wires particles
@@ -59,7 +46,7 @@ namespace TO5.Wires
 
         [NonSerialized] public float m_BoostParticlesSpeed = 0f;                // Current speed of the boost particles
         private bool m_EnableBoostParticles = false;                            // If boost particles should be enabled
-        private bool m_UpdateBoostParticles = true;                            // If boost particles need to be updated     
+        private bool m_UpdateBoostParticles = true;                             // If boost particles need to be updated     
 
         [Header("Flying Packets")]
         [SerializeField] private ParticleSystem m_FlyingPacketsParticles;               // Particle system emitting the flying packets
@@ -69,6 +56,8 @@ namespace TO5.Wires
         private bool m_HaveSwitched = false;                    // If blend has switched (from old to new)
         private int m_Intensity = 0;                            // Intensity set last
         private bool m_BoostActive = false;                     // If boost is active
+
+        private TunnelVision m_TunnelInstance;                  // Tunnel instance we can also update
 
         void Awake()
         {
@@ -116,7 +105,18 @@ namespace TO5.Wires
             {
                 // Cache previous color now for blending
                 if (m_ActiveWire && m_ActiveWire.factory)
+                {
+                    m_BorderColor = m_ActiveWire.factory.color;
                     m_ParticleColor = m_ActiveWire.factory.particleColor;
+
+                    if (m_TunnelInstance)
+                    {
+                        Color color = m_BorderColor;
+                        color.a = 0f;
+                        m_TunnelInstance.SetColor(color);
+                        m_TunnelInstance.SetTextures(m_ActiveWire.factory.borderTexture, wire.factory.borderTexture);
+                    }
+                }
 
                 m_ActiveWire = wire;
                 m_HaveSwitched = false;
@@ -210,6 +210,13 @@ namespace TO5.Wires
             {
                 WireFactory factory = m_ActiveWire.factory;
                 SetParticleColors(Color.Lerp(m_ParticleColor, factory.particleColor, progress));
+
+                if (m_TunnelInstance)
+                {
+                    Color color = Color.Lerp(m_BorderColor, factory.color, progress);
+                    color.a = progress;
+                    m_TunnelInstance.SetColor(color);
+                }
             }
         }
 
@@ -254,6 +261,14 @@ namespace TO5.Wires
 
             if (m_UpdateBoostParticles)
                 SetBoostColor(factory.boostColor);
+
+            if (m_TunnelInstance)
+            {
+                Color color = factory.color;
+                color.a = 1f;
+                m_TunnelInstance.SetColor(color);
+                m_TunnelInstance.SetTextures(factory.borderTexture, factory.borderTexture);
+            }
 
             m_HaveSwitched = true;
         }
@@ -426,6 +441,27 @@ namespace TO5.Wires
 
                 ParticleSystem.EmissionModule emission = system.emission;
                 emission.rateOverTime = props.m_SpawnRate;
+            }
+        }
+
+        /// <summary>
+        /// Sets the optional tunnel vision script to also update.
+        /// </summary>
+        /// <param name="tunnelVision">Tunnel Vision script to update (Can be null to reset)</param>
+        public void SetTunnelVision(TunnelVision tunnelVision)
+        {
+            m_TunnelInstance = tunnelVision;
+            if (m_TunnelInstance)
+            {
+                WireFactory wireFactory = m_ActiveWire ? m_ActiveWire.factory : null;
+                if (!wireFactory)
+                    return;
+
+                Color tunnelColor = wireFactory.color;
+                tunnelColor.a = 1f;
+
+                m_TunnelInstance.SetColor(tunnelColor);
+                m_TunnelInstance.SetTextures(wireFactory.borderTexture, wireFactory.borderTexture);
             }
         }
     }

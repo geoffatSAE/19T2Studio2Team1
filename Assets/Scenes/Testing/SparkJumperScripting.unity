@@ -1443,6 +1443,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: ArcadeGameMode
       objectReference: {fileID: 0}
+    - target: {fileID: 3395505406176328832, guid: 9a8c4600bb7ba224baddce08e9afd423,
+        type: 3}
+      propertyPath: m_RisingSpark
+      value: 
+      objectReference: {fileID: 1028443595}
     - target: {fileID: 3395505406176328842, guid: 9a8c4600bb7ba224baddce08e9afd423,
         type: 3}
       propertyPath: m_WireManager
@@ -1858,11 +1863,6 @@ PrefabInstance:
       propertyPath: m_AutoDisable
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3395505406176328832, guid: 9a8c4600bb7ba224baddce08e9afd423,
-        type: 3}
-      propertyPath: m_RisingSpark
-      value: 
-      objectReference: {fileID: 1028443595}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9a8c4600bb7ba224baddce08e9afd423, type: 3}
 --- !u!1001 &8646348427722513404
@@ -1901,6 +1901,86 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalRotation.w
       value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 4836047251030961452, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
+        type: 3}
+      propertyPath: m_GameMode
+      value: 
+      objectReference: {fileID: 512415689}
+    - target: {fileID: 4836047251030961452, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
+        type: 3}
+      propertyPath: m_EndGameState.m_Scale.x
+      value: 250
+      objectReference: {fileID: 0}
+    - target: {fileID: 4836047251030961452, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
+        type: 3}
+      propertyPath: m_EndGameState.m_Scale.y
+      value: 250
+      objectReference: {fileID: 0}
+    - target: {fileID: 4836047251030961452, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
+        type: 3}
+      propertyPath: m_EndGameState.m_Scale.z
+      value: 250
+      objectReference: {fileID: 0}
+    - target: {fileID: 4836047251030961452, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
+        type: 3}
+      propertyPath: m_EndGameState.m_Position.y
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 4836047251030961452, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
+        type: 3}
+      propertyPath: m_EndGameState.m_Position.z
+      value: 300
+      objectReference: {fileID: 0}
+    - target: {fileID: 4836047251030961452, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
+        type: 3}
+      propertyPath: m_RotationInterval
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4836047251030961452, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
+        type: 3}
+      propertyPath: m_EndingState.m_Position.y
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 4836047251030961452, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
+        type: 3}
+      propertyPath: m_StartingState.m_Position.y
+      value: 250
+      objectReference: {fileID: 0}
+    - target: {fileID: 4836047251030961452, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
+        type: 3}
+      propertyPath: m_EndRotationInterval
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4836047251030961452, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
+        type: 3}
+      propertyPath: m_StartingState.m_Scale.x
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 4836047251030961452, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
+        type: 3}
+      propertyPath: m_StartingState.m_Scale.y
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 4836047251030961452, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
+        type: 3}
+      propertyPath: m_StartingState.m_Scale.z
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 4836047251030961452, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
+        type: 3}
+      propertyPath: m_EndingState.m_Scale.x
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 4836047251030961452, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
+        type: 3}
+      propertyPath: m_EndingState.m_Scale.y
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 4836047251030961452, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
+        type: 3}
+      propertyPath: m_EndingState.m_Scale.z
+      value: 150
       objectReference: {fileID: 0}
     - target: {fileID: 8646348428977238134, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
         type: 3}
@@ -2002,86 +2082,6 @@ PrefabInstance:
       propertyPath: m_WireManager
       value: 
       objectReference: {fileID: 1444838668}
-    - target: {fileID: 4836047251030961452, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
-        type: 3}
-      propertyPath: m_GameMode
-      value: 
-      objectReference: {fileID: 512415689}
-    - target: {fileID: 4836047251030961452, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
-        type: 3}
-      propertyPath: m_EndGameState.m_Scale.x
-      value: 250
-      objectReference: {fileID: 0}
-    - target: {fileID: 4836047251030961452, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
-        type: 3}
-      propertyPath: m_EndGameState.m_Scale.y
-      value: 250
-      objectReference: {fileID: 0}
-    - target: {fileID: 4836047251030961452, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
-        type: 3}
-      propertyPath: m_EndGameState.m_Scale.z
-      value: 250
-      objectReference: {fileID: 0}
-    - target: {fileID: 4836047251030961452, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
-        type: 3}
-      propertyPath: m_EndGameState.m_Position.y
-      value: 150
-      objectReference: {fileID: 0}
-    - target: {fileID: 4836047251030961452, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
-        type: 3}
-      propertyPath: m_EndGameState.m_Position.z
-      value: 300
-      objectReference: {fileID: 0}
-    - target: {fileID: 4836047251030961452, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
-        type: 3}
-      propertyPath: m_RotationInterval
-      value: 1.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4836047251030961452, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
-        type: 3}
-      propertyPath: m_EndingState.m_Position.y
-      value: 150
-      objectReference: {fileID: 0}
-    - target: {fileID: 4836047251030961452, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
-        type: 3}
-      propertyPath: m_StartingState.m_Position.y
-      value: 250
-      objectReference: {fileID: 0}
-    - target: {fileID: 4836047251030961452, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
-        type: 3}
-      propertyPath: m_EndRotationInterval
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4836047251030961452, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
-        type: 3}
-      propertyPath: m_StartingState.m_Scale.x
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 4836047251030961452, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
-        type: 3}
-      propertyPath: m_StartingState.m_Scale.y
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 4836047251030961452, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
-        type: 3}
-      propertyPath: m_StartingState.m_Scale.z
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 4836047251030961452, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
-        type: 3}
-      propertyPath: m_EndingState.m_Scale.x
-      value: 150
-      objectReference: {fileID: 0}
-    - target: {fileID: 4836047251030961452, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
-        type: 3}
-      propertyPath: m_EndingState.m_Scale.y
-      value: 150
-      objectReference: {fileID: 0}
-    - target: {fileID: 4836047251030961452, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
-        type: 3}
-      propertyPath: m_EndingState.m_Scale.z
-      value: 150
-      objectReference: {fileID: 0}
     - target: {fileID: 6276619885508357593, guid: 3ad8bee6bf510b2479b61a26fdc4bbeb,
         type: 3}
       propertyPath: m_AnchorMax.y

@@ -24,8 +24,8 @@ namespace TO5.Wires
         public bool m_AutoDisable = false;                      // If sequence automatically disables itself (audio)
 
         [Header("Aesthetics")]
-        [Range(0f, 1f)] public float m_FinalBorderAlpha = 0.5f;     // Final alpha of the outer border when finale is done
-        private float m_StartBorderAlpha = 0.1f;                    // Value of borders alpha when we started
+        [SerializeField] private TunnelVision m_TunnelPrefab;       // Tunnel to instantiate, is attached to player directly
+        private TunnelVision m_TunnelInstance = null;               // Instance of tunnel
 
         [Header("Generation|Fixed")]
         public int m_MinSegments = 18;                              // Min segments per during finale
@@ -57,7 +57,6 @@ namespace TO5.Wires
         [SerializeField, Range(0f, 3f)] private float m_EndingPitch = 2f;           // Ending pitch of buildup sound
 
         private WireManager m_WireManager;                      // Wire manager to manipulate
-        private WorldTheme m_WorldTheme;                        // World theme to manipulate
         private float m_StartTime = -1f;                        // Time at which finale was activated
         private WireStageProperties m_WireProperties = null;    // Wire generation properties we set
 
@@ -132,10 +131,7 @@ namespace TO5.Wires
                 }
 
                 m_WireManager = wireManager;
-                m_WireManager.m_DriftingEnabled = false;
-
-                m_WorldTheme = worldTheme;
-                m_StartBorderAlpha = m_WorldTheme.worldAesthetics.borderAlpha;
+                m_WireManager.m_DriftingEnabled = false;   
 
                 // Setup custom stage
                 GenerateStageProperties();
@@ -156,7 +152,11 @@ namespace TO5.Wires
                         sparkJumper.companion.SetBoostModeEnabled(true);
 
                     if (sparkJumper.companionVoice)
-                        sparkJumper.companionVoice.PlayFinaleDialogue();                
+                        sparkJumper.companionVoice.PlayFinaleDialogue();
+
+                    InstantiateTunnel(sparkJumper);
+                    if (worldTheme)
+                        worldTheme.worldAesthetics.SetTunnelVision(m_TunnelInstance);
                 }
 
                 m_StartTime = Time.time;
@@ -192,7 +192,6 @@ namespace TO5.Wires
                 }
 
                 m_WireManager = null;
-                m_WorldTheme = null;
                 m_StartTime = -1f;
 
                 if (OnSequenceFinished != null)
@@ -232,10 +231,8 @@ namespace TO5.Wires
         /// <param name="alpha">Alpha of interpolation</param>
         private void InterpolateAesthetics(float alpha)
         {
-            if (m_WorldTheme)
-            {
-                m_WorldTheme.worldAesthetics.borderAlpha = Mathf.Lerp(m_StartBorderAlpha, m_FinalBorderAlpha, alpha);
-            }
+            if (m_TunnelInstance)
+                m_TunnelInstance.InterpolateAlpha(alpha);
         }
 
         /// <summary>
@@ -264,6 +261,19 @@ namespace TO5.Wires
                 float pitch = Mathf.Lerp(m_StartingPitch, m_EndingPitch, alpha);
                 m_BuildupSource.pitch = pitch;
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sparkJumper"></param>
+        private void InstantiateTunnel(SparkJumper sparkJumper)
+        {
+            if (!m_TunnelPrefab)
+                return;
+
+            m_TunnelInstance = Instantiate(m_TunnelPrefab, sparkJumper.transform, false);
+            m_TunnelInstance.ActivatetTunnel();
         }
     }
 }

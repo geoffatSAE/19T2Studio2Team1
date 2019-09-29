@@ -1122,6 +1122,9 @@ namespace TO5.Wires
             #if UNITY_EDITOR
             if (m_Debug)
             {
+                if (m_WireProperties == null)
+                    return;
+
                 Vector3 center = GetSpawnCircleCenter();
 
                 // We want to draw current properties while playing, while drawing preview while in inspector

@@ -47,6 +47,8 @@ MonoBehaviour:
   m_Duration: 15
   m_AutoControlStart: 7.5
   m_AutoDisable: 0
+  m_TunnelPrefab: {fileID: 2312797860181079084, guid: 379e511018003fa44af772db3dd5384e,
+    type: 3}
   m_MinSegments: 50
   m_MaxSegments: 60
   m_SpawnSegmentOffset: 15
