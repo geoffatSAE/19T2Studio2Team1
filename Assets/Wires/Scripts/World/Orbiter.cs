@@ -9,7 +9,7 @@ namespace TO5.Wires
     /// </summary>
     public class Orbiter : MonoBehaviour
     {
-        [SerializeField] private Renderer m_OrbiterPrefab;              // Object to spawn for each stage
+        [SerializeField] private OrbiterObject m_OrbiterPrefab;         // Object to spawn for each stage
         public float m_Speed = 1f;                                      // Speed of orbiting
 
         [Header("Lissajous")]
@@ -18,8 +18,8 @@ namespace TO5.Wires
         public float m_Offset = 2.5f;                                   // Amount to offset transforms by from origin
         public float m_Step = 2.5f;                                     // Step in between each transform
 
-        private List<Renderer> m_Orbiters = new List<Renderer>();       // All the orbiters we are managing
-        private float m_Time = 0f;                                      // Time that we have ticked
+        private List<OrbiterObject> m_Orbiters = new List<OrbiterObject>();         // All the orbiters we are managing
+        private float m_Time = 0f;                                                  // Time that we have ticked
 
         void Awake()
         {
@@ -45,22 +45,26 @@ namespace TO5.Wires
                 return;
             }
 
-            Renderer orbiter = Instantiate(m_OrbiterPrefab, transform);
+            OrbiterObject orb = Instantiate(m_OrbiterPrefab, transform);
 
             int orbiterNumber = m_Orbiters.Count;
-            m_Orbiters.Add(orbiter);
+            m_Orbiters.Add(orb);
 
             if (factory)
             {
-                Material material = orbiter.material;
-
                 OrbiterColorSet colorSet = factory.orbiterColors;
-                material.SetColor("_LowColor", colorSet.m_LowColor);
-                material.SetColor("_HighColor", colorSet.m_HighColor);
+
+                Material meshMaterial = orb.meshMaterial;   
+                meshMaterial.SetColor("_LowColor", colorSet.m_LowColor);
+                meshMaterial.SetColor("_HighColor", colorSet.m_HighColor);
+
+                TrailRenderer trails = orb.trails;
+                trails.startColor = colorSet.m_TrailStartColor;
+                trails.endColor = colorSet.m_TrailEndColor;
             }
 
             // Initial move orbiter to match its correct position
-            orbiter.transform.localPosition = LissajousKnot(m_LissajousN, m_LissajousO, m_Time + m_Step * orbiterNumber, m_Offset);
+            orb.transform.localPosition = LissajousKnot(m_LissajousN, m_LissajousO, m_Time + m_Step * orbiterNumber, m_Offset);
         }
 
         /// <summary>

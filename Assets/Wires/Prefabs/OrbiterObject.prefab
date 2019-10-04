@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4424137095162860649}
   - component: {fileID: 4424137095162860654}
   - component: {fileID: 6978503276209322402}
+  - component: {fileID: 6956393855446250789}
   m_Layer: 0
   m_Name: OrbiterObject
   m_TagString: Untagged
@@ -87,10 +88,10 @@ TrailRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4424137095162860653}
   m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_MotionVectors: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 0
+  m_MotionVectors: 2
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
   m_RenderingLayerMask: 1
@@ -179,6 +180,20 @@ TrailRenderer:
     textureMode: 0
     shadowBias: 0.5
     generateLightingData: 0
-  m_MinVertexDistance: 0.1
+  m_MinVertexDistance: 5
   m_Autodestruct: 0
   m_Emitting: 1
+--- !u!114 &6956393855446250789
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4424137095162860653}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80085e9d9013bd54796772c748513a7d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Mesh: {fileID: 4424137095162860654}
+  m_Trail: {fileID: 6978503276209322402}

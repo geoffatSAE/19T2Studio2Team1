@@ -10,8 +10,10 @@ namespace TO5.Wires
     [System.Serializable]
     public struct OrbiterColorSet
     {
-        public Color m_LowColor;        // Color for the low shader parameter of shader
-        public Color m_HighColor;       // Color for the high shader parameter of shader
+        public Color m_LowColor;                // Color for the low shader parameter of shader
+        public Color m_HighColor;               // Color for the high shader parameter of shader
+        public Color m_TrailStartColor;         // Color at start of trails
+        public Color m_TrailEndColor;           // Color at end of trails
     }
 
     /// <summary>

@@ -43,7 +43,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bce837656fb91b4fbca0214a0ed4dfd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_OrbiterPrefab: {fileID: 4424137095162860654, guid: 5a81fb29e8231264891bfe0f2d8b7d09,
+  m_OrbiterPrefab: {fileID: 6956393855446250789, guid: 5a81fb29e8231264891bfe0f2d8b7d09,
     type: 3}
   m_Speed: 0.5
   m_LissajousN: {x: 3, y: 4, z: 7}
