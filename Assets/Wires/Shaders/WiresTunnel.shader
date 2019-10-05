@@ -49,6 +49,13 @@
 			half _TexScalar;
 			half2 _PanningSpeed;
 
+			float ease(float alpha)
+			{
+				// Ease Out Cubic
+				// See https://easings.net/en
+				return (--alpha) * alpha * alpha + 1;
+			}
+
 			v2f vert(appdata v)
 			{
 				v2f o;
@@ -85,8 +92,11 @@
 				fixed4 y = lerp(y1, y2, _Color.a);
 				fixed4 z = lerp(z1, z2, _Color.a);
 
+				// How close pixel is to center of plane
+				fixed centerRatio = 1.f - abs(pow((i.uv.y * 2.f) - 1.f, 2.f));
+
 				fixed4 col = _Color * (x * blend.x + y * blend.y + z * blend.z);
-				col.a = _Alpha;
+				col.a = _Alpha * ease(centerRatio);
 
 				return col;
 			}
