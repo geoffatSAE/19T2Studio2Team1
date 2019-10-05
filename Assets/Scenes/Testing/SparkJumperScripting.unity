@@ -1034,7 +1034,7 @@ PrefabInstance:
     - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_MaxDriftTime
-      value: 2.5
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095703, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
@@ -1536,7 +1536,7 @@ PrefabInstance:
     - target: {fileID: 3395505406176328842, guid: 9a8c4600bb7ba224baddce08e9afd423,
         type: 3}
       propertyPath: m_ArcadeLength
-      value: 180
+      value: 60
       objectReference: {fileID: 0}
     - target: {fileID: 3395505406176328845, guid: 9a8c4600bb7ba224baddce08e9afd423,
         type: 3}
