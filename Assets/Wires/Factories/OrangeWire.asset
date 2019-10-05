@@ -81,6 +81,8 @@ MonoBehaviour:
   m_OrbiterColors:
     m_LowColor: {r: 0.9622642, g: 0.521394, b: 0.031772893, a: 1}
     m_HighColor: {r: 1, g: 0, b: 0, a: 1}
+    m_TrailStartColor: {r: 0.7075472, g: 0.49777842, b: 0.26366144, a: 1}
+    m_TrailEndColor: {r: 0.6415094, g: 0.23905303, b: 0.23905303, a: 1}
   m_BorderTexture: {fileID: 2800000, guid: deff90eebe787eb4baf1deb26e423804, type: 3}
   m_MusicTracks:
   - m_Music: {fileID: 8300000, guid: 22dae3c8aafd3cc429e5fdf663644a15, type: 3}

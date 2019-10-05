@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace TO5.Wires
 {
+    /// <summary>
+    /// Controller for data packets the player can collect
+    /// </summary>
     [RequireComponent(typeof(SphereCollider))]
     public class DataPacket : MonoBehaviour, IInteractive
     {
@@ -16,17 +19,25 @@ namespace TO5.Wires
         public PacketCollected OnCollected;     // Event for when player collects this packet
         public PacketCollected OnExpired;       // Event for when this packet expires
 
-        [SerializeField] private FloatingMovement m_FloatingMovement;       // Movement component (calls Move during Tick)
+        [SerializeField] private FloatingMovement m_FloatingMovement;       // Float movement component (used when collected)
+        [SerializeField] private SeekMovement m_SeekMovement;               // Seek movement component (used when collected)
         [SerializeField] private Animator m_Animator;                       // Packets animator
         public AudioClip m_SelectedSound;                                   // Sound to play when selected
 
-        private float m_Speed;          // The speed of this packet
-        
+        private float m_Speed = 0f;                 // The speed of this packet
+        private bool m_Seek = false;                // If this packet should seek target
+
         void Awake()
         {
-            // We update it manually
             if (m_FloatingMovement)
                 m_FloatingMovement.enabled = false;
+
+            if (m_SeekMovement)
+            {
+                m_SeekMovement.enabled = false;
+                m_SeekMovement.OnTargetReached += TargetReached;
+            }
+
         }
 
         /// <summary>
@@ -40,7 +51,12 @@ namespace TO5.Wires
             gameObject.SetActive(true);
 
             transform.position = position;
+            transform.localScale = Vector3.one;
             m_Speed = speed;
+            m_Seek = false;
+
+            if (m_SeekMovement)
+                m_SeekMovement.m_Target = null;
 
             Invoke("Expire", lifetime);
         }
@@ -60,12 +76,39 @@ namespace TO5.Wires
         /// <param name="step">Amount to move packet by (scaled by speed)</param>
         public void TickPacket(float step)
         {
-            // We move in the opposite direction of sparks (so we subtract)
-            step *= m_Speed;
-            transform.position -= WireManager.WirePlane * step;
+            // We let seek movement control us if collected
+            if (m_Seek)
+            {
+                if (m_SeekMovement)
+                    m_SeekMovement.Move(Time.deltaTime);
+            }
+            else
+            {
+                // We move in the opposite direction of sparks (so we subtract)
+                step *= m_Speed;
+                transform.position -= WireManager.WirePlane * step;
 
-            if (m_FloatingMovement)
-                m_FloatingMovement.Move(Time.deltaTime);
+                if (m_FloatingMovement)
+                    m_FloatingMovement.Move(Time.deltaTime);
+            }
+        }
+
+        /// <summary>
+        /// Puts this data packet into seek mode
+        /// </summary>
+        /// <param name="target">Target to seek</param>
+        /// <returns>If packet is in seek mode</returns>
+        public bool SetSeekTarget(Transform target)
+        {
+            if (!m_SeekMovement)
+                return false;
+
+            CancelInvoke("Expire");
+
+            m_Seek = true;
+            m_SeekMovement.SetTarget(target);
+
+            return true;
         }
 
         /// <summary>
@@ -87,17 +130,26 @@ namespace TO5.Wires
                 OnExpired.Invoke(this);
         }
 
-        // IInteractive Interface
-        public bool CanInteract(SparkJumper jumper)
-        {
-            return isActiveAndEnabled && !jumper.isDrifting;
-        }
-        
-        // IInteractive Interface
-        public void OnInteract(SparkJumper jumper)
+        /// <summary>
+        /// Notify that we have reached our target after seeking
+        /// </summary>
+        private void TargetReached()
         {
             if (OnCollected != null)
                 OnCollected.Invoke(this);
+        }
+
+        // IInteractive Interface
+        public bool CanInteract(SparkJumper jumper)
+        {
+            return isActiveAndEnabled && !(jumper.isDrifting || m_Seek);
+        }
+
+        // IInteractive Interface
+        public void OnInteract(SparkJumper jumper)
+        {
+            if (jumper.companion)
+                SetSeekTarget(jumper.companion.transform);
 
             jumper.PlaySelectionSound(m_SelectedSound);
         }

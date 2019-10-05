@@ -433,7 +433,8 @@ namespace TO5.Wires
         /// </summary>
         private void FinaleSequenceFinished()
         {
-            StartCoroutine(SpawnEndingWireRoutine());
+            if (isActiveAndEnabled)
+                StartCoroutine(SpawnEndingWireRoutine());
         }
 
         /// <summary>
