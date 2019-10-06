@@ -57,8 +57,8 @@ TrailRenderer:
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
-  m_DynamicOccludee: 1
-  m_MotionVectors: 1
+  m_DynamicOccludee: 0
+  m_MotionVectors: 2
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
   m_RenderingLayerMask: 1
@@ -84,7 +84,7 @@ TrailRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Time: 1.5
+  m_Time: 1
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 1
@@ -147,7 +147,7 @@ TrailRenderer:
     textureMode: 0
     shadowBias: 0.5
     generateLightingData: 0
-  m_MinVertexDistance: 0.1
+  m_MinVertexDistance: 5
   m_Autodestruct: 0
   m_Emitting: 1
 --- !u!1 &1671077178524130715
@@ -209,6 +209,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75439ae7f2ac55444ae38db45a0a4393, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Renderer: {fileID: 932160140195054690}
+  m_Trails: {fileID: 7086892676740745429}
   m_FloatingMovement: {fileID: 407622591707420134}
   m_SeekMovement: {fileID: 247224142979716038}
   m_Animator: {fileID: 932160140199279266}
@@ -234,14 +236,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3770911953066173349}
     m_Modifications:
-    - target: {fileID: 9500000, guid: f00b79955544011418c14296565402b0, type: 3}
-      propertyPath: m_Controller
-      value: 
-      objectReference: {fileID: 9100000, guid: 2db713996ae8af04f8935c2701f9160b, type: 2}
     - target: {fileID: 100000, guid: f00b79955544011418c14296565402b0, type: 3}
       propertyPath: m_Name
       value: Data_Packet
       objectReference: {fileID: 0}
+    - target: {fileID: 9500000, guid: f00b79955544011418c14296565402b0, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 2db713996ae8af04f8935c2701f9160b, type: 2}
     - target: {fileID: 400000, guid: f00b79955544011418c14296565402b0, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -298,6 +300,18 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 2.1
       objectReference: {fileID: 0}
+    - target: {fileID: 400002, guid: f00b79955544011418c14296565402b0, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 400002, guid: f00b79955544011418c14296565402b0, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.0002
+      objectReference: {fileID: 0}
+    - target: {fileID: 400002, guid: f00b79955544011418c14296565402b0, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.025
+      objectReference: {fileID: 0}
     - target: {fileID: 13700000, guid: f00b79955544011418c14296565402b0, type: 3}
       propertyPath: m_SkinnedMotionVectors
       value: 0
@@ -326,18 +340,6 @@ PrefabInstance:
       propertyPath: m_DynamicOccludee
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 400002, guid: f00b79955544011418c14296565402b0, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400002, guid: f00b79955544011418c14296565402b0, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.0002
-      objectReference: {fileID: 0}
-    - target: {fileID: 400002, guid: f00b79955544011418c14296565402b0, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.025
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f00b79955544011418c14296565402b0, type: 3}
 --- !u!4 &932160140206789954 stripped
@@ -355,6 +357,12 @@ Animator:
 --- !u!1 &932160140206557536 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 100002, guid: f00b79955544011418c14296565402b0,
+    type: 3}
+  m_PrefabInstance: {fileID: 932160140206657474}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &932160140195054690 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 13700000, guid: f00b79955544011418c14296565402b0,
     type: 3}
   m_PrefabInstance: {fileID: 932160140206657474}
   m_PrefabAsset: {fileID: 0}

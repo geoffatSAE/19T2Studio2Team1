@@ -469,7 +469,6 @@ MonoBehaviour:
   m_BoostSpeedMultiplier: 1.25
   m_SparkSpawnAudioSource: {fileID: 8467593056296462756}
   m_InitialSegments: 20
-  m_WireAnimator: {fileID: 0}
   m_Factories:
   - {fileID: 11400000, guid: 83edc1a72b7667e4ab8d4cc017ef1b60, type: 2}
   - {fileID: 11400000, guid: c2de25d8b4bac2d40a177e6c8be5a710, type: 2}
@@ -481,6 +480,7 @@ MonoBehaviour:
   m_WirePrefab: {fileID: 4698685643518956546, guid: 1f8155c3339076843a6198e146cab368,
     type: 3}
   m_WireSpace: 3
+  m_EnableDefectiveWires: 0
   m_WireProperties:
   - m_MinSegments: 20
     m_MaxSegments: 35
@@ -599,6 +599,7 @@ MonoBehaviour:
   m_UseDebugMesh: 0
   m_DebugMesh: {fileID: 0}
   m_DebugText: {fileID: 0}
+  m_WorldTheme: {fileID: 0}
 --- !u!114 &7946252058374095657
 MonoBehaviour:
   m_ObjectHideFlags: 0

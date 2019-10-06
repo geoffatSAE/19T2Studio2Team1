@@ -19,6 +19,8 @@ namespace TO5.Wires
         public PacketCollected OnCollected;     // Event for when player collects this packet
         public PacketCollected OnExpired;       // Event for when this packet expires
 
+        [SerializeField] private Renderer m_Renderer;                       // Packets mesh renderer
+        [SerializeField] private TrailRenderer m_Trails;                    // Packets trails when seeking
         [SerializeField] private FloatingMovement m_FloatingMovement;       // Float movement component (used when collected)
         [SerializeField] private SeekMovement m_SeekMovement;               // Seek movement component (used when collected)
         [SerializeField] private Animator m_Animator;                       // Packets animator
@@ -38,6 +40,8 @@ namespace TO5.Wires
                 m_SeekMovement.OnTargetReached += TargetReached;
             }
 
+            if (m_Trails)
+                m_Trails.enabled = false;
         }
 
         /// <summary>
@@ -57,6 +61,12 @@ namespace TO5.Wires
 
             if (m_SeekMovement)
                 m_SeekMovement.m_Target = null;
+
+            if (m_Renderer)
+                m_Renderer.enabled = true;
+
+            if (m_Trails)
+                m_Trails.enabled = false;
 
             Invoke("Expire", lifetime);
         }
@@ -107,6 +117,12 @@ namespace TO5.Wires
 
             m_Seek = true;
             m_SeekMovement.SetTarget(target);
+
+            if (m_Renderer)
+                m_Renderer.enabled = false;
+
+            if (m_Trails)
+                m_Trails.enabled = true;
 
             return true;
         }

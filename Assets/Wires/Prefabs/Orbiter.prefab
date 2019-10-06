@@ -49,4 +49,4 @@ MonoBehaviour:
   m_LissajousN: {x: 3, y: 4, z: 7}
   m_LissajousO: {x: 0.1, y: 0.7, z: 0}
   m_Offset: 5
-  m_Step: 3
+  m_Step: 5
