@@ -221,12 +221,13 @@ namespace TO5.Wires
         }
 
         /// <summary>
-        /// Updates the aethetics to match specifications on active wires factory
+        /// Refreshes the outer border size and warning sign placement.
+        /// This should be used when adding segments to the active wire 
         /// </summary>
-        /// <param name="particleColor">If particle colors should also be updated</param>
-        private void UpdateBorderAesthetics(bool particleColor)
+        public void RefreshWireBasedAesthetics()
         {
-            Assert.IsNotNull(m_ActiveWire);
+            if (!m_ActiveWire)
+                return;
 
             // Stretch outer wire
             if (m_BorderPivot && m_BorderRenderer)
@@ -244,6 +245,17 @@ namespace TO5.Wires
                 m_WarningPivot.gameObject.SetActive(true);
                 m_WarningPivot.position = m_ActiveWire.end;
             }
+        }
+
+        /// <summary>
+        /// Updates the aethetics to match specifications on active wires factory
+        /// </summary>
+        /// <param name="particleColor">If particle colors should also be updated</param>
+        private void UpdateBorderAesthetics(bool particleColor)
+        {
+            Assert.IsNotNull(m_ActiveWire);
+
+            RefreshWireBasedAesthetics();
 
             WireFactory factory = m_ActiveWire.factory;
             if (!factory)

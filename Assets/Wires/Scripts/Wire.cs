@@ -48,26 +48,13 @@ namespace TO5.Wires
 
             m_Segments = segments;
             m_SegmentDistance = segmentDistance;
-            m_WireDistance = segments * segmentDistance;
-            m_Factory = factory;
-
+            SetWireDistance(segments * segmentDistance);
+            
             transform.position = start;
 
-            m_Pivot.transform.localScale = Vector3.one;
-
-            if (m_WireMesh)
-            {
-                // Bounds is in world space (TODO: Should be using local space (which is Mesh.Bounds)
-                Bounds meshBounds = m_WireMesh.bounds;
-                float scaler = m_WireDistance / meshBounds.size.z;
-
-                Vector3 scale = m_Pivot.localScale;
-                scale.y = scaler;
-                m_Pivot.localScale = scale;
-            }
-
-            if (factory)
-                m_WireMesh.material.color = factory.color;
+            m_Factory = factory;
+            if (m_Factory)
+                m_WireMesh.material.color = m_Factory.color;
         }
 
         /// <summary>
@@ -76,9 +63,10 @@ namespace TO5.Wires
         public void DeactivateWire()
         {
             if (m_Spark)
+            {
                 m_Spark.DeactivateSpark();
-
-            m_Spark = null;
+                m_Spark = null;
+            }
 
             gameObject.SetActive(false);
         }
@@ -124,6 +112,76 @@ namespace TO5.Wires
 
             m_CachedProgress = progress;
             return progress;
+        }
+
+        /// <summary>
+        /// Adds segments to this wire
+        /// </summary>
+        /// <param name="segments">Value greater than zero</param>
+        public void AddSegments(int segments)
+        {
+            if (segments > 0)
+            {
+                // Can't change length while player is drifting on this wire
+                if (spark && spark.sparkJumper && spark.sparkJumper.isDrifting)
+                    return;
+
+                m_Segments += segments;
+                SetWireDistance(m_Segments * m_SegmentDistance);
+            }
+        }
+
+        /// <summary>
+        /// Sets the wires distance, updating mesh size and cached progress
+        /// </summary>
+        /// <param name="length">Length of wire</param>
+        /// <param name="activation">If setting from activation</param>
+        private void SetWireDistance(float length, bool activation = true)
+        {
+            if (length <= 0f)
+                return;
+
+            // Scale mesh to match length
+            if (m_WireMesh)
+            {
+                // Need to reset this here so we can get accurate bounds (TODO: calculate in local space)
+                m_Pivot.transform.localScale = Vector3.one;
+
+                // Bounds is in world space (TODO: Should be using local space (which is Mesh.Bounds)
+                Bounds meshBounds = m_WireMesh.bounds;
+                float scaler = length / meshBounds.size.z;
+
+                Vector3 scale = m_Pivot.localScale;
+                scale.y = scaler;
+                m_Pivot.localScale = scale;
+            }
+
+            if (activation)
+            {
+                m_WireDistance = length;
+                return;
+            }
+
+            // Update progress so we remain where we should be (don't need to move spark)
+            float newProgress = 0f;
+            if (m_CachedProgress != 0f)
+                newProgress = Mathf.Clamp01((m_WireDistance * m_CachedProgress) / length);
+
+            // Only need to move spark if length is shorter than previous
+            if (newProgress != m_CachedProgress && spark)
+            {
+                Transform sparkTransform = spark.transform;
+                sparkTransform.position = transform.position + (WireManager.WirePlane * (m_WireDistance * m_CachedProgress));
+
+                SparkJumper sparkJumper = spark.sparkJumper;
+                if (sparkJumper)
+                {
+                    m_Spark.sparkJumper.SetPosition(sparkTransform.position);
+                }
+            }
+
+            m_WireDistance = length;
+            m_CachedProgress = newProgress;
         }
 
         #if UNITY_EDITOR

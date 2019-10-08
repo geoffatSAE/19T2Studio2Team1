@@ -156,6 +156,18 @@ namespace TO5.Wires
         void Update()
         {
             float step = 0f;
+
+            // Quick testing
+            {
+                if (Input.GetKeyDown(KeyCode.Z))
+                {
+                    if (sparkJumper.wire)
+                        sparkJumper.wire.AddSegments(20);
+
+                    if (m_WorldTheme && m_WorldTheme.worldAesthetics)
+                        m_WorldTheme.worldAesthetics.RefreshWireBasedAesthetics();
+                }
+            }
          
             // Don't tick when player is jumping
             if (m_TickWhenJumping || !m_SparkJumper.isJumping)
