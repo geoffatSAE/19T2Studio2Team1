@@ -49,6 +49,7 @@ namespace TO5.Wires
         public float m_MaxSpeed = 2.5f;                                 // Max speed of a packet
         [Min(0)] public float m_Lifetime = 10f;                         // How long data packets last for before expiring (zero for do not spawn)
         [Min(0.1f)] public float m_AnimSpeed = 1f;                      // Speed of animation
+        [Min(0)] public int m_BonusSegments = 5;                        // Additional segments to grant to wire when collected
 
         [Header("Packet Spawn Properties")]
         public int m_MinSpawnOffset = 20;                               // Min segments in front of player to spawn

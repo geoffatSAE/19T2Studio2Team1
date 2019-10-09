@@ -481,6 +481,7 @@ MonoBehaviour:
     type: 3}
   m_WireSpace: 3
   m_EnableDefectiveWires: 0
+  m_ForceWireSpawnAt: 0.8
   m_WireProperties:
   - m_MinSegments: 20
     m_MaxSegments: 35
@@ -624,6 +625,7 @@ MonoBehaviour:
       m_MaxSpeed: 12
       m_Lifetime: 0
       m_AnimSpeed: 1
+      m_BonusSegments: 5
       m_MinSpawnOffset: 75
       m_MinSpawnInterval: 1
       m_MaxSpawnInterval: 2
@@ -640,6 +642,7 @@ MonoBehaviour:
       m_MaxSpeed: 15
       m_Lifetime: 5
       m_AnimSpeed: 1.2
+      m_BonusSegments: 5
       m_MinSpawnOffset: 75
       m_MinSpawnInterval: 1
       m_MaxSpawnInterval: 2
@@ -656,6 +659,7 @@ MonoBehaviour:
       m_MaxSpeed: 20
       m_Lifetime: 5
       m_AnimSpeed: 1.4
+      m_BonusSegments: 5
       m_MinSpawnOffset: 90
       m_MinSpawnInterval: 1
       m_MaxSpawnInterval: 2
@@ -672,6 +676,7 @@ MonoBehaviour:
       m_MaxSpeed: 20
       m_Lifetime: 5
       m_AnimSpeed: 1.6
+      m_BonusSegments: 5
       m_MinSpawnOffset: 100
       m_MinSpawnInterval: 1
       m_MaxSpawnInterval: 2
@@ -688,6 +693,7 @@ MonoBehaviour:
       m_MaxSpeed: 20
       m_Lifetime: 5
       m_AnimSpeed: 1.8
+      m_BonusSegments: 5
       m_MinSpawnOffset: 120
       m_MinSpawnInterval: 1
       m_MaxSpawnInterval: 2
@@ -704,6 +710,7 @@ MonoBehaviour:
       m_MaxSpeed: 20
       m_Lifetime: 10
       m_AnimSpeed: 2
+      m_BonusSegments: 5
       m_MinSpawnOffset: 140
       m_MinSpawnInterval: 1
       m_MaxSpawnInterval: 2
@@ -730,6 +737,7 @@ MonoBehaviour:
   m_MaxPacketSpawnRadius: 25.9
   m_BottomCircleCutoff: 0.7
   m_TopCircleCutoff: 0.7
+  m_MaxBonusSegments: 4
   m_PacketSpawnSound: {fileID: 8300000, guid: 05a9b8a29ac7a024c8739b54e6d8e22b, type: 3}
   m_PacketClusterSpawnSound: {fileID: 8300000, guid: c912b9e24aba07d4f8c5e6d37c7c01ec,
     type: 3}

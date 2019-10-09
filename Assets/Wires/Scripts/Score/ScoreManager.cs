@@ -83,6 +83,8 @@ namespace TO5.Wires
         [SerializeField, Range(0, 1)] public float m_BottomCircleCutoff = 0.7f;     // Cutoff from bottom of spawn circle (no packets will spawn in cutoff)
         [SerializeField, Range(0, 1)] public float m_TopCircleCutoff = 1f;          // Cutoff from top of spawn circle (no packets will spawn in cutoff)
 
+        [SerializeField, Min(0)] private int m_MaxBonusSegments = 4;                // Max amount of packets that give bonus segments, resets when jumping
+
         public AudioClip m_PacketSpawnSound;                    // Spawn sound for an individual packet
         public AudioClip m_PacketClusterSpawnSound;             // Spawn sound for a cluster of packets
         public AudioSource m_PacketSpawnAudioSource;            // Audio source for packets spawning                          
@@ -109,6 +111,7 @@ namespace TO5.Wires
         private ObjectPool<DataPacket> m_DataPackets = new ObjectPool<DataPacket>();    // Packets being managed
         private PacketStageProperties m_ActivePacketProperties;                         // Properties for current stage
         private int m_PacketSpawnsSinceLastCluster = 0;                                 // Amount of random packets spawn attempts since the last packet cluster
+        private int m_PacketsCollectedSinceJump = 0;                                    // Amount of packets that has been collected since the last spark jump
 
         #if UNITY_EDITOR
         [Header("Debug")]
@@ -273,8 +276,11 @@ namespace TO5.Wires
             m_WireManager = wireManager;
             m_SparkJumper = wireManager.sparkJumper;
 
-            //if (m_SparkJumper)
-            //   m_SparkJumper.OnActivateBoost = ActivateBoost;
+            if (m_SparkJumper)
+            {
+                m_SparkJumper.OnJumpToSpark += JumpedToSpark;
+                //m_SparkJumper.OnActivateBoost = ActivateBoost;
+            }
 
             m_Score = 0f;
             m_Multiplier = 1f;
@@ -906,6 +912,16 @@ namespace TO5.Wires
             AddScore(m_PacketScore);
             //AddBoost(m_BoostPerPacket);
 
+            // Extend wire of player if we can
+            if (m_PacketsCollectedSinceJump < m_MaxBonusSegments)
+            {
+                PacketStageProperties packetProps = GetStagePacketProperties();
+                if (m_WireManager)
+                    m_WireManager.ExtendActiveWire(packetProps.m_BonusSegments);
+
+                ++m_PacketsCollectedSinceJump;
+            }
+
             CompanionVoice voice = companionVoice;
             if (voice)
                 voice.PlayPacketCollectedDialogue();
@@ -1154,6 +1170,17 @@ namespace TO5.Wires
                     --i;
                 }
             }
+        }
+
+        /// <summary>
+        /// Notify that player has jumped to another spark
+        /// </summary>
+        /// <param name="spark">Spark player jumped to</param>
+        /// <param name="finished">If jump has finished or just started</param>
+        private void JumpedToSpark(Spark spark, bool finished)
+        {
+            if (finished)
+                m_PacketsCollectedSinceJump = 0;
         }
 
         #if UNITY_EDITOR

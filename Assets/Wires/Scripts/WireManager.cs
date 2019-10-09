@@ -84,9 +84,10 @@ namespace TO5.Wires
         public Wire m_WirePrefab;
 
         [Header("Generation")]
-        [SerializeField] private float m_WireSpace = 4f;                        // Space needed for wires to spawn
-        public bool m_EnableDefectiveWires = true;                              // If defective wires should be able to spawn
-        [SerializeField] private WireStageProperties[] m_WireProperties;        // Properties for wire behavior for each multiplier stage
+        [SerializeField] private float m_WireSpace = 4f;                                // Space needed for wires to spawn
+        public bool m_EnableDefectiveWires = true;                                      // If defective wires should be able to spawn
+        [SerializeField, Range(0.5f, 1f)] private float m_ForceWireSpawnAt = 0.9f;      // If only one wire exists and player is pass X, force another to spawn
+        [SerializeField] private WireStageProperties[] m_WireProperties;                // Properties for wire behavior for each multiplier stage
 
         #if UNITY_EDITOR
         public int m_WirePropertiesStagePreview = 0;            // Preview properties for wire stage at index
@@ -157,18 +158,6 @@ namespace TO5.Wires
         {
             float step = 0f;
 
-            // Quick testing
-            {
-                if (Input.GetKeyDown(KeyCode.Z))
-                {
-                    if (sparkJumper.wire)
-                        sparkJumper.wire.AddSegments(20);
-
-                    if (m_WorldTheme && m_WorldTheme.worldAesthetics)
-                        m_WorldTheme.worldAesthetics.RefreshWireBasedAesthetics();
-                }
-            }
-         
             // Don't tick when player is jumping
             if (m_TickWhenJumping || !m_SparkJumper.isJumping)
             {
@@ -197,6 +186,8 @@ namespace TO5.Wires
                     step = wireProps.m_SparkSpeed * gameSpeed * boostMultiplier * Time.deltaTime;
                 }
 
+                // Tick wires (and sparks)
+                int numJumpOptions = 0;
                 for (int i = 0; i < m_Wires.activeCount; ++i)
                 {
                     Wire wire = m_Wires.GetObject(i);
@@ -213,6 +204,22 @@ namespace TO5.Wires
                         // Object pool swaps when deactivating objects, we need
                         // to update the swapped object since it is still active
                         --i;
+                    }
+                    else if (wire.spark && wire.spark.canJumpTo)
+                    {
+                        ++numJumpOptions;
+                    }
+                }
+
+                // Force a wire to spawn if too close to the end
+                // and there are no other wires we can jump to
+                if (m_GeneratingWires && numJumpOptions == 0)
+                {
+                    Wire wire = m_SparkJumper.wire;
+                    if (wire != m_DriftingWire && wire.sparkProgress >= m_ForceWireSpawnAt)
+                    {
+                        if (GenerateRandomWire(true) != null)
+                            Debug.Log("Forced wire spawn as progress exceeded ForceWireSpawnAt", this);
                     }
                 }
 
@@ -1126,6 +1133,25 @@ namespace TO5.Wires
                 source.time = 0f;
 
                 source.Play();
+            }
+        }
+
+        /// <summary>
+        /// Extends the wire the player is currently on
+        /// </summary>
+        /// <param name="segments"></param>
+        public void ExtendActiveWire(int segments)
+        {
+            if (!tutorialMode)
+            {
+                if (m_SparkJumper.wire)
+                {
+                    m_SparkJumper.wire.AddSegments(segments);
+
+                    // Update world aesthetics to match change
+                    if (m_WorldTheme && m_WorldTheme.worldAesthetics)
+                        m_WorldTheme.worldAesthetics.RefreshWireBasedAesthetics();
+                }
             }
         }
 
