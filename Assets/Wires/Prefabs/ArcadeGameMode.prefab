@@ -185,28 +185,8 @@ MonoBehaviour:
   m_AutoStart: 1
   m_ArcadeLength: 180
   m_PostArcadeLength: 7.5
-  m_EndingProperties:
-    m_Skip: 0
-    m_Duration: 15
-    m_AutoControlStart: 5
-    m_MinSegments: 50
-    m_MaxSegments: 60
-    m_SpawnSegmentOffset: 15
-    m_SpawnSegmentRange: 10
-    m_InnerSpawnRadius: 12
-    m_OuterSpawnRadius: 25
-    m_BottomCircleCutoff: 0.7
-    m_TopCircleCutoff: 0.7
-    m_MaxWiresAtOnce: 100
-    m_StartMinSpawnInterval: 0.3
-    m_StartMaxSpawnInterval: 0.4
-    m_EndMinSpawnInterval: 0.05
-    m_EndMaxSpawnInterval: 0.1
-    m_StartSparkSpeed: 4
-    m_EndSparkSpeed: 25
-    m_StartJumpTime: 0.3
-    m_EndJumpTime: 0.05
   m_FinaleSequence: {fileID: 2033297823795197395}
+  m_SkipFinale: 0
   m_Fireworks: {fileID: 0}
   m_EnableTutorial: 1
   m_TutorialInitialSegments: 20
@@ -233,6 +213,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0cde81fa7dec6d45a4586efca52af15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_RisingSpark: {fileID: 0}
 --- !u!114 &3395505406176328833
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -338,6 +319,10 @@ MonoBehaviour:
   - 2.5
   - 3.25
   m_WarningPivot: {fileID: 3395505405431495115}
+  m_WarningSignRenderer: {fileID: 3395505406248523955}
+  m_UnlockedWireWarning: {fileID: 2800000, guid: 8dfeabd395ccbad4d845b725db9b9cb3,
+    type: 3}
+  m_LockedWireWarning: {fileID: 2800000, guid: 92368218d3c5d7c4b9049e6787b03525, type: 3}
   m_BoostSpeedMultiplier: 1.2
   m_BoostActivationParticles: {fileID: 0}
   m_BoostParticles: {fileID: 0}
@@ -673,6 +658,12 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 5563083081622057804}
   m_PrefabAsset: {fileID: 0}
+--- !u!23 &3395505406248523955 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 7073827611407674367, guid: e32fe8fb7b98c504496925a909ffecc7,
+    type: 3}
+  m_PrefabInstance: {fileID: 5563083081622057804}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6979367470523637417
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -680,11 +671,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3395505406176328845}
     m_Modifications:
-    - target: {fileID: 9001578712236911484, guid: 165260925e4477c409d839c3251ce8ee,
-        type: 3}
-      propertyPath: m_Name
-      value: FinaleSequence
-      objectReference: {fileID: 0}
     - target: {fileID: 9001578712236911481, guid: 165260925e4477c409d839c3251ce8ee,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -739,6 +725,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9001578712236911484, guid: 165260925e4477c409d839c3251ce8ee,
+        type: 3}
+      propertyPath: m_Name
+      value: FinaleSequence
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 165260925e4477c409d839c3251ce8ee, type: 3}

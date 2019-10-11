@@ -90,6 +90,7 @@ namespace TO5.Wires
         public AudioSource m_PacketSpawnAudioSource;            // Audio source for packets spawning                          
         public AudioSource m_PacketAudioSource;                 // Audio source for packets (moves depending on players location)
         public ParticleSystem m_PacketCollectedParticles;       // Particle system to play when a packet is collected
+        public AudioSource m_BonusSegmentsReachedSource;        // Audio source for reaching max bonus limit
 
         private ObjectPool<ParticleSystem> m_PacketCollectedSystems = new ObjectPool<ParticleSystem>();     // Pool of particle systems used for packet collection
 
@@ -113,10 +114,10 @@ namespace TO5.Wires
         private int m_PacketSpawnsSinceLastCluster = 0;                                 // Amount of random packets spawn attempts since the last packet cluster
         private int m_PacketsCollectedSinceJump = 0;                                    // Amount of packets that has been collected since the last spark jump
 
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         [Header("Debug")]
         [SerializeField] private Text m_DebugText;      // Text for writing debug data
-        #endif
+#endif
 
         // If scoring is enabled
         public bool isRunning { get { return m_IsRunning; } }
@@ -246,7 +247,7 @@ namespace TO5.Wires
 
             Profiler.EndSample();
 
-            #if UNITY_EDITOR
+#if UNITY_EDITOR
             // For testing
             if (m_IsRunning)
             {
@@ -264,7 +265,7 @@ namespace TO5.Wires
                 m_DebugText.text = string.Format("Score: {0}\nMultiplier: {1}\nMultiplier Stage: {2}\nPackets Pool Size: {3}\nPackets Active: {4}\nRemaining Lives: {5}\nHandicap Active: {6}",
                     Mathf.FloorToInt(m_Score), m_Multiplier, m_Stage, m_DataPackets.Count, m_DataPackets.activeCount, m_RemainingLives, m_StageResets >= m_StageHandicap);
             }
-            #endif
+#endif
         }
 
         /// <summary>
@@ -334,7 +335,7 @@ namespace TO5.Wires
 
                 //m_Boost = 0f;
                 //m_BoostActive = false;
-                
+
                 //if (m_BoostLoopingAudioSource)
                 //    m_BoostLoopingAudioSource.Stop();
 
@@ -489,7 +490,7 @@ namespace TO5.Wires
             m_Multiplier = 1f;
             m_Stage = 0;
             m_StageResets = 0;
-            SetRemainingLives(m_StageLives);    
+            SetRemainingLives(m_StageLives);
         }
 
         /// <summary>
@@ -525,7 +526,7 @@ namespace TO5.Wires
             float end = m_MultiplierStart + m_MultiplierInterval;
             return 1f - ((end - Time.time) / m_MultiplierInterval);
         }
-        
+
         /// <summary>
         /// Activates the auto multiplier tick routine
         /// </summary>
@@ -599,7 +600,7 @@ namespace TO5.Wires
                     m_PacketSpawnsSinceLastCluster = 0;
 
                     return packet;
-                }   
+                }
             }
 
             Profiler.BeginSample("GenerateRandomPacket", this);
@@ -614,7 +615,7 @@ namespace TO5.Wires
             int attempts = 0;
             while (++attempts <= maxAttempts)
             {
-                Vector2 circleOffset = Wires.GetRandomCircleOffset(m_MinPacketSpawnRadius, 
+                Vector2 circleOffset = Wires.GetRandomCircleOffset(m_MinPacketSpawnRadius,
                     m_MaxPacketSpawnRadius, m_BottomCircleCutoff, m_TopCircleCutoff);
 
                 position = spawnCenter + new Vector3(circleOffset.x, circleOffset.y, 0f);
@@ -681,13 +682,13 @@ namespace TO5.Wires
             Profiler.BeginSample("GeneratePacketCluster", this);
 
             const int maxAttempts = 5;
-            Vector3 spawnCenter = m_WireManager.GetSpawnCircleCenter() + WireManager.WirePlane * (m_WireManager.segmentLength * packetProps.m_MinSpawnOffset);     
+            Vector3 spawnCenter = m_WireManager.GetSpawnCircleCenter() + WireManager.WirePlane * (m_WireManager.segmentLength * packetProps.m_MinSpawnOffset);
 
             DataPacket packet = null;
 
-            #if UNITY_EDITOR
+#if UNITY_EDITOR
             int packetsSpawned = 0;
-            #endif
+#endif
 
             int clusterSize = Random.Range(packetProps.m_MinPacketsPerCluster, packetProps.m_MaxPacketsPerCluster + 1);
             for (int i = 0; i < clusterSize; ++i)
@@ -725,15 +726,15 @@ namespace TO5.Wires
                 if (newPacket != null)
                     packet = newPacket;
 
-                #if UNITY_EDITOR
+#if UNITY_EDITOR
                 if (newPacket != null)
                     ++packetsSpawned;
-                #endif
+#endif
             }
 
-            #if UNITY_EDITOR
+#if UNITY_EDITOR
             Debug.Log(string.Format("Packet Cluster Spawn Results - Cluster Size: {0}, Packets Spawned: {1}", clusterSize, packetsSpawned));
-            #endif
+#endif
 
             Profiler.EndSample();
 
@@ -761,6 +762,7 @@ namespace TO5.Wires
             // Hook events
             {
                 packet.OnCollected += PacketCollected;
+                packet.OnSeekComplete += PacketSeekComplete;
                 packet.OnExpired += PacketExpired;
             }
 
@@ -784,8 +786,6 @@ namespace TO5.Wires
                 if (m_PacketAudioSource)
                     m_PacketAudioSource.Stop();
 
-            if (wasCollected)
-                SpawnPacketCollectedParticles(packet);
 
             if (OnPacketDespawned != null)
                 OnPacketDespawned.Invoke(packet, wasCollected);
@@ -887,21 +887,21 @@ namespace TO5.Wires
         /// <param name="amount">Amount to add</param>
         //public void AddBoost(float amount)
         //{
-            //if (!m_BoostActive && m_Boost < 100f)
-            //{
-            //    //m_Boost = Mathf.Min(100f, m_Boost + amount);
-            //    if (m_Boost >= 100f)
-            //    {
-            //        PlayLoopingBoostSound(m_BoostReadySound, 1f);
+        //if (!m_BoostActive && m_Boost < 100f)
+        //{
+        //    //m_Boost = Mathf.Min(100f, m_Boost + amount);
+        //    if (m_Boost >= 100f)
+        //    {
+        //        PlayLoopingBoostSound(m_BoostReadySound, 1f);
 
-            //        if (m_BoostReadyParticles)
-            //            m_BoostReadyParticles.Play();
+        //        if (m_BoostReadyParticles)
+        //            m_BoostReadyParticles.Play();
 
-            //        CompanionVoice voice = companionVoice;
-            //        if (voice)
-            //            voice.PlayBoostReadyDialogue();
-            //    }
-            //}
+        //        CompanionVoice voice = companionVoice;
+        //        if (voice)
+        //            voice.PlayBoostReadyDialogue();
+        //    }
+        //}
         //}
 
         /// <summary>
@@ -909,24 +909,38 @@ namespace TO5.Wires
         /// </summary>
         private void PacketCollected(DataPacket packet)
         {
+            // Assuming packet is now chasing the player companion
+            SpawnPacketCollectedParticles(packet);
+        }
+
+        /// <summary>
+        /// Notify that packet has reached the companion
+        /// </summary>
+        /// <param name="packet"></param>
+        private void PacketSeekComplete(DataPacket packet)
+        {
             AddScore(m_PacketScore);
             //AddBoost(m_BoostPerPacket);
 
             // Extend wire of player if we can
             if (m_PacketsCollectedSinceJump < m_MaxBonusSegments)
             {
+                ++m_PacketsCollectedSinceJump;
+                bool nowLocked = m_PacketsCollectedSinceJump == m_MaxBonusSegments;
+
+                if (nowLocked && m_BonusSegmentsReachedSource)
+                    m_BonusSegmentsReachedSource.Play();
+
                 PacketStageProperties packetProps = GetStagePacketProperties();
                 if (m_WireManager)
-                    m_WireManager.ExtendActiveWire(packetProps.m_BonusSegments);
-
-                ++m_PacketsCollectedSinceJump;
+                    m_WireManager.ExtendActiveWire(packetProps.m_BonusSegments, nowLocked);
             }
+
+            DeactivatePacket(packet, true);
 
             CompanionVoice voice = companionVoice;
             if (voice)
                 voice.PlayPacketCollectedDialogue();
-
-            DeactivatePacket(packet, true);
         }
 
         /// <summary>
@@ -943,27 +957,27 @@ namespace TO5.Wires
         /// <returns>If boost was activated</returns>
         //private bool ActivateBoost()
         //{
-            //if (!m_BoostActive && boostReady)
-            //{
-            //    m_BoostActive = true;
+        //if (!m_BoostActive && boostReady)
+        //{
+        //    m_BoostActive = true;
 
-            //    PlayBoostSound(m_BoostActivatedSound);
-            //    PlayLoopingBoostSound(m_BoostActiveSound, 0.7f);
+        //    PlayBoostSound(m_BoostActivatedSound);
+        //    PlayLoopingBoostSound(m_BoostActiveSound, 0.7f);
 
-            //    if (m_BoostReadyParticles)
-            //        m_BoostReadyParticles.Stop();
+        //    if (m_BoostReadyParticles)
+        //        m_BoostReadyParticles.Stop();
 
-            //    CompanionVoice voice = companionVoice;
-            //    if (voice)
-            //        voice.PlayBoostStartDialogue();
+        //    CompanionVoice voice = companionVoice;
+        //    if (voice)
+        //        voice.PlayBoostStartDialogue();
 
-            //    if (OnBoostModeUpdated != null)
-            //        OnBoostModeUpdated.Invoke(true);
+        //    if (OnBoostModeUpdated != null)
+        //        OnBoostModeUpdated.Invoke(true);
 
-            //    return true;
-            //}
+        //    return true;
+        //}
 
-            //return false;
+        //return false;
         //}
 
         /// <summary>
@@ -1045,7 +1059,7 @@ namespace TO5.Wires
                 {
                     m_PacketSpawnAudioSource.clip = clip;
                     m_PacketSpawnAudioSource.time = 0f;
-                    m_PacketSpawnAudioSource.Play();       
+                    m_PacketSpawnAudioSource.Play();
                 }
             }
         }
@@ -1056,12 +1070,12 @@ namespace TO5.Wires
         /// <param name="clip">Audio clip to play</param>
         //private void PlayBoostSound(AudioClip clip)
         //{
-            //if (m_BoostAudioSource && clip)
-            //{
-            //    m_BoostAudioSource.clip = clip;
-            //    m_BoostAudioSource.time = 0f;
-            //    m_BoostAudioSource.Play();
-            //}
+        //if (m_BoostAudioSource && clip)
+        //{
+        //    m_BoostAudioSource.clip = clip;
+        //    m_BoostAudioSource.time = 0f;
+        //    m_BoostAudioSource.Play();
+        //}
         //}
 
         /// <summary>
@@ -1071,20 +1085,20 @@ namespace TO5.Wires
         /// <param name="volume">Volume to play clip at</param>
         //private void PlayLoopingBoostSound(AudioClip clip, float volume)
         //{
-            //if (m_BoostLoopingAudioSource)
-            //{
-            //    // A call to this function assumes we were going to override an already looping sound
-            //    if (!clip)
-            //    {
-            //        m_BoostLoopingAudioSource.Stop();
-            //        return;
-            //    }
+        //if (m_BoostLoopingAudioSource)
+        //{
+        //    // A call to this function assumes we were going to override an already looping sound
+        //    if (!clip)
+        //    {
+        //        m_BoostLoopingAudioSource.Stop();
+        //        return;
+        //    }
 
-            //    m_BoostLoopingAudioSource.clip = clip;
-            //    m_BoostLoopingAudioSource.time = 0f;
-            //    m_BoostLoopingAudioSource.volume = volume;
-            //    m_BoostLoopingAudioSource.Play();
-            //}
+        //    m_BoostLoopingAudioSource.clip = clip;
+        //    m_BoostLoopingAudioSource.time = 0f;
+        //    m_BoostLoopingAudioSource.volume = volume;
+        //    m_BoostLoopingAudioSource.Play();
+        //}
         //}
 
         /// <summary>
@@ -1143,7 +1157,7 @@ namespace TO5.Wires
             }
             else if (m_PacketCollectedParticles != null)
             {
-                system = Instantiate(m_PacketCollectedParticles, packet.transform.position, Quaternion.identity);               
+                system = Instantiate(m_PacketCollectedParticles, packet.transform.position, Quaternion.identity);
                 m_PacketCollectedSystems.Add(system);
                 m_PacketCollectedSystems.ActivateObject();
             }
@@ -1183,7 +1197,7 @@ namespace TO5.Wires
                 m_PacketsCollectedSinceJump = 0;
         }
 
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         /// <summary>
         /// Called by wire manager to draw debug gizmos
         /// </summary>
@@ -1196,6 +1210,6 @@ namespace TO5.Wires
             Wires.DrawCutoffGizmo(m_BottomCircleCutoff, center, m_MaxPacketSpawnRadius, true);
             Wires.DrawCutoffGizmo(m_TopCircleCutoff, center, m_MaxPacketSpawnRadius, false);
         }
-        #endif
+#endif
     }
 }

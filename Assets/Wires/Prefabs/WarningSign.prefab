@@ -76,7 +76,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Speed: 1
-  m_Offset: 0.05
+  m_Offset: 0.1
 --- !u!1 &7073827611407674354
 GameObject:
   m_ObjectHideFlags: 0

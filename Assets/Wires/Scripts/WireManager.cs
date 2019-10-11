@@ -1139,18 +1139,23 @@ namespace TO5.Wires
         /// <summary>
         /// Extends the wire the player is currently on
         /// </summary>
-        /// <param name="segments"></param>
-        public void ExtendActiveWire(int segments)
+        /// <param name="segments">Amount of segments to increase wire by</param>
+        /// <param name="locked">If wire is now locked from extending further</param>
+        public void ExtendActiveWire(int segments, bool locked)
         {
             if (!tutorialMode)
             {
-                if (m_SparkJumper.wire)
+                // Don't want to extend wire while drifting
+                if (m_SparkJumper.wire && !m_SparkJumper.isDrifting)
                 {
                     m_SparkJumper.wire.AddSegments(segments);
 
                     // Update world aesthetics to match change
                     if (m_WorldTheme && m_WorldTheme.worldAesthetics)
+                    {
                         m_WorldTheme.worldAesthetics.RefreshWireBasedAesthetics();
+                        m_WorldTheme.worldAesthetics.SetWarningSignedLocked(locked);
+                    }
                 }
             }
         }

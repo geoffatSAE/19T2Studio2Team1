@@ -122,9 +122,8 @@ namespace TO5.Wires
         {
             if (segments > 0)
             {
-                // Can't change length while player is drifting on this wire
-                if (spark && spark.sparkJumper && 
-                    spark.sparkJumper.isDrifting || spark.sparkJumper.isJumping)
+                // Can't change length while player is jumping to this wire
+                if (spark && spark.sparkJumper && spark.sparkJumper.isJumping)
                     return;
 
                 m_Segments += segments;

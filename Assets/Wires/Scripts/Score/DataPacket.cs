@@ -17,6 +17,7 @@ namespace TO5.Wires
         public delegate void PacketCollected(DataPacket packet);
 
         public PacketCollected OnCollected;     // Event for when player collects this packet
+        public PacketCollected OnSeekComplete;  // Event for when packet has finished seeking its target
         public PacketCollected OnExpired;       // Event for when this packet expires
 
         [SerializeField] private Renderer m_Renderer;                       // Packets mesh renderer
@@ -151,8 +152,8 @@ namespace TO5.Wires
         /// </summary>
         private void TargetReached()
         {
-            if (OnCollected != null)
-                OnCollected.Invoke(this);
+            if (OnSeekComplete != null)
+                OnSeekComplete.Invoke(this);
         }
 
         // IInteractive Interface
@@ -168,6 +169,9 @@ namespace TO5.Wires
                 SetSeekTarget(jumper.companion.transform);
 
             jumper.PlaySelectionSound(m_SelectedSound);
+
+            if (OnCollected != null)
+                OnCollected.Invoke(this);
         }
     }
 }

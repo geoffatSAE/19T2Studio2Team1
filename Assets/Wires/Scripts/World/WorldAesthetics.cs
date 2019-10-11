@@ -34,6 +34,9 @@ namespace TO5.Wires
 
         [Header("Warning")]
         [SerializeField] private Transform m_WarningPivot;              // Pivot for the end of wire sign
+        [SerializeField] private Renderer m_WarningSignRenderer;        // Renderer for the warning sign
+        [SerializeField] private Texture2D m_UnlockedWireWarning;       // Texture to use when wire can be extended
+        [SerializeField] private Texture2D m_LockedWireWarning;         // Texture to use when wire can't be extended
 
         private bool m_WarningSignLocked = false;                       // If warning sign is locked in an off state
 
@@ -77,6 +80,8 @@ namespace TO5.Wires
                 ParticleSystem.TrailModule trails = m_BorderParticles.trails;
                 m_ParticleColor = trails.colorOverLifetime.color;
             }
+
+            SetWarningSignTexture(m_UnlockedWireWarning);
         }
 
         /// <summary>
@@ -123,6 +128,8 @@ namespace TO5.Wires
 
                 if (m_BorderRenderer)
                     m_BorderRenderer.enabled = true;
+
+                SetWarningSignedLocked(false);
             }
         }
 
@@ -475,6 +482,25 @@ namespace TO5.Wires
                 m_TunnelInstance.SetColor(tunnelColor);
                 m_TunnelInstance.SetTextures(wireFactory.borderTexture, wireFactory.borderTexture);
             }
+        }
+
+        /// <summary>
+        /// Set the warning sign texture based on if the wire is locked (from increasing in size)
+        /// </summary>
+        /// <param name="locked">If to use locked texture</param>
+        public void SetWarningSignedLocked(bool locked)
+        {
+            SetWarningSignTexture(locked ? m_LockedWireWarning : m_UnlockedWireWarning);
+        }
+
+        /// <summary>
+        /// Updates the texture of the warning sign
+        /// </summary>
+        /// <param name="texture">Texture to set</param>
+        private void SetWarningSignTexture(Texture2D texture)
+        {
+            if (m_WarningSignRenderer)
+                m_WarningSignRenderer.material.mainTexture = texture;
         }
     }
 }

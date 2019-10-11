@@ -93,7 +93,7 @@
 				fixed4 z = lerp(z1, z2, _Color.a);
 
 				// How close pixel is to center of plane
-				fixed centerRatio = 1.f - abs(pow((i.uv.y * 2.f) - 1.f, 2.f));
+				fixed centerRatio = 1.f;// 1.f - abs(pow((i.objectPos.y * 2.f) - 1.f, 2.f));
 
 				fixed4 col = _Color * (x * blend.x + y * blend.y + z * blend.z);
 				col.a = _Alpha * ease(centerRatio);
