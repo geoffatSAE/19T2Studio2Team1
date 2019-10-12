@@ -439,7 +439,8 @@ namespace TO5.Wires
             // Wires can never be defective if switch interval is zero
             float onInterval = 0f;
             float offInterval = 0f;
-            if (wireProps.m_SparkOnSwitchInterval > 0f && wireProps.m_SparkOffSwitchInterval > 0f)
+            if (m_EnableDefectiveWires &&
+                wireProps.m_SparkOnSwitchInterval > 0f && wireProps.m_SparkOffSwitchInterval > 0f)
             {
                 float defectiveChance = wireProps.m_DefectiveWireChance;
 
