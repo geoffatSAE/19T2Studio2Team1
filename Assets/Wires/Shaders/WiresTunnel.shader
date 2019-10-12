@@ -51,9 +51,9 @@
 
 			float ease(float alpha)
 			{
-				// Ease Out Cubic
+				// Ease Out Quad
 				// See https://easings.net/en
-				return (--alpha) * alpha * alpha + 1;
+				return alpha * (2 - alpha);
 			}
 
 			v2f vert(appdata v)
@@ -92,12 +92,11 @@
 				fixed4 y = lerp(y1, y2, _Color.a);
 				fixed4 z = lerp(z1, z2, _Color.a);
 
-				// How close pixel is to center of plane
-				fixed centerRatio = 1.f;// 1.f - abs(pow((i.objectPos.y * 2.f) - 1.f, 2.f));
+				// Wumbo Jumbo math due to the tunnels verticies positions being off
+				fixed centerRatio = 1 - ((abs(i.objectPos.y + 1.25)) / 3.5);
 
 				fixed4 col = _Color * (x * blend.x + y * blend.y + z * blend.z);
 				col.a = _Alpha * ease(centerRatio);
-
 				return col;
 			}
 

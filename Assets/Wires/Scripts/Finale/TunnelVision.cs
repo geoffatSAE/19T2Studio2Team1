@@ -10,7 +10,7 @@ namespace TO5.Wires
     public class TunnelVision : MonoBehaviour
     {
         [SerializeField] private Material m_VisionMaterial;     // Vision to apply to planes
-        [SerializeField] private MeshRenderer[] m_Planes;       // Planes to set material for
+        [SerializeField] private MeshRenderer m_Mesh;           // Mesh to manipulate
 
         [SerializeField, Range(0f, 1f)] private float m_StartAlpha = 0f;            // Alpha of material when finale starts
         [SerializeField, Range(0f, 1f)] private float m_EndAlpha = 0.6f;            // Alpha of material when finale ends
@@ -21,12 +21,8 @@ namespace TO5.Wires
             if (m_VisionMaterial)
                 m_VisionMaterial = new Material(m_VisionMaterial);
 
-            if (m_VisionMaterial && m_Planes != null)
-                foreach (MeshRenderer renderer in m_Planes)
-                {
-                    renderer.material = m_VisionMaterial;
-                    renderer.gameObject.SetActive(false);
-                }
+            if (m_VisionMaterial && m_Mesh != null)
+                m_Mesh.material = m_VisionMaterial;
         }
 
         /// <summary>
@@ -36,9 +32,6 @@ namespace TO5.Wires
         {
             if (m_VisionMaterial)
                 m_VisionMaterial.SetFloat("_Alpha", m_StartAlpha);
-
-            foreach (MeshRenderer renderer in m_Planes)
-                renderer.gameObject.SetActive(true);
         }
 
         /// <summary>

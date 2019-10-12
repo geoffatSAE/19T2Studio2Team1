@@ -45,8 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_VisionMaterial: {fileID: 2100000, guid: b1676d7da20f89c47b2aadb2dc3c06ce, type: 2}
-  m_Planes:
-  - {fileID: 354320540666672775}
+  m_Mesh: {fileID: 354320540666672775}
   m_StartAlpha: 0
   m_EndAlpha: 0.25
 --- !u!1001 &354320540668571367
@@ -60,6 +59,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: FinaleTunnel
       objectReference: {fileID: 0}
+    - target: {fileID: 2300000, guid: 9ab66d980bb1d0544a4f16e5311300c2, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: b1676d7da20f89c47b2aadb2dc3c06ce, type: 2}
     - target: {fileID: 400000, guid: 9ab66d980bb1d0544a4f16e5311300c2, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -116,10 +119,6 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 100
       objectReference: {fileID: 0}
-    - target: {fileID: 2300000, guid: 9ab66d980bb1d0544a4f16e5311300c2, type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: b1676d7da20f89c47b2aadb2dc3c06ce, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9ab66d980bb1d0544a4f16e5311300c2, type: 3}
 --- !u!4 &354320540668441703 stripped
