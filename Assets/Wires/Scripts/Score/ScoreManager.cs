@@ -936,7 +936,8 @@ namespace TO5.Wires
                     m_WireManager.ExtendActiveWire(packetProps.m_BonusSegments, nowLocked);
             }
 
-            DeactivatePacket(packet, true);
+            // Allow packets trails to also disappear
+            StartCoroutine(DelayPacketDeactivationRoutine(packet));
 
             CompanionVoice voice = companionVoice;
             if (voice)
@@ -949,6 +950,23 @@ namespace TO5.Wires
         private void PacketExpired(DataPacket packet)
         {
             DeactivatePacket(packet, false);
+        }
+
+        /// <summary>
+        /// Delays the deactivation of the packet based on expected delay
+        /// </summary>
+        /// <param name="packet">Packet to deactivate</param>
+        private IEnumerator DelayPacketDeactivationRoutine(DataPacket packet)
+        {
+            // Has possibly of changing expected delay,
+            // so we must call it first for accurate time
+            packet.DisableTrails();
+
+            float delay = packet.expectedDelayTime;
+            if (delay > 0f)
+                yield return new WaitForSeconds(delay);
+
+            DeactivatePacket(packet, true);
         }
 
         /// <summary>

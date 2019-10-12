@@ -26,9 +26,14 @@ namespace TO5.Wires
         [SerializeField] private SeekMovement m_SeekMovement;               // Seek movement component (used when collected)
         [SerializeField] private Animator m_Animator;                       // Packets animator
         public AudioClip m_SelectedSound;                                   // Sound to play when selected
+        public float m_SeekTrailsTime = 1f;                                 // Speed of trails when seeking
+        public float m_SeekFadeTime = 0.25f;                                // Speed of trails after reaching target
 
         private float m_Speed = 0f;                 // The speed of this packet
         private bool m_Seek = false;                // If this packet should seek target
+
+        // Expected time to delay to allow trails to disappear
+        public float expectedDelayTime { get { return m_Trails != null ? m_Trails.time : 0f; } }
 
         void Awake()
         {
@@ -123,7 +128,11 @@ namespace TO5.Wires
                 m_Renderer.enabled = false;
 
             if (m_Trails)
+            {
                 m_Trails.enabled = true;
+                m_Trails.emitting = true;
+                m_Trails.time = m_SeekTrailsTime;
+            }
 
             return true;
         }
@@ -136,6 +145,19 @@ namespace TO5.Wires
         {
             if (m_Animator)
                 m_Animator.speed = speed;
+        }
+
+        /// <summary>
+        /// Disables this packets trails, used 
+        /// by scoreManager for delayed deactivation
+        /// </summary>
+        public void DisableTrails()
+        {
+            if (m_Trails)
+            {
+                m_Trails.emitting = false;
+                m_Trails.time = m_SeekFadeTime;
+            }
         }
 
         /// <summary>

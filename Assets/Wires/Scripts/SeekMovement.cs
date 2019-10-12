@@ -35,7 +35,7 @@ namespace TO5.Wires
         /// <param name="deltaTime"></param>
         public void Move(float deltaTime)
         {
-            if (!m_Target)
+            if (!m_Target || m_AtTarget)
                 return;
 
             Vector3 from = transform.position;
@@ -46,10 +46,9 @@ namespace TO5.Wires
             transform.localScale = Vector3.Lerp(Vector3.one, Vector3.one * 0.4f, alpha);
 
             // Are we at target?
-            bool wasAtTarget = m_AtTarget;
-            m_AtTarget = alpha >= 1f;
-            if (wasAtTarget != m_AtTarget && m_AtTarget)
+            if (alpha >= 1f)
             {
+                m_AtTarget = true;
                 if (OnTargetReached != null)
                     OnTargetReached.Invoke();
             }          

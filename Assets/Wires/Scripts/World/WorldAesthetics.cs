@@ -128,8 +128,6 @@ namespace TO5.Wires
 
                 if (m_BorderRenderer)
                     m_BorderRenderer.enabled = true;
-
-                SetWarningSignedLocked(false);
             }
         }
 
@@ -263,6 +261,8 @@ namespace TO5.Wires
             Assert.IsNotNull(m_ActiveWire);
 
             RefreshWireBasedAesthetics();
+
+            SetWarningSignedLocked(false);
 
             WireFactory factory = m_ActiveWire.factory;
             if (!factory)
