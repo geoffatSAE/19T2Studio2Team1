@@ -15,7 +15,7 @@ MonoBehaviour:
   m_Color: {r: 1, g: 0.58961695, b: 0, a: 1}
   m_SkyboxColor: {r: 1, g: 0.697198, b: 0, a: 1}
   m_ParticleColor: {r: 1, g: 0.65882355, b: 0, a: 1}
-  m_SparkColor: {r: 1, g: 0, b: 0, a: 1}
+  m_SparkColor: {r: 1, g: 0.7727525, b: 0.4481132, a: 1}
   m_BoostColor:
     m_Mode: 1
     m_GradientMin:
@@ -79,10 +79,10 @@ MonoBehaviour:
     m_ColorMin: {r: 0, g: 0, b: 0, a: 0}
     m_ColorMax: {r: 0, g: 0, b: 0, a: 0}
   m_OrbiterColors:
-    m_LowColor: {r: 0.9622642, g: 0.521394, b: 0.031772893, a: 1}
-    m_HighColor: {r: 1, g: 0, b: 0, a: 1}
-    m_TrailStartColor: {r: 0.7075472, g: 0.49777842, b: 0.26366144, a: 1}
-    m_TrailEndColor: {r: 0.6415094, g: 0.23905303, b: 0.23905303, a: 1}
+    m_LowColor: {r: 1, g: 0.6428995, b: 0, a: 1}
+    m_HighColor: {r: 1, g: 0.6431373, b: 0, a: 1}
+    m_TrailStartColor: {r: 1, g: 0.53097343, b: 0, a: 1}
+    m_TrailEndColor: {r: 1, g: 0.8009267, b: 0, a: 0}
   m_BorderTexture: {fileID: 2800000, guid: deff90eebe787eb4baf1deb26e423804, type: 3}
   m_MusicTracks:
   - m_Music: {fileID: 8300000, guid: 22dae3c8aafd3cc429e5fdf663644a15, type: 3}
