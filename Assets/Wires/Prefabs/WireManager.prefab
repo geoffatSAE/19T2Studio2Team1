@@ -73,7 +73,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 243841563610326654, guid: 55545f7fdabb42d4f93bdb72b21c53b1,
     type: 2}
   m_audioClip: {fileID: 8300000, guid: d64f57847fd29dc4196bbbf3e55389f2, type: 3}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -605,15 +605,15 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 7503fa6e476d74148be8d6db326b6477, type: 2}
   - {fileID: 11400000, guid: 7bee21f78d023f1408627f6cfe3092f5, type: 2}
   m_DriftingEnabled: 1
-  m_MaxDriftTime: 2.5
+  m_MaxDriftTime: 2
   m_WirePrefab: {fileID: 4698685643518956546, guid: 1f8155c3339076843a6198e146cab368,
     type: 3}
   m_WireSpace: 3
   m_EnableDefectiveWires: 0
-  m_ForceWireSpawnAt: 0.8
+  m_ForceWireSpawnAt: 0.65
   m_WireProperties:
-  - m_MinSegments: 20
-    m_MaxSegments: 35
+  - m_MinSegments: 30
+    m_MaxSegments: 40
     m_MinSpawnInterval: 2.6
     m_MaxSpawnInterval: 3.6
     m_SpawnSegmentOffset: 5
@@ -622,16 +622,16 @@ MonoBehaviour:
     m_OuterSpawnRadius: 5
     m_BottomCircleCutoff: 0
     m_TopCircleCutoff: 0.7
-    m_MaxWiresAtOnce: 4
+    m_MaxWiresAtOnce: 2
     m_SparkSpawnSegmentDelay: 2
     m_DefectiveWireChance: 0
     m_SparkSpeed: 2.75
     m_SparkDriftScale: 1
     m_SparkOnSwitchInterval: 2
     m_SparkOffSwitchInterval: 0.5
-    m_JumpTime: 0.6
-  - m_MinSegments: 40
-    m_MaxSegments: 50
+    m_JumpTime: 0.75
+  - m_MinSegments: 35
+    m_MaxSegments: 35
     m_MinSpawnInterval: 2
     m_MaxSpawnInterval: 3
     m_SpawnSegmentOffset: 5
@@ -640,16 +640,16 @@ MonoBehaviour:
     m_OuterSpawnRadius: 7
     m_BottomCircleCutoff: 0.3
     m_TopCircleCutoff: 0.7
-    m_MaxWiresAtOnce: 5
+    m_MaxWiresAtOnce: 2
     m_SparkSpawnSegmentDelay: 3
     m_DefectiveWireChance: 0
-    m_SparkSpeed: 3
+    m_SparkSpeed: 2.75
     m_SparkDriftScale: 1
     m_SparkOnSwitchInterval: 2
     m_SparkOffSwitchInterval: 0.5
     m_JumpTime: 0.5
-  - m_MinSegments: 55
-    m_MaxSegments: 65
+  - m_MinSegments: 40
+    m_MaxSegments: 40
     m_MinSpawnInterval: 1.7
     m_MaxSpawnInterval: 2.6
     m_SpawnSegmentOffset: 7
@@ -658,16 +658,16 @@ MonoBehaviour:
     m_OuterSpawnRadius: 15
     m_BottomCircleCutoff: 0.3
     m_TopCircleCutoff: 0.7
-    m_MaxWiresAtOnce: 5
+    m_MaxWiresAtOnce: 3
     m_SparkSpawnSegmentDelay: 3
     m_DefectiveWireChance: 0.08
-    m_SparkSpeed: 3.25
+    m_SparkSpeed: 3
     m_SparkDriftScale: 0.6
     m_SparkOnSwitchInterval: 2
     m_SparkOffSwitchInterval: 0.5
     m_JumpTime: 0.45
-  - m_MinSegments: 65
-    m_MaxSegments: 75
+  - m_MinSegments: 50
+    m_MaxSegments: 50
     m_MinSpawnInterval: 1.3
     m_MaxSpawnInterval: 2.2
     m_SpawnSegmentOffset: 8
@@ -676,16 +676,16 @@ MonoBehaviour:
     m_OuterSpawnRadius: 24
     m_BottomCircleCutoff: 0.55
     m_TopCircleCutoff: 0.7
-    m_MaxWiresAtOnce: 5
+    m_MaxWiresAtOnce: 4
     m_SparkSpawnSegmentDelay: 3
     m_DefectiveWireChance: 0.08
-    m_SparkSpeed: 3.4
+    m_SparkSpeed: 3.25
     m_SparkDriftScale: 0.3
     m_SparkOnSwitchInterval: 1.5
     m_SparkOffSwitchInterval: 1.4
     m_JumpTime: 0.4
   - m_MinSegments: 75
-    m_MaxSegments: 85
+    m_MaxSegments: 75
     m_MinSpawnInterval: 1.2
     m_MaxSpawnInterval: 1.6
     m_SpawnSegmentOffset: 10
@@ -694,16 +694,16 @@ MonoBehaviour:
     m_OuterSpawnRadius: 26
     m_BottomCircleCutoff: 0.7
     m_TopCircleCutoff: 0.7
-    m_MaxWiresAtOnce: 6
+    m_MaxWiresAtOnce: 4
     m_SparkSpawnSegmentDelay: 3
     m_DefectiveWireChance: 0.08
-    m_SparkSpeed: 3.55
+    m_SparkSpeed: 3.5
     m_SparkDriftScale: 0.6
     m_SparkOnSwitchInterval: 1.2
     m_SparkOffSwitchInterval: 0.3
     m_JumpTime: 0.35
   - m_MinSegments: 85
-    m_MaxSegments: 95
+    m_MaxSegments: 85
     m_MinSpawnInterval: 0.8
     m_MaxSpawnInterval: 1.8
     m_SpawnSegmentOffset: 5
@@ -712,10 +712,10 @@ MonoBehaviour:
     m_OuterSpawnRadius: 25
     m_BottomCircleCutoff: 0.7
     m_TopCircleCutoff: 0.7
-    m_MaxWiresAtOnce: 7
+    m_MaxWiresAtOnce: 4
     m_SparkSpawnSegmentDelay: 6
     m_DefectiveWireChance: 0.08
-    m_SparkSpeed: 3.6
+    m_SparkSpeed: 3.75
     m_SparkDriftScale: 0.6
     m_SparkOnSwitchInterval: 1
     m_SparkOffSwitchInterval: 0.3
@@ -771,46 +771,46 @@ MonoBehaviour:
       m_MaxSpeed: 15
       m_Lifetime: 5
       m_AnimSpeed: 1.2
-      m_BonusSegments: 5
-      m_MinSpawnOffset: 75
-      m_MinSpawnInterval: 1
-      m_MaxSpawnInterval: 2
+      m_BonusSegments: 7
+      m_MinSpawnOffset: 70
+      m_MinSpawnInterval: 2
+      m_MaxSpawnInterval: 3
       m_ClusterChance: 0.1
       m_MinPacketsPerCluster: 2
-      m_MaxPacketsPerCluster: 4
+      m_MaxPacketsPerCluster: 2
       m_ClusterRate: 2
       m_ClusterSpawnRange: 1
       m_MultiplierIncreaseInterval: 15
       m_HandicapMultiplierIncreaseInterval: 10
   - m_Duration: 24
     m_PacketProperties:
-      m_MinSpeed: 15
-      m_MaxSpeed: 20
+      m_MinSpeed: 20
+      m_MaxSpeed: 30
       m_Lifetime: 5
       m_AnimSpeed: 1.4
-      m_BonusSegments: 5
-      m_MinSpawnOffset: 90
-      m_MinSpawnInterval: 1
+      m_BonusSegments: 12
+      m_MinSpawnOffset: 80
+      m_MinSpawnInterval: 1.5
       m_MaxSpawnInterval: 2
       m_ClusterChance: 0.05
-      m_MinPacketsPerCluster: 3
-      m_MaxPacketsPerCluster: 4
+      m_MinPacketsPerCluster: 2
+      m_MaxPacketsPerCluster: 2
       m_ClusterRate: 2
       m_ClusterSpawnRange: 1
       m_MultiplierIncreaseInterval: 15
       m_HandicapMultiplierIncreaseInterval: 10
   - m_Duration: 26
     m_PacketProperties:
-      m_MinSpeed: 15
-      m_MaxSpeed: 20
+      m_MinSpeed: 25
+      m_MaxSpeed: 35
       m_Lifetime: 5
       m_AnimSpeed: 1.6
-      m_BonusSegments: 5
-      m_MinSpawnOffset: 100
-      m_MinSpawnInterval: 1
-      m_MaxSpawnInterval: 2
+      m_BonusSegments: 15
+      m_MinSpawnOffset: 90
+      m_MinSpawnInterval: 0.5
+      m_MaxSpawnInterval: 1
       m_ClusterChance: 0.05
-      m_MinPacketsPerCluster: 3
+      m_MinPacketsPerCluster: 2
       m_MaxPacketsPerCluster: 3
       m_ClusterRate: 2
       m_ClusterSpawnRange: 2
@@ -818,14 +818,14 @@ MonoBehaviour:
       m_HandicapMultiplierIncreaseInterval: 10
   - m_Duration: 28
     m_PacketProperties:
-      m_MinSpeed: 15
-      m_MaxSpeed: 20
+      m_MinSpeed: 35
+      m_MaxSpeed: 40
       m_Lifetime: 5
       m_AnimSpeed: 1.8
-      m_BonusSegments: 5
-      m_MinSpawnOffset: 120
-      m_MinSpawnInterval: 1
-      m_MaxSpawnInterval: 2
+      m_BonusSegments: 19
+      m_MinSpawnOffset: 100
+      m_MinSpawnInterval: 0.25
+      m_MaxSpawnInterval: 1
       m_ClusterChance: 0.05
       m_MinPacketsPerCluster: 3
       m_MaxPacketsPerCluster: 4
@@ -835,14 +835,14 @@ MonoBehaviour:
       m_HandicapMultiplierIncreaseInterval: 10
   - m_Duration: 30
     m_PacketProperties:
-      m_MinSpeed: 15
-      m_MaxSpeed: 20
+      m_MinSpeed: 40
+      m_MaxSpeed: 45
       m_Lifetime: 10
       m_AnimSpeed: 2
-      m_BonusSegments: 5
-      m_MinSpawnOffset: 140
-      m_MinSpawnInterval: 1
-      m_MaxSpawnInterval: 2
+      m_BonusSegments: 23
+      m_MinSpawnOffset: 110
+      m_MinSpawnInterval: 0.25
+      m_MaxSpawnInterval: 0.75
       m_ClusterChance: 0.08
       m_MinPacketsPerCluster: 3
       m_MaxPacketsPerCluster: 4
@@ -851,21 +851,22 @@ MonoBehaviour:
       m_MultiplierIncreaseInterval: 15
       m_HandicapMultiplierIncreaseInterval: 10
   m_MultiplierAudioSource: {fileID: 4692482073915151728}
-  m_MultiplierIncreaseClip: {fileID: 8300000, guid: bfea28521886300429f745d3d4ee8e3b,
+  m_MultiplierIncreaseClip: {fileID: 8300000, guid: f527fd6abefcab4489423637e6346fd9,
     type: 3}
   m_MultiplierIncreaseParticles: {fileID: 0}
   m_StageLives: 4
   m_StageHandicap: 2
-  m_MultiplierDecreaseClip: {fileID: 0}
+  m_MultiplierDecreaseClip: {fileID: 8300000, guid: 4df8d8cddb15ec941a07179ccde48f1a,
+    type: 3}
   m_LifeLostClip: {fileID: 0}
   m_MultiplierDecreaseParticles: {fileID: 0}
   m_PacketPrefab: {fileID: 1671077178524130716, guid: 9d6ee2c3a0b241145bd4019fd34cfc5c,
     type: 3}
-  m_PacketSpace: 1
+  m_PacketSpace: 4
   m_MinPacketSpawnRadius: 4
-  m_MaxPacketSpawnRadius: 25.9
+  m_MaxPacketSpawnRadius: 15
   m_BottomCircleCutoff: 0.7
-  m_TopCircleCutoff: 0.7
+  m_TopCircleCutoff: 1
   m_MaxBonusSegments: 4
   m_PacketSpawnSound: {fileID: 8300000, guid: 05a9b8a29ac7a024c8739b54e6d8e22b, type: 3}
   m_PacketClusterSpawnSound: {fileID: 8300000, guid: c912b9e24aba07d4f8c5e6d37c7c01ec,

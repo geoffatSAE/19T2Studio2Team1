@@ -183,7 +183,7 @@ MonoBehaviour:
   m_WireManager: {fileID: 0}
   m_WorldTheme: {fileID: 3395505406176328832}
   m_AutoStart: 1
-  m_ArcadeLength: 180
+  m_ArcadeLength: 225
   m_PostArcadeLength: 7.5
   m_FinaleSequence: {fileID: 2033297823795197395}
   m_SkipFinale: 0
@@ -195,7 +195,7 @@ MonoBehaviour:
   m_TutorialSparkSpeed: 1
   m_TutorialSparkOnInterval: 2
   m_TutorialSparkOffInterval: 1
-  m_TutorialJumpTime: 1.5
+  m_TutorialJumpTime: 1.25
   m_TutorialPacketOffset: 50
   m_TutorialPacketSpeed: 7.5
   m_TutorialPacketLifetime: 15
@@ -228,7 +228,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_MusicSource1: {fileID: 3395505407192623761}
   m_MusicSource2: {fileID: 3395505406105372229}
-  m_MusicFadeTime: 1.5
+  m_MusicFadeTime: 1
   m_MusicFadeVolume: 0.5
   m_MusicFadePitch: 0.75
   m_BeatCurve:
@@ -333,12 +333,12 @@ MonoBehaviour:
     m_SpawnRate: 3
   - m_SimulationSpeed: 2
     m_SpawnRate: 6
-  - m_SimulationSpeed: 2.1
-    m_SpawnRate: 8
-  - m_SimulationSpeed: 2.25
+  - m_SimulationSpeed: 2
     m_SpawnRate: 10
-  - m_SimulationSpeed: 2.5
-    m_SpawnRate: 12
+  - m_SimulationSpeed: 4
+    m_SpawnRate: 20
+  - m_SimulationSpeed: 6
+    m_SpawnRate: 30
   m_BoostDissapateSpeed: 15
   m_FlyingPacketsParticles: {fileID: 0}
   m_FlyingPacketsStages:
