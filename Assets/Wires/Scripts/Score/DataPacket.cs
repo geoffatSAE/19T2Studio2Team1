@@ -29,6 +29,7 @@ namespace TO5.Wires
         public float m_SeekTrailsTime = 1f;                                 // Speed of trails when seeking
         public float m_SeekFadeTime = 0.25f;                                // Speed of trails after reaching target
 
+        private SphereCollider m_Collder;           // Packets collider
         private float m_Speed = 0f;                 // The speed of this packet
         private bool m_Seek = false;                // If this packet should seek target
 
@@ -48,6 +49,8 @@ namespace TO5.Wires
 
             if (m_Trails)
                 m_Trails.enabled = false;
+
+            m_Collder = GetComponent<SphereCollider>();
         }
 
         /// <summary>
@@ -65,14 +68,13 @@ namespace TO5.Wires
             m_Speed = speed;
             m_Seek = false;
 
-            if (m_SeekMovement)
-                m_SeekMovement.m_Target = null;
-
             if (m_Renderer)
                 m_Renderer.enabled = true;
 
             if (m_Trails)
                 m_Trails.enabled = false;
+
+            m_Collder.enabled = true;
 
             Invoke("Expire", lifetime);
         }
@@ -114,7 +116,7 @@ namespace TO5.Wires
         /// </summary>
         /// <param name="target">Target to seek</param>
         /// <returns>If packet is in seek mode</returns>
-        public bool SetSeekTarget(Transform target)
+        public bool SetSeekTarget(Vector3 target)
         {
             if (!m_SeekMovement)
                 return false;
@@ -133,6 +135,10 @@ namespace TO5.Wires
                 m_Trails.emitting = true;
                 m_Trails.time = m_SeekTrailsTime;
             }
+
+            // We could potentially fly infront of the player,
+            // we don't want to be in there way if that happens
+            m_Collder.enabled = false;
 
             return true;
         }
@@ -187,8 +193,8 @@ namespace TO5.Wires
         // IInteractive Interface
         public void OnInteract(SparkJumper jumper)
         {
-            if (jumper.companion)
-                SetSeekTarget(jumper.companion.transform);
+            if (jumper.wire)
+                SetSeekTarget(jumper.wire.end);
 
             jumper.PlaySelectionSound(m_SelectedSound);
 
