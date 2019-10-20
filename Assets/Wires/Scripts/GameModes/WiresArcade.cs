@@ -17,9 +17,8 @@ namespace TO5.Wires
         {
             None,
             Jumping,        
-            Packets,         
-            Boost,
-            Defective
+            Packets,
+            Extension
         }
 
         [Header("Arcade")]
@@ -47,6 +46,7 @@ namespace TO5.Wires
         [SerializeField] private int m_TutorialPacketOffset = 50;               // Offset from player packets spawn in tutorial mode
         [SerializeField] private float m_TutorialPacketSpeed = 7.5f;            // Packet speed in tutorial mode
         [SerializeField] private float m_TutorialPacketLifetime = 15f;          // Lifetime of packets in tutorial mode
+        [SerializeField] private int m_TutorialBonusSegments = 15;              // Bonus segments when collecting packets in tutorial mode
         [SerializeField] private TutorialUI m_TutorialUI;                       // UI to display during tutorial mode
 
         private bool m_TutorialActive = false;                          // If tutorial is active   
@@ -265,7 +265,7 @@ namespace TO5.Wires
             {
                 if (wire.sparkProgress > 0.5f)
                 {
-                    bool defective = m_TutorialStep == TutorialStep.Defective;
+                    bool defective = false;// m_TutorialStep == TutorialStep.Defective;
 
                     // Repeat until a wire is spawned
                     Wire newWire = m_WireManager.GenerateRandomFixedWire(m_TutorialWireSegments, true, defective);
@@ -289,6 +289,20 @@ namespace TO5.Wires
                     yield return null;
                 }
             }
+        }
+
+        /// <summary>
+        /// Routine for delaying the start of the next tutorial step for duration
+        /// </summary>
+        /// <param name="delay">Delay to wait</param>
+        private IEnumerator TutorialDelayStepRoutine(float delay)
+        {
+            if (delay > 0f)
+                yield return new WaitForSeconds(delay);
+            else
+                yield return null;
+
+            NextTutorialStep();
         }
 
         /// <summary>
@@ -383,8 +397,8 @@ namespace TO5.Wires
                 // Chance with non defective wire spawning in earlier than defective wire step
                 // starting. This checks if last generated wire was defective (we don't need to
                 // check the wire specifically since we only spawn one wire at a time in tutorial mode)
-                if ((m_TutorialStep == TutorialStep.Jumping && !m_TutorialWireDefective) ||
-                    (m_TutorialStep == TutorialStep.Defective && m_TutorialWireDefective))
+                if ((m_TutorialStep == TutorialStep.Jumping && !m_TutorialWireDefective))// ||
+                    //(m_TutorialStep == TutorialStep.Defective && m_TutorialWireDefective))
                 {
                     NextTutorialStep();
                 }
@@ -497,24 +511,11 @@ namespace TO5.Wires
                     
                     // Boost has been removed
                     case TutorialStep.Packets:
-                        //StartBoostTutorial();
-                        //step = 2;
-                        //break;
+                        StartExtensionTutorial();
+                        step = 2;
+                        break;
 
-                    case TutorialStep.Boost:
-                        if (wireManager.m_EnableDefectiveWires)
-                        {
-                            StartDefectiveTutorial();
-                            step = 3;
-                            break;
-                        }
-                        else
-                        {
-                            EndTutorial(false);
-                            break;
-                        }        
-
-                    case TutorialStep.Defective:
+                    case TutorialStep.Extension:
                         EndTutorial(false);
                         break;
                 }
@@ -557,6 +558,7 @@ namespace TO5.Wires
                 tutorialProps.m_MinSpeed = m_TutorialPacketSpeed;
                 tutorialProps.m_MaxSpeed = m_TutorialPacketSpeed;
                 tutorialProps.m_Lifetime = m_TutorialPacketLifetime;
+                tutorialProps.m_BonusSegments = m_TutorialBonusSegments;
                 tutorialProps.m_ClusterChance = 0f;
 
                 scoreManager.EnableTutorial(tutorialProps);
@@ -574,36 +576,24 @@ namespace TO5.Wires
         }
 
         /// <summary>
-        /// Starts the boost section of the tutorial
+        /// Starts the wire extension section of the tutoril
         /// </summary>
-        private void StartBoostTutorial()
+        private void StartExtensionTutorial()
         {
-            m_TutorialStep = TutorialStep.Boost;
+            m_TutorialStep = TutorialStep.Extension;
 
             if (scoreManager)
             {
                 scoreManager.OnPacketDespawned -= TutorialPacketDespawned;
-                scoreManager.OnBoostModeUpdated += TutorialBoostModeUpdated;
-
                 scoreManager.SetPacketGenerationEnabled(false);
-                //scoreManager.AddBoost(100f);
             }
-            else
-            {
-                // We can't progress onto next tutorial
-                EndTutorial(false);
-            }
-        }
 
-        /// <summary>
-        /// Starts the defective section of the tutorial
-        /// </summary>
-        private void StartDefectiveTutorial()
-        {
-            m_TutorialStep = TutorialStep.Defective;
+            float delay = 0f;
+            if (sparkJumper && sparkJumper.companionVoice)
+                delay = sparkJumper.companionVoice.PlayTutorialDialogue(2);
 
-            if (scoreManager)
-                scoreManager.OnBoostModeUpdated -= TutorialBoostModeUpdated;
+            // Additional half a second of delay
+            StartCoroutine(TutorialDelayStepRoutine(delay + 0.5f));
         }
     }
 }

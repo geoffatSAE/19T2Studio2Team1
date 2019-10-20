@@ -1144,19 +1144,16 @@ namespace TO5.Wires
         /// <param name="locked">If wire is now locked from extending further</param>
         public void ExtendActiveWire(int segments, bool locked)
         {
-            if (!tutorialMode)
+            // Don't want to extend wire while drifting
+            if (m_SparkJumper.wire && !m_SparkJumper.isDrifting)
             {
-                // Don't want to extend wire while drifting
-                if (m_SparkJumper.wire && !m_SparkJumper.isDrifting)
-                {
-                    m_SparkJumper.wire.AddSegments(segments);
+                m_SparkJumper.wire.AddSegments(segments);
 
-                    // Update world aesthetics to match change
-                    if (m_WorldTheme && m_WorldTheme.worldAesthetics)
-                    {
-                        m_WorldTheme.worldAesthetics.RefreshWireBasedAesthetics();
-                        m_WorldTheme.worldAesthetics.SetWarningSignedLocked(locked);
-                    }
+                // Update world aesthetics to match change
+                if (m_WorldTheme && m_WorldTheme.worldAesthetics)
+                {
+                    m_WorldTheme.worldAesthetics.RefreshWireBasedAesthetics();
+                    m_WorldTheme.worldAesthetics.SetWarningSignedLocked(locked);
                 }
             }
         }

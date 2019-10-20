@@ -143,7 +143,7 @@ namespace TO5.Wires
             PlayDialogue(ref m_GameFinishedDialogue);
         }
 
-        public void PlayTutorialDialogue(int index)
+        public float PlayTutorialDialogue(int index)
         {
             if (m_TutorialDialogue != null)
             {
@@ -152,9 +152,11 @@ namespace TO5.Wires
                     m_DialoguePriority = -1;
 
                     AudioClip clip = m_TutorialDialogue[index];
-                    PlayDialogue(clip, int.MaxValue);
+                    return PlayDialogue(clip, int.MaxValue);
                 }
             }
+
+            return 0f;
         }
 
         public void PlayTutorialFinishedDialogue()
@@ -175,9 +177,10 @@ namespace TO5.Wires
         /// <param name="voiceLines">Voicelines to play</param>
         /// <param name="overrideActive">If dialogue should override current dialogue if priority is the same</param>
         /// <param name="delay">Delay before starting audio playback</param>
-        private void PlayDialogue(ref CompanionVoiceLines voiceLines, bool overrideActive = true, float delay = 0f)
+        /// <returns>Length of audio clip if playing (0 if not)</returns>
+        private float PlayDialogue(ref CompanionVoiceLines voiceLines, bool overrideActive = true, float delay = 0f)
         {
-            PlayDialogue(voiceLines.GetRandomVoiceline(), voiceLines.priority, overrideActive, delay);
+            return PlayDialogue(voiceLines.GetRandomVoiceline(), voiceLines.priority, overrideActive, delay);
         }
 
         /// <summary>
@@ -187,10 +190,11 @@ namespace TO5.Wires
         /// <param name="priority">Priority of dialogue</param>
         /// <param name="overrideActive">If dialogue should override current dialogue if priority is the same</param>
         /// <param name="delay">Delay before starting audio playback</param>
-        private void PlayDialogue(AudioClip clip, int priority, bool overrideActive = true, float delay = 0f)
+        /// <returns>Length of audio clip</returns>
+        private float PlayDialogue(AudioClip clip, int priority, bool overrideActive = true, float delay = 0f)
         {
             if (!enabled || !clip)
-                return;
+                return 0;
 
             bool playVoiceline = false;
 
@@ -200,6 +204,7 @@ namespace TO5.Wires
                 playVoiceline = true;
             }
 
+            float playTime = 0f;
             if (playVoiceline)
             {
                 m_AudioSource.clip = clip;
@@ -207,7 +212,11 @@ namespace TO5.Wires
                 m_AudioSource.PlayDelayed(delay);
 
                 m_DialoguePriority = priority;
+
+                playTime = clip.length;
             }
+
+            return playTime;
         }
     }
 }
