@@ -966,6 +966,7 @@ MonoBehaviour:
   m_EndWireAnim: EndOfWire
   m_MulIncAnim: MulIncrease
   m_MulDecAnim: MulDecrease
+  m_IdleSpeedIncrease: 0.25
   m_TutorialAnchor:
     m_Position: {x: 2, y: 3, z: 1}
     m_Scale: {x: 1.5, y: 1.5, z: 1.5}
@@ -1140,7 +1141,7 @@ MonoBehaviour:
   m_TutorialDialogue:
   - {fileID: 8300000, guid: 51cfbcb77f07af842bf71fddd3ade5af, type: 3}
   - {fileID: 8300000, guid: 95da70ebfcb110d4e929f1b538e58d10, type: 3}
-  - {fileID: 8300000, guid: 11e1f38dbfba7c34f8a3b23b214435a1, type: 3}
+  - {fileID: 8300000, guid: 82abaf8edd0f3364fbec807397e5a7f9, type: 3}
   - {fileID: 8300000, guid: 357f6d45184512044b5097e797a76110, type: 3}
   m_TutorialFinishedDialogue:
     m_Voicelines:

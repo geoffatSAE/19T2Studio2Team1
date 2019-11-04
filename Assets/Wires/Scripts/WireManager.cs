@@ -207,7 +207,9 @@ namespace TO5.Wires
                     }
                     else if (wire.spark && wire.spark.canJumpTo)
                     {
-                        ++numJumpOptions;
+                        // Give some squeezing room, spark might be at end of wire
+                        if (wire.sparkProgress <= m_ForceWireSpawnAt)
+                            ++numJumpOptions;
                     }
                 }
 

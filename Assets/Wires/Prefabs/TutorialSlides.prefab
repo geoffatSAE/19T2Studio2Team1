@@ -389,5 +389,5 @@ MonoBehaviour:
   m_Slides:
   - {fileID: 2800000, guid: b168059bb397f62449eec649f1d9c8ae, type: 3}
   - {fileID: 2800000, guid: 8dad535144c8acd459f4ddad56588bed, type: 3}
-  - {fileID: 2800000, guid: 4208cb84a176143428bc064c2f119c7f, type: 3}
+  - {fileID: 2800000, guid: eca98fec3ab3e304589570fee09363ca, type: 3}
   m_SkipButton: {fileID: 5220531377157060925}
