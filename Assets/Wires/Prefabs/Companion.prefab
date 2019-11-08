@@ -1099,7 +1099,6 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 4201e21ca12c868418fa4faa86d88cb9, type: 3}
     - {fileID: 8300000, guid: 350bc9d07f5f02b4f85a127f8feafd20, type: 3}
     - {fileID: 8300000, guid: ba973a121b0a3fa438d20cd854332d6f, type: 3}
-    - {fileID: 8300000, guid: 3f9f9ce6a6166b449a20e06a1d3d8c01, type: 3}
     m_Priority: 5
     m_Chance: 1
   m_PacketCollectedDialogue:
@@ -1141,7 +1140,7 @@ MonoBehaviour:
   m_TutorialDialogue:
   - {fileID: 8300000, guid: 51cfbcb77f07af842bf71fddd3ade5af, type: 3}
   - {fileID: 8300000, guid: 95da70ebfcb110d4e929f1b538e58d10, type: 3}
-  - {fileID: 8300000, guid: 82abaf8edd0f3364fbec807397e5a7f9, type: 3}
+  - {fileID: 8300000, guid: a2e4b66d02fba4843bc9d65530d052c3, type: 3}
   - {fileID: 8300000, guid: 357f6d45184512044b5097e797a76110, type: 3}
   m_TutorialFinishedDialogue:
     m_Voicelines:
@@ -1880,14 +1879,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1881301029925431942}
     m_Modifications:
-    - target: {fileID: 100002, guid: f42c7a07e9f3e524096430d2e4a9c490, type: 3}
-      propertyPath: m_Name
-      value: Bot
-      objectReference: {fileID: 0}
     - target: {fileID: 9500000, guid: f42c7a07e9f3e524096430d2e4a9c490, type: 3}
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 7aee329bd5d58154781c0e6be4453307, type: 2}
+    - target: {fileID: 100002, guid: f42c7a07e9f3e524096430d2e4a9c490, type: 3}
+      propertyPath: m_Name
+      value: Bot
+      objectReference: {fileID: 0}
     - target: {fileID: 400002, guid: f42c7a07e9f3e524096430d2e4a9c490, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1999,16 +1998,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6653541785662568251}
     m_Modifications:
-    - target: {fileID: 1670520300878705314, guid: 8372337e5be3bda4894d1936b9593d9f,
-        type: 3}
-      propertyPath: m_Name
-      value: DecMultiplier
-      objectReference: {fileID: 0}
-    - target: {fileID: 1670520300878705314, guid: 8372337e5be3bda4894d1936b9593d9f,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 3102074831525882982, guid: 8372337e5be3bda4894d1936b9593d9f,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2062,6 +2051,16 @@ PrefabInstance:
     - target: {fileID: 3102074831525882982, guid: 8372337e5be3bda4894d1936b9593d9f,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1670520300878705314, guid: 8372337e5be3bda4894d1936b9593d9f,
+        type: 3}
+      propertyPath: m_Name
+      value: DecMultiplier
+      objectReference: {fileID: 0}
+    - target: {fileID: 1670520300878705314, guid: 8372337e5be3bda4894d1936b9593d9f,
+        type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

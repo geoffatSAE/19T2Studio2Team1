@@ -329,17 +329,17 @@ MonoBehaviour:
   m_BoostParticles: {fileID: 0}
   m_BoostStages:
   - m_SimulationSpeed: 0
-    m_SpawnRate: 0
+    m_SpawnRate: 2
   - m_SimulationSpeed: 0
-    m_SpawnRate: 3
+    m_SpawnRate: 4
   - m_SimulationSpeed: 2
     m_SpawnRate: 6
   - m_SimulationSpeed: 2
-    m_SpawnRate: 10
+    m_SpawnRate: 8
   - m_SimulationSpeed: 4
-    m_SpawnRate: 20
+    m_SpawnRate: 10
   - m_SimulationSpeed: 6
-    m_SpawnRate: 30
+    m_SpawnRate: 12
   m_BoostDissapateSpeed: 15
   m_FlyingPacketsParticles: {fileID: 0}
   m_FlyingPacketsStages:
@@ -348,7 +348,7 @@ MonoBehaviour:
   - m_SimulationSpeed: 1.25
     m_SpawnRate: 1
   - m_SimulationSpeed: 1.5
-    m_SpawnRate: 2
+    m_SpawnRate: 1
   - m_SimulationSpeed: 1.75
     m_SpawnRate: 2
   - m_SimulationSpeed: 1.75
