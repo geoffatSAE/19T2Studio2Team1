@@ -373,21 +373,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
-      propertyPath: m_ScoreText
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
-        type: 3}
-      propertyPath: m_DebugText
-      value: 
-      objectReference: {fileID: 1384009259}
-    - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
-        type: 3}
-      propertyPath: m_BoostReadyParticles
-      value: 
-      objectReference: {fileID: 1644508037}
-    - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
-        type: 3}
       propertyPath: m_MultiplierIncreaseParticles
       value: 
       objectReference: {fileID: 1644508039}
@@ -396,6 +381,11 @@ PrefabInstance:
       propertyPath: m_MultiplierDecreaseParticles
       value: 
       objectReference: {fileID: 1644508038}
+    - target: {fileID: 7946252058374095657, guid: 0c734c134181caa47bd9ea2607cf738b,
+        type: 3}
+      propertyPath: m_DebugText
+      value: 
+      objectReference: {fileID: 1384009259}
     - target: {fileID: 7946252058374095656, guid: 0c734c134181caa47bd9ea2607cf738b,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -905,12 +895,6 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 5600396916351574791, guid: 5593047f33c885c41b990ceb2626df33, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 5593047f33c885c41b990ceb2626df33, type: 3}
---- !u!198 &1644508037 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 7755296781292922817, guid: 5593047f33c885c41b990ceb2626df33,
-    type: 3}
-  m_PrefabInstance: {fileID: 1644508036}
-  m_PrefabAsset: {fileID: 0}
 --- !u!198 &1644508038 stripped
 ParticleSystem:
   m_CorrespondingSourceObject: {fileID: 5739179386373509642, guid: 5593047f33c885c41b990ceb2626df33,

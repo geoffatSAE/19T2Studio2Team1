@@ -616,7 +616,7 @@ MonoBehaviour:
     m_MaxSegments: 40
     m_MinSpawnInterval: 2.6
     m_MaxSpawnInterval: 3.6
-    m_SpawnSegmentOffset: 5
+    m_SpawnSegmentOffset: 6
     m_SpawnSegmentRange: 3
     m_InnerSpawnRadius: 3
     m_OuterSpawnRadius: 5
@@ -634,8 +634,8 @@ MonoBehaviour:
     m_MaxSegments: 35
     m_MinSpawnInterval: 2
     m_MaxSpawnInterval: 3
-    m_SpawnSegmentOffset: 5
-    m_SpawnSegmentRange: 3
+    m_SpawnSegmentOffset: 10
+    m_SpawnSegmentRange: 5
     m_InnerSpawnRadius: 4
     m_OuterSpawnRadius: 7
     m_BottomCircleCutoff: 0.3
@@ -652,10 +652,10 @@ MonoBehaviour:
     m_MaxSegments: 40
     m_MinSpawnInterval: 1.7
     m_MaxSpawnInterval: 2.6
-    m_SpawnSegmentOffset: 7
-    m_SpawnSegmentRange: 3
-    m_InnerSpawnRadius: 5
-    m_OuterSpawnRadius: 15
+    m_SpawnSegmentOffset: 15
+    m_SpawnSegmentRange: 5
+    m_InnerSpawnRadius: 10
+    m_OuterSpawnRadius: 20
     m_BottomCircleCutoff: 0.3
     m_TopCircleCutoff: 0.7
     m_MaxWiresAtOnce: 3
@@ -670,10 +670,10 @@ MonoBehaviour:
     m_MaxSegments: 55
     m_MinSpawnInterval: 1.3
     m_MaxSpawnInterval: 2.2
-    m_SpawnSegmentOffset: 8
-    m_SpawnSegmentRange: 5
-    m_InnerSpawnRadius: 14
-    m_OuterSpawnRadius: 24
+    m_SpawnSegmentOffset: 20
+    m_SpawnSegmentRange: 6
+    m_InnerSpawnRadius: 15
+    m_OuterSpawnRadius: 25
     m_BottomCircleCutoff: 0.55
     m_TopCircleCutoff: 0.7
     m_MaxWiresAtOnce: 4
@@ -688,10 +688,10 @@ MonoBehaviour:
     m_MaxSegments: 65
     m_MinSpawnInterval: 1.2
     m_MaxSpawnInterval: 1.6
-    m_SpawnSegmentOffset: 10
-    m_SpawnSegmentRange: 5
-    m_InnerSpawnRadius: 16
-    m_OuterSpawnRadius: 26
+    m_SpawnSegmentOffset: 25
+    m_SpawnSegmentRange: 8
+    m_InnerSpawnRadius: 20
+    m_OuterSpawnRadius: 30
     m_BottomCircleCutoff: 0.7
     m_TopCircleCutoff: 0.7
     m_MaxWiresAtOnce: 4
@@ -706,10 +706,10 @@ MonoBehaviour:
     m_MaxSegments: 75
     m_MinSpawnInterval: 0.8
     m_MaxSpawnInterval: 1.8
-    m_SpawnSegmentOffset: 5
-    m_SpawnSegmentRange: 6
-    m_InnerSpawnRadius: 20
-    m_OuterSpawnRadius: 25
+    m_SpawnSegmentOffset: 30
+    m_SpawnSegmentRange: 10
+    m_InnerSpawnRadius: 25
+    m_OuterSpawnRadius: 35
     m_BottomCircleCutoff: 0.7
     m_TopCircleCutoff: 0.7
     m_MaxWiresAtOnce: 5
@@ -720,7 +720,7 @@ MonoBehaviour:
     m_SparkOnSwitchInterval: 1
     m_SparkOffSwitchInterval: 0.3
     m_JumpTime: 0.3
-  m_WirePropertiesStagePreview: 0
+  m_WirePropertiesStagePreview: 3
   m_DisabledSpot: {fileID: 7927552244697839908}
   m_ScoreManager: {fileID: 7946252058374095657}
   m_TickWhenJumping: 0

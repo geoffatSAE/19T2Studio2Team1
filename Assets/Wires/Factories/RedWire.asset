@@ -15,7 +15,7 @@ MonoBehaviour:
   m_Color: {r: 1, g: 0.07065217, b: 0, a: 1}
   m_SkyboxColor: {r: 1, g: 0.2918979, b: 0.2216981, a: 1}
   m_ParticleColor: {r: 1, g: 0, b: 0.009901047, a: 1}
-  m_SparkColor: {r: 1, g: 0.50460595, b: 0.4669811, a: 1}
+  m_SparkColor: {r: 0.9811321, g: 0.20506045, b: 0.14346743, a: 1}
   m_BoostColor:
     m_Mode: 1
     m_GradientMin:
