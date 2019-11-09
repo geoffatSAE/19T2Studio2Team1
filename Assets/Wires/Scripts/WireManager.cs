@@ -69,7 +69,6 @@ namespace TO5.Wires
 
         [Header("Sparks")]
         public Spark m_SparkPrefab;                                         // The sparks to use
-        [SerializeField] private float m_BoostSpeedMultiplier = 1.25f;      // Multiplier to speed when boost is active
         public AudioSource m_SparkSpawnAudioSource;                         // Audio source to play spark spawn sound
 
         [Header("Wires")]
@@ -176,14 +175,11 @@ namespace TO5.Wires
                 else
                 {
                     // Step is influenced by multiplier stage
-                    float gameSpeed = 1f, boostMultiplier = 1f;
+                    float gameSpeed = 1f;
                     if (m_ScoreManager)
-                    {
                         gameSpeed = m_ScoreManager.multiplierStage + 1;
-                        boostMultiplier = m_ScoreManager.boostActive ? m_BoostSpeedMultiplier : 1f;
-                    }
 
-                    step = wireProps.m_SparkSpeed * gameSpeed * boostMultiplier * Time.deltaTime;
+                    step = wireProps.m_SparkSpeed * gameSpeed * Time.deltaTime;
                 }
 
                 // Tick wires (and sparks)

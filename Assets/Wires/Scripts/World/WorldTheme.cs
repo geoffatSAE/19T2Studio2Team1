@@ -22,7 +22,6 @@ namespace TO5.Wires
         private bool m_IsJumping;                           // If player is jumping
         private bool m_IsDrifting;                          // If player is drifting
         private int m_MultiplierStage;                      // Stage of multiplier
-        [System.Obsolete] private bool m_BoostActive;       // If boost is active (Obsolete)
 
         public WorldMusic worldMusic { get { return m_WorldMusic; } }
         public WorldColor worldColor { get { return m_WorldColor; } }
@@ -55,7 +54,6 @@ namespace TO5.Wires
             m_IsJumping = false;
             m_IsDrifting = false;
             m_MultiplierStage = 0;
-            m_BoostActive = false;
 
             if (m_WireManager)
             {
@@ -64,10 +62,8 @@ namespace TO5.Wires
                 if (scoreManager)
                 {
                     scoreManager.OnMultiplierUpdated += MultiplierUpdated;
-                    scoreManager.OnBoostModeUpdated += BoostModeUpdated;
 
                     m_MultiplierStage = scoreManager.multiplierStage;
-                    m_BoostActive = scoreManager.boostActive;
                 }
 
                 // We listen for when the player jumps to handle aesthetic changes
@@ -170,20 +166,6 @@ namespace TO5.Wires
 
                 m_WorldAesthetics.SetIntensity(m_MultiplierStage);
             } 
-        }
-
-        /// <summary>
-        /// Notify that boost mode has been switched on or off
-        /// </summary>
-        /// <param name="active">If boost is active</param>
-        private void BoostModeUpdated(bool active)
-        {
-            m_BoostActive = active;
-
-            m_WorldAesthetics.SetBoostActive(active);
-
-            if (!m_IsJumping && !m_IsDrifting)
-                m_WorldAesthetics.SetBoostParticlesEnabled(active, m_WorldAesthetics.m_BoostParticlesSpeed);          
         }
 
         /// <summary>

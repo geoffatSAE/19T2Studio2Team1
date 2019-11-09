@@ -171,19 +171,6 @@ namespace TO5.Wires
         }
 
         /// <summary>
-        /// Set if aesthetics should be boosted
-        /// </summary>
-        /// <param name="active">Activate boosted aesthetics</param>
-        public void SetBoostActive(bool active)
-        {
-            if (m_BoostActive != active)
-            {
-                m_BoostActive = active;
-                SetIntensity(m_Intensity);
-            }
-        }
-
-        /// <summary>
         /// Blends aesthetics from old wire to new
         /// </summary>
         /// <param name="progress">Progress of blend</param>

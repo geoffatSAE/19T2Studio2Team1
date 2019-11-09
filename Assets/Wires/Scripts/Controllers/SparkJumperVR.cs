@@ -30,18 +30,12 @@ namespace TO5.Wires
             {
                 if (OVRInput.GetDown(OVRInput.Button.One))
                     TraceWorld(new Ray(controllerPos, controllerDir));
-
-                if (OVRInput.GetDown(OVRInput.Button.Two))
-                    ActivateBoost();
             }
             #else
             // Oculus Go is used for packaged builds
             {
                 if (OVRInput.GetDown(OVRInput.Button.PrimaryIndexTrigger))
                     TraceWorld(new Ray(controllerPos, controllerDir));
-
-                if (OVRInput.GetDown(OVRInput.Button.PrimaryTouchpad))
-                    ActivateBoost();
             }
             #endif
 

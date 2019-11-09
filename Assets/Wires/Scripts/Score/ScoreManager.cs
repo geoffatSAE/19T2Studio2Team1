@@ -33,16 +33,9 @@ namespace TO5.Wires
         /// <param name="wasCollected">If the packet was collected rather than expired</param>
         public delegate void PacketDespawned(DataPacket packet, bool wasCollected);
 
-        /// <summary>
-        /// Delegate to notify when boost has either been activated or depleted
-        /// </summary>
-        /// <param name="active">If boost mode is active</param>
-        public delegate void BoostModeUpdated(bool active);
-
         public MultiplierStageUpdated OnMultiplierUpdated;                      // Event for when multiplier has changed
         public StageLivesUpdated OnStageLivesUpdated;                           // Event for when lives has changed
         public PacketDespawned OnPacketDespawned;                               // Event for when a packet despawns
-        [System.Obsolete] public BoostModeUpdated OnBoostModeUpdated;           // Event for when boost mode has changed
 
         private bool m_IsRunning = false;               // If scoring is enabled (including packet generation)
         private bool m_GeneratingPackets = false;       // If packets are being generated automatically
@@ -94,30 +87,16 @@ namespace TO5.Wires
 
         private ObjectPool<ParticleSystem> m_PacketCollectedSystems = new ObjectPool<ParticleSystem>();     // Pool of particle systems used for packet collection
 
-        // TODO: Remove (at least to different component)
-        //[Header("Boost (Obsolete)")]
-        //[SerializeField] private float m_BoostChargeRate = 0.83f;           // Boost player earns per second
-        //[SerializeField] private float m_BoostDepletionRate = 10f;          // Boost player consumes per second (when active)
-        //[SerializeField] private float m_BoostMultiplier = 2f;              // Multipler all score is scaled by when boost is active
-        //[SerializeField] private float m_BoostPerPacket = 5f;               // Boost player earns when collecting a packet
-        //public AudioSource m_BoostAudioSource;                              // Audio source for playing boost sounds
-        //public AudioSource m_BoostLoopingAudioSource;                       // Audio source for playing looping boost sounds       
-        //public AudioClip m_BoostActivatedSound;                             // Sound to play when boost has been activated
-        //public AudioClip m_BoostDepletedSound;                              // Sound to play when boost has been depleted
-        //public AudioClip m_BoostReadySound;                                 // Sound to play when boost is ready
-        //public AudioClip m_BoostActiveSound;                                // Sound to play while boost is active
-        //public ParticleSystem m_BoostReadyParticles;                        // Particles to play when boost is ready
-
         private MultiplierStageProperties m_ActiveMultiplierProperties;                 // Properties for current stage
         private ObjectPool<DataPacket> m_DataPackets = new ObjectPool<DataPacket>();    // Packets being managed
         private PacketStageProperties m_ActivePacketProperties;                         // Properties for current stage
         private int m_PacketSpawnsSinceLastCluster = 0;                                 // Amount of random packets spawn attempts since the last packet cluster
         private int m_PacketsCollectedSinceJump = 0;                                    // Amount of packets that has been collected since the last spark jump
 
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
         [Header("Debug")]
         [SerializeField] private Text m_DebugText;      // Text for writing debug data
-#endif
+        #endif
 
         // If scoring is enabled
         public bool isRunning { get { return m_IsRunning; } }
@@ -131,23 +110,14 @@ namespace TO5.Wires
         // Multipliers current stage
         public int multiplierStage { get { return m_Stage; } }
 
-        // Total multipler (default * boost)
-        public float totalMultiplier { get { return m_Multiplier; /* * (m_BoostActive ? m_BoostMultiplier : 1f); */ } }
+        // Total multipler
+        public float totalMultiplier { get { return m_Multiplier; } }
 
         // Time till next multiplier increase (1 if at max stage)
         public float multiplierProgress { get { return GetMultiplierProgress(); } }
 
         // Lives remaining before stage decrease
         public int remainingLives { get { return m_RemainingLives; } }
-
-        // If boost is ready
-        public bool boostReady { get { return false; /* m_Boost >= 100f; */ } }
-
-        // If boost is active
-        public bool boostActive { get { return false; /* m_BoostActive */; } }
-
-        // Current boost built up (in percentage)
-        public float boost { get { return 0f; /* m_Boost / 100f; */ } }
 
         // Space required for packets
         public float packetSpace { get { return m_PacketSpace; } }
@@ -160,8 +130,6 @@ namespace TO5.Wires
         private float m_Score;                          // Players score
         private float m_Multiplier;                     // Players multiplier
         private int m_Stage;                            // Multiplier stage
-        //private float m_Boost;                        // Players boost (Between 0 and 100)
-        //private bool m_BoostActive;                   // If boost is active
         private Coroutine m_PacketSpawnRoutine;         // Coroutine for spawning packets
 
         // If tutorial settings should be used
@@ -177,51 +145,6 @@ namespace TO5.Wires
             if (m_IsRunning)
             {
                 AddScore(m_ScorePerSecond * Time.deltaTime);
-
-                // Tick boost
-                //if (m_SparkJumper)
-                {
-                    //if (m_BoostActive)
-                    //{
-                    //    const float cutoff = 60f;
-
-                    //    // If boost was above the cutoff before decreasing it this frame, we do this
-                    //    // so we don't spam delayed mid boost activated companion dialogues
-                    //    bool aboveCutoff = m_Boost >= cutoff;
-
-                    //    m_Boost = Mathf.Max(0, m_Boost - (m_BoostDepletionRate * Time.deltaTime));
-                    //    m_BoostActive = m_Boost > 0f;
-
-                    //    // Was boost just depleted?
-                    //    if (!m_BoostActive)
-                    //    {
-                    //        PlayBoostSound(m_BoostDepletedSound);
-
-                    //        if (m_BoostLoopingAudioSource)
-                    //            m_BoostLoopingAudioSource.Stop();
-
-                    //        CompanionVoice voice = companionVoice;
-                    //        if (voice)
-                    //            voice.PlayBoostEndDialogue();
-
-                    //        //if (OnBoostModeUpdated != null)
-                    //        //    OnBoostModeUpdated.Invoke(false);
-                    //    }
-                    //    else if (aboveCutoff && m_Boost < cutoff)
-                    //    {
-                    //        if (!m_SparkJumper.isDrifting)
-                    //        {
-                    //            CompanionVoice voice = companionVoice;
-                    //            if (voice)
-                    //                voice.PlayBoostActiveDialogue(0.25f);
-                    //        }
-                    //    }
-                    //}
-                    //else if (!m_SparkJumper.isDrifting && !tutorialMode)
-                    //{
-                    //    AddBoost(m_BoostChargeRate * Time.deltaTime);
-                    //}
-                }
 
                 // Tick packets
                 {
@@ -247,7 +170,7 @@ namespace TO5.Wires
 
             Profiler.EndSample();
 
-#if UNITY_EDITOR
+            #if UNITY_EDITOR
             // For testing
             if (m_IsRunning)
             {
@@ -255,8 +178,6 @@ namespace TO5.Wires
                     IncreaseMultiplier();
                 if (Input.GetKeyDown(KeyCode.DownArrow))
                     DecreaseMultiplier();
-                //if (Input.GetKeyDown(KeyCode.F))
-                 //   AddBoost(100f);
             }
 
             // Debug text
@@ -265,7 +186,7 @@ namespace TO5.Wires
                 m_DebugText.text = string.Format("Score: {0}\nMultiplier: {1}\nMultiplier Stage: {2}\nPackets Pool Size: {3}\nPackets Active: {4}\nRemaining Lives: {5}\nHandicap Active: {6}",
                     Mathf.FloorToInt(m_Score), m_Multiplier, m_Stage, m_DataPackets.Count, m_DataPackets.activeCount, m_RemainingLives, m_StageResets >= m_StageHandicap);
             }
-#endif
+            #endif
         }
 
         /// <summary>
@@ -280,7 +201,6 @@ namespace TO5.Wires
             if (m_SparkJumper)
             {
                 m_SparkJumper.OnJumpToSpark += JumpedToSpark;
-                //m_SparkJumper.OnActivateBoost = ActivateBoost;
             }
 
             m_Score = 0f;
@@ -288,9 +208,6 @@ namespace TO5.Wires
             m_Stage = 0;
 
             m_ActivePacketProperties = GetPacketProperties(m_Stage);
-
-            //m_Boost = 0f;
-            //m_BoostActive = false;
 
             m_PacketSpawnsSinceLastCluster = 0;
         }
@@ -333,19 +250,10 @@ namespace TO5.Wires
                 m_ActiveMultiplierProperties = GetMultiplierProperties(m_Stage);
                 m_ActivePacketProperties = GetPacketProperties(m_Stage);
 
-                //m_Boost = 0f;
-                //m_BoostActive = false;
-
-                //if (m_BoostLoopingAudioSource)
-                //    m_BoostLoopingAudioSource.Stop();
-
                 // Need to notify listeners of changes
                 {
                     if (OnMultiplierUpdated != null)
                         OnMultiplierUpdated.Invoke(m_Multiplier, m_Stage);
-
-                    //if (OnBoostModeUpdated != null)
-                    //    OnBoostModeUpdated.Invoke(false);
                 }
             }
 
@@ -467,10 +375,6 @@ namespace TO5.Wires
                 return false;
 
             ++m_StageResets;
-
-            // No lives are lost while boost is active
-            //if (!m_BoostActive)
-            //    SetRemainingLives(m_RemainingLives - 1);
 
             if (m_RemainingLives <= 0)
             {
@@ -686,9 +590,9 @@ namespace TO5.Wires
 
             DataPacket packet = null;
 
-#if UNITY_EDITOR
+            #if UNITY_EDITOR
             int packetsSpawned = 0;
-#endif
+            #endif
 
             int clusterSize = Random.Range(packetProps.m_MinPacketsPerCluster, packetProps.m_MaxPacketsPerCluster + 1);
             for (int i = 0; i < clusterSize; ++i)
@@ -726,15 +630,15 @@ namespace TO5.Wires
                 if (newPacket != null)
                     packet = newPacket;
 
-#if UNITY_EDITOR
+                #if UNITY_EDITOR
                 if (newPacket != null)
                     ++packetsSpawned;
-#endif
+                #endif
             }
 
-#if UNITY_EDITOR
+            #if UNITY_EDITOR
             Debug.Log(string.Format("Packet Cluster Spawn Results - Cluster Size: {0}, Packets Spawned: {1}", clusterSize, packetsSpawned));
-#endif
+            #endif
 
             Profiler.EndSample();
 
@@ -882,29 +786,6 @@ namespace TO5.Wires
         }
 
         /// <summary>
-        /// Adds to current boost count (if allowed)
-        /// </summary>
-        /// <param name="amount">Amount to add</param>
-        //public void AddBoost(float amount)
-        //{
-        //if (!m_BoostActive && m_Boost < 100f)
-        //{
-        //    //m_Boost = Mathf.Min(100f, m_Boost + amount);
-        //    if (m_Boost >= 100f)
-        //    {
-        //        PlayLoopingBoostSound(m_BoostReadySound, 1f);
-
-        //        if (m_BoostReadyParticles)
-        //            m_BoostReadyParticles.Play();
-
-        //        CompanionVoice voice = companionVoice;
-        //        if (voice)
-        //            voice.PlayBoostReadyDialogue();
-        //    }
-        //}
-        //}
-
-        /// <summary>
         /// Notify that player has collected given packet
         /// </summary>
         private void PacketCollected(DataPacket packet)
@@ -920,7 +801,6 @@ namespace TO5.Wires
         private void PacketSeekComplete(DataPacket packet)
         {
             AddScore(m_PacketScore);
-            //AddBoost(m_BoostPerPacket);
 
             // Extend wire of player if we can
             if (m_PacketsCollectedSinceJump < m_MaxBonusSegments)
@@ -968,35 +848,6 @@ namespace TO5.Wires
 
             DeactivatePacket(packet, true);
         }
-
-        /// <summary>
-        /// Notify from player that they wish to activate boost
-        /// </summary>
-        /// <returns>If boost was activated</returns>
-        //private bool ActivateBoost()
-        //{
-        //if (!m_BoostActive && boostReady)
-        //{
-        //    m_BoostActive = true;
-
-        //    PlayBoostSound(m_BoostActivatedSound);
-        //    PlayLoopingBoostSound(m_BoostActiveSound, 0.7f);
-
-        //    if (m_BoostReadyParticles)
-        //        m_BoostReadyParticles.Stop();
-
-        //    CompanionVoice voice = companionVoice;
-        //    if (voice)
-        //        voice.PlayBoostStartDialogue();
-
-        //    if (OnBoostModeUpdated != null)
-        //        OnBoostModeUpdated.Invoke(true);
-
-        //    return true;
-        //}
-
-        //return false;
-        //}
 
         /// <summary>
         /// Routine for spawning packets
@@ -1081,43 +932,6 @@ namespace TO5.Wires
                 }
             }
         }
-
-        /// <summary>
-        /// Plays audio clip for the boost audio source
-        /// </summary>
-        /// <param name="clip">Audio clip to play</param>
-        //private void PlayBoostSound(AudioClip clip)
-        //{
-        //if (m_BoostAudioSource && clip)
-        //{
-        //    m_BoostAudioSource.clip = clip;
-        //    m_BoostAudioSource.time = 0f;
-        //    m_BoostAudioSource.Play();
-        //}
-        //}
-
-        /// <summary>
-        /// Plays audio clip for the looping boost audio source
-        /// </summary>
-        /// <param name="clip">Audio clip to play</param>
-        /// <param name="volume">Volume to play clip at</param>
-        //private void PlayLoopingBoostSound(AudioClip clip, float volume)
-        //{
-        //if (m_BoostLoopingAudioSource)
-        //{
-        //    // A call to this function assumes we were going to override an already looping sound
-        //    if (!clip)
-        //    {
-        //        m_BoostLoopingAudioSource.Stop();
-        //        return;
-        //    }
-
-        //    m_BoostLoopingAudioSource.clip = clip;
-        //    m_BoostLoopingAudioSource.time = 0f;
-        //    m_BoostLoopingAudioSource.volume = volume;
-        //    m_BoostLoopingAudioSource.Play();
-        //}
-        //}
 
         /// <summary>
         /// Updates the position of the packet audio source to match position of packet closest to players vicew

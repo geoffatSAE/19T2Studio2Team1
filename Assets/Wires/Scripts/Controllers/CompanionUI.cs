@@ -6,7 +6,7 @@ using UnityEngine.UI;
 namespace TO5.Wires
 {
     /// <summary>
-    /// Handles the UI displayed on the players companion
+    /// Handles the UI displayed on the players companion (including the bot mesh itself)
     /// </summary>
     [RequireComponent(typeof(CompanionVoice))]
     public class CompanionUI : MonoBehaviour
@@ -37,11 +37,7 @@ namespace TO5.Wires
         [SerializeField] private Text m_ScoreText;              // Text block for writing players score
         [SerializeField] private Text m_MultiplierText;         // Text block for writing players multiplier
         [SerializeField] private Image m_MultiplierImage;       // Image to manipulate based on auto multiplier increase
-        //[SerializeField] private Slider m_BoostSlider;        // Slider for displaying built boost
         [SerializeField] private Slider m_WireSlider;           // Slider for displaying wire progress
-        //[SerializeField] private Image[] m_LivesList;         // Images used for displaying lives 
-        //public Color m_LifeActiveColor = Color.white;         // Color to use for active lives
-        //public Color m_LifeInactiveColor = Color.gray;        // Color to use for inactive lives
 
         [Header("Jump")]
         [SerializeField] private FloatingMovement m_FloatingMovement;       // Floating movement to optionally disable when jumping
@@ -110,7 +106,6 @@ namespace TO5.Wires
                 m_PreviousStage = m_ScoreManager.multiplierStage;
 
                 m_ScoreManager.OnMultiplierUpdated += MultiplierUpdated;
-                m_ScoreManager.OnBoostModeUpdated += BoostModeUpdated;
             }
 
             m_GameAnchor.m_Position = transform.localPosition;
@@ -132,7 +127,6 @@ namespace TO5.Wires
                     RefreshScoreText(m_ScoreManager.score);
                     //RefreshMultiplierText((int)m_ScoreManager.totalMultiplier);
                     RefreshMultiplierProgress(m_ScoreManager.multiplierProgress);
-                    //RefreshBoostProgress(m_ScoreManager.boost);
                 }
             }
 
@@ -161,12 +155,6 @@ namespace TO5.Wires
         public void EnableCompanion()
         {
             ToggleEnabledUI(m_DisplayGameUI);
-
-            //if (m_ScoreManager)
-            //{
-            //    m_ScoreManager.OnStageLivesUpdated += StageLivesUpdated;
-            //    RefreshLivesList(m_ScoreManager.remainingLives);
-            //}
         }
 
         /// <summary>
@@ -175,9 +163,6 @@ namespace TO5.Wires
         public void DisableCompanion()
         {
             SetDisplayCanvases(false, false);
-
-            //if (m_ScoreManager)
-            //    m_ScoreManager.OnStageLivesUpdated -= StageLivesUpdated;
         }
 
         /// <summary>
@@ -313,16 +298,6 @@ namespace TO5.Wires
         }
 
         /// <summary>
-        /// Refreshes boost progress
-        /// </summary>
-        /// <param name="progress">Boost progress</param>
-        //public void RefreshBoostProgress(float progress)
-        //{
-        //    if (m_BoostSlider)
-        //        m_BoostSlider.value = progress;
-        //}
-
-        /// <summary>
         /// Refreshes wire progress
         /// </summary>
         /// <param name="progress">Wire progress</param>
@@ -331,41 +306,6 @@ namespace TO5.Wires
             if (m_WireSlider)
                 m_WireSlider.value = progress;
         }
-
-        /// <summary>
-        /// Refresh list of lives to match lives given
-        /// </summary>
-        /// <param name="lives">Lives remaining in stage</param>
-        //public void RefreshLivesList(int lives)
-        //{
-        //    if (lives == m_ActiveLives)
-        //        return;
-
-        //    // Activate disabled images
-        //    if (lives > m_ActiveLives)
-        //    {
-        //        int max = Mathf.Min(lives, m_LivesList.Length);
-        //        for (int i = m_ActiveLives; i < max; ++i)
-        //        {
-        //            Image image = m_LivesList[i];
-        //            if (image)
-        //                image.color = m_LifeActiveColor;
-        //        }
-        //    }
-        //    // Deactivate enabled images
-        //    else if (lives < m_LivesList.Length)
-        //    {
-        //        int max = Mathf.Max(m_ActiveLives, m_LivesList.Length);
-        //        for (int i = lives; i < max; ++i)
-        //        {
-        //            Image image = m_LivesList[i];
-        //            if (image)
-        //                image.color = m_LifeInactiveColor;
-        //        }
-        //    }
-
-        //    m_ActiveLives = lives;
-        //}
 
         /// <summary>
         /// Notify that player has entered drifting mode
@@ -384,15 +324,6 @@ namespace TO5.Wires
         }
 
         /// <summary>
-        /// Notify that players stage lives has changed
-        /// </summary>
-        /// <param name="lives">Current amount of lives</param>
-        //private void StageLivesUpdated(int lives)
-        //{
-        //    RefreshLivesList(lives);
-        //}
-
-        /// <summary>
         /// Notify that multiplier stage has changed
         /// </summary>
         /// <param name="multiplier">New multiplier</param>
@@ -400,13 +331,6 @@ namespace TO5.Wires
         private void MultiplierUpdated(float multiplier, int stage)
         {
             RefreshMultiplierText((int)multiplier);
-
-            // Boost overrides these animations
-            if (m_ScoreManager && m_ScoreManager.boostActive)
-            {
-                m_PreviousStage = stage;
-                return;
-            }
 
             if (m_PreviousStage != stage)
             {
@@ -425,16 +349,6 @@ namespace TO5.Wires
 
                 m_PreviousStage = stage;
             }
-        }
-
-        /// <summary>
-        /// Notify that players boost has updated modes
-        /// </summary>
-        /// <param name="active">If boost is active</param>
-        private void BoostModeUpdated(bool active)
-        {
-            if (m_Animator)
-                m_Animator.SetBool("boostActive", active);
         }
 
         /// <summary>
@@ -487,7 +401,7 @@ namespace TO5.Wires
         }
 
         /// <summary>
-        /// Sets if companion should enter boost mode
+        /// Sets if companion should enter boost mode 
         /// </summary>
         /// <param name="enable">If boost made is enabled</param>
         public void SetBoostModeEnabled(bool enable)

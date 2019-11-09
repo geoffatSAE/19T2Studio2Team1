@@ -57,10 +57,6 @@ namespace TO5.Wires
             if (Input.GetMouseButtonDown(0))
                 TraceWorld(trans.position, trans.rotation);
 
-            // Right mouse
-            if (Input.GetMouseButtonDown(1))
-                ActivateBoost();
-
             Shader.SetGlobalVector(WorldSpaceControllerPosShaderName, trans.position);
             Shader.SetGlobalVector(WorldSpaceControllerDirShaderName, trans.forward);
 

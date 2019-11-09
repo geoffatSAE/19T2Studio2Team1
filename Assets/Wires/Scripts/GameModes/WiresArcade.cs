@@ -184,7 +184,6 @@ namespace TO5.Wires
                 if (scoreManager)
                 {
                     scoreManager.OnPacketDespawned -= TutorialPacketDespawned;
-                    scoreManager.OnBoostModeUpdated -= TutorialBoostModeUpdated;
                 }
 
                 // Switch to game UI
@@ -433,16 +432,6 @@ namespace TO5.Wires
         }
 
         /// <summary>
-        /// Notify that boost mode has been updated
-        /// </summary>
-        /// <param name="active">If boost is now updated</param>
-        private void TutorialBoostModeUpdated(bool active)
-        {
-            if (!active)
-                NextTutorialStep();
-        }
-
-        /// <summary>
         /// Notify that the finale sequence has finished
         /// </summary>
         private void FinaleSequenceFinished()
@@ -509,7 +498,6 @@ namespace TO5.Wires
                         step = 1;
                         break;
                     
-                    // Boost has been removed
                     case TutorialStep.Packets:
                         StartExtensionTutorial();
                         step = 2;

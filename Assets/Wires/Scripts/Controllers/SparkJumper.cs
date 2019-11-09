@@ -26,15 +26,8 @@ namespace TO5.Wires
         /// <param name="isEnabled">If jumper is now drifting</param>
         public delegate void DriftingUpdated(bool isEnabled);
 
-        /// <summary>
-        /// Delegate for when jumper is attempting to activate the boost
-        /// </summary>
-        /// <returns>If activation was successful</returns>
-        public delegate bool TryActivateBoost();
-
         public JumpedToSpark OnJumpToSpark;                                 // Event for when jumping to new spark
         public DriftingUpdated OnDriftingUpdated;                           // Event for when entering/exiting drifting
-        [System.Obsolete] public TryActivateBoost OnActivateBoost;          // Event for when attempting boost activation
 
         public Transform m_Anchor;                                                          // Anchor to move instead of gameObject
         public bool m_ControlsEnabled = true;                                               // If player controls are enabled
@@ -204,24 +197,6 @@ namespace TO5.Wires
                 if (interactive != null && interactive.CanInteract(this))
                     interactive.OnInteract(this);      
             }
-        }
-
-        /// <summary>
-        /// Attempts to activate boost
-        /// </summary>
-        /// <returns>If boost was activated</returns>
-        public bool ActivateBoost()
-        {
-            //bool activated = false;
-
-            //if (!m_IsDrifting && m_JumpingEnabled)
-            //    if (OnActivateBoost != null)
-            //        activated = OnActivateBoost.Invoke();
-
-            //if (!activated)
-            //    PlaySelectionSound(m_BoostFailSound, false);
-
-            return false;
         }
 
         /// <summary>

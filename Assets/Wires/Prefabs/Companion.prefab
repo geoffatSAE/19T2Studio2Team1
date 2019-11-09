@@ -1082,6 +1082,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dfcfc7241a8980748b08cf907796a162, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_GameMixer: {fileID: 243035948677991448, guid: 55545f7fdabb42d4f93bdb72b21c53b1,
+    type: 2}
+  m_TutorialMixer: {fileID: 243453162723047130, guid: 55545f7fdabb42d4f93bdb72b21c53b1,
+    type: 2}
   m_IntroDialogue: {fileID: 8300000, guid: f279b7338ca61f148bd6e36bcc74c054, type: 3}
   m_MultiplierIncreaseDialogue:
     m_Voicelines:
@@ -1093,6 +1097,12 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 8ea8772ed2514154b94c33d3fa2b6bc7, type: 3}
     m_Priority: 5
     m_Chance: 1
+    m_RepeatDelay: 0
+  m_MultiplierDecreaseDialogue:
+    m_Voicelines: []
+    m_Priority: 0
+    m_Chance: 0
+    m_RepeatDelay: 0
   m_EndOfWireDialogue:
     m_Voicelines:
     - {fileID: 8300000, guid: 45b6d9d7861ffa64bb208d69d86043dd, type: 3}
@@ -1101,6 +1111,7 @@ MonoBehaviour:
     - {fileID: 8300000, guid: ba973a121b0a3fa438d20cd854332d6f, type: 3}
     m_Priority: 5
     m_Chance: 1
+    m_RepeatDelay: 0
   m_PacketCollectedDialogue:
     m_Voicelines:
     - {fileID: 8300000, guid: c5865ec8fb3f5ac4693b2d5f513114b1, type: 3}
@@ -1108,6 +1119,7 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 93d6a5c47188c1443abf25373fd2d8e4, type: 3}
     m_Priority: 2
     m_Chance: 0.1
+    m_RepeatDelay: 4
   m_JumpDialogue:
     m_Voicelines:
     - {fileID: 8300000, guid: 490c21ec2e876864583c3070cfbadbff, type: 3}
@@ -1116,12 +1128,14 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 490c21ec2e876864583c3070cfbadbff, type: 3}
     m_Priority: 2
     m_Chance: 0.1
+    m_RepeatDelay: 1
   m_FinaleDialogue:
     m_Voicelines:
     - {fileID: 8300000, guid: 1530e571a60c0d54f900ac7756448697, type: 3}
     - {fileID: 8300000, guid: bd8bacd486d9007458a621dc7899f542, type: 3}
     m_Priority: 999
     m_Chance: 1
+    m_RepeatDelay: 0
   m_FinaleCheerDialogue:
     m_Voicelines:
     - {fileID: 8300000, guid: 21ba7298f0fa7a044a5d355b2a2c8c9b, type: 3}
@@ -1129,6 +1143,7 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 6b9abe7c64de61e40b1b6cebb3473126, type: 3}
     m_Priority: 999
     m_Chance: 1
+    m_RepeatDelay: 0
   m_GameFinishedDialogue:
     m_Voicelines:
     - {fileID: 8300000, guid: 1a03af66c972b164da8065b72e10ed79, type: 3}
@@ -1137,6 +1152,7 @@ MonoBehaviour:
     - {fileID: 8300000, guid: d44a78fc0ccc5934bb8ccbc3d16ec969, type: 3}
     m_Priority: 999
     m_Chance: 1
+    m_RepeatDelay: 0
   m_TutorialDialogue:
   - {fileID: 8300000, guid: 51cfbcb77f07af842bf71fddd3ade5af, type: 3}
   - {fileID: 8300000, guid: 95da70ebfcb110d4e929f1b538e58d10, type: 3}
@@ -1148,6 +1164,7 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 7c769a4e3ec8cbf4b91e46c683a5a820, type: 3}
     m_Priority: 50
     m_Chance: 1
+    m_RepeatDelay: 0
   m_TutorialSkippedDialogue:
     m_Voicelines:
     - {fileID: 8300000, guid: aca38c95b38c0b749a2756126ec5030c, type: 3}
@@ -1155,6 +1172,7 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 278f87555a426624f93f0f4422b44e37, type: 3}
     m_Priority: 50
     m_Chance: 1
+    m_RepeatDelay: 0
 --- !u!1 &6653541787310680283
 GameObject:
   m_ObjectHideFlags: 0
