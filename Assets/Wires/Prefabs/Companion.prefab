@@ -1125,7 +1125,6 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 490c21ec2e876864583c3070cfbadbff, type: 3}
     - {fileID: 8300000, guid: 691b1aef7be541844857d0c24f508638, type: 3}
     - {fileID: 8300000, guid: 691b1aef7be541844857d0c24f508638, type: 3}
-    - {fileID: 8300000, guid: 490c21ec2e876864583c3070cfbadbff, type: 3}
     m_Priority: 2
     m_Chance: 0.1
     m_RepeatDelay: 1
@@ -1897,14 +1896,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1881301029925431942}
     m_Modifications:
-    - target: {fileID: 9500000, guid: f42c7a07e9f3e524096430d2e4a9c490, type: 3}
-      propertyPath: m_Controller
-      value: 
-      objectReference: {fileID: 9100000, guid: 7aee329bd5d58154781c0e6be4453307, type: 2}
     - target: {fileID: 100002, guid: f42c7a07e9f3e524096430d2e4a9c490, type: 3}
       propertyPath: m_Name
       value: Bot
       objectReference: {fileID: 0}
+    - target: {fileID: 9500000, guid: f42c7a07e9f3e524096430d2e4a9c490, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 7aee329bd5d58154781c0e6be4453307, type: 2}
     - target: {fileID: 400002, guid: f42c7a07e9f3e524096430d2e4a9c490, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -2016,6 +2015,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6653541785662568251}
     m_Modifications:
+    - target: {fileID: 1670520300878705314, guid: 8372337e5be3bda4894d1936b9593d9f,
+        type: 3}
+      propertyPath: m_Name
+      value: DecMultiplier
+      objectReference: {fileID: 0}
+    - target: {fileID: 1670520300878705314, guid: 8372337e5be3bda4894d1936b9593d9f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3102074831525882982, guid: 8372337e5be3bda4894d1936b9593d9f,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2069,16 +2078,6 @@ PrefabInstance:
     - target: {fileID: 3102074831525882982, guid: 8372337e5be3bda4894d1936b9593d9f,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1670520300878705314, guid: 8372337e5be3bda4894d1936b9593d9f,
-        type: 3}
-      propertyPath: m_Name
-      value: DecMultiplier
-      objectReference: {fileID: 0}
-    - target: {fileID: 1670520300878705314, guid: 8372337e5be3bda4894d1936b9593d9f,
-        type: 3}
-      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

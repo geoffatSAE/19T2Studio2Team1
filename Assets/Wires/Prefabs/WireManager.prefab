@@ -595,7 +595,6 @@ MonoBehaviour:
   m_SparkJumper: {fileID: 0}
   m_SparkPrefab: {fileID: 7764608039323799731, guid: 630a43b9f7b365f4db327f062cc13540,
     type: 3}
-  m_BoostSpeedMultiplier: 1.25
   m_SparkSpawnAudioSource: {fileID: 8467593056296462756}
   m_InitialSegments: 20
   m_Factories:
@@ -929,8 +928,8 @@ AudioSource:
   SpatializePostEffects: 0
   Priority: 128
   DopplerLevel: 1
-  MinDistance: 12.5
-  MaxDistance: 25
+  MinDistance: 50
+  MaxDistance: 100
   Pan2D: 0
   rolloffMode: 1
   BypassEffects: 0
