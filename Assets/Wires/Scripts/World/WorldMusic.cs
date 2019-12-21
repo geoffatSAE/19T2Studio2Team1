@@ -22,7 +22,6 @@ namespace TO5.Wires
         private bool m_FadingMusic = false;                                 // If music is being faded out
         private float m_FadingStart = -1f;                                  // When music started fading
         private bool m_FadeIn = false;                                      // If music is fading in
-        private Coroutine m_FadingMusicRoutine = null;                      // Routine for fading music
 
         public AnimationCurve m_BeatCurve = AnimationCurve.Linear(0f, 1f, 1f, 0f);      // Animation curve of beat (value provided to shaders)
         private float m_BeatTime = 0f;                                                  // Time of beat

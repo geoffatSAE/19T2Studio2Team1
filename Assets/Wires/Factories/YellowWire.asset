@@ -85,21 +85,27 @@ MonoBehaviour:
     m_TrailEndColor: {r: 0.78823537, g: 1, b: 0, a: 0}
   m_BorderTexture: {fileID: 2800000, guid: deff90eebe787eb4baf1deb26e423804, type: 3}
   m_MusicTracks:
-  - m_Music: {fileID: 8300000, guid: fbc264cd42ae6a34f8c53fd45023cb58, type: 3}
+  - m_MusicAssetPath: Assets/Wires/Audio/Music/Yellow Wire/Master/SP_Music_MusicIteration3_E_v1_Master_JJ.wav
     m_BeatRate: 0.92257
     m_BeatDelay: 0.46498
-  - m_Music: {fileID: 8300000, guid: 4981c831166e63b4fa537813bfc2c38c, type: 3}
+    m_Music: {fileID: 8300000, guid: fbc264cd42ae6a34f8c53fd45023cb58, type: 3}
+  - m_MusicAssetPath: Assets/Wires/Audio/Music/Yellow Wire/Master/SP_Music_MusicIteration3_M_v1_Master_JJ.wav
     m_BeatRate: 0.92257
     m_BeatDelay: 0.46498
-  - m_Music: {fileID: 8300000, guid: e4ac967742dae0b488a9df27b81d37c2, type: 3}
+    m_Music: {fileID: 8300000, guid: 4981c831166e63b4fa537813bfc2c38c, type: 3}
+  - m_MusicAssetPath: Assets/Wires/Audio/Music/Yellow Wire/Master/SP_Music_MusicIteration3_H_v1_Master_JJ.wav
     m_BeatRate: 0.92257
     m_BeatDelay: 0.46498
-  - m_Music: {fileID: 8300000, guid: 90140c1c1dc82044bb7e96fe193a5433, type: 3}
+    m_Music: {fileID: 8300000, guid: e4ac967742dae0b488a9df27b81d37c2, type: 3}
+  - m_MusicAssetPath: Assets/Wires/Audio/Music/Yellow Wire/Master/SP_Music_MusicIteration3_H+_v1_Master_JJ.wav
     m_BeatRate: 0.84485
     m_BeatDelay: 0.42234
-  - m_Music: {fileID: 8300000, guid: 91a9957bfb36d1d46b9fad8a4a9975b7, type: 3}
+    m_Music: {fileID: 8300000, guid: 90140c1c1dc82044bb7e96fe193a5433, type: 3}
+  - m_MusicAssetPath: Assets/Wires/Audio/Music/Yellow Wire/Master/SP_Music_MusicIteration3_H++_v1_Master_JJ.wav
     m_BeatRate: 0.773785
     m_BeatDelay: 0.38717
-  - m_Music: {fileID: 8300000, guid: 33e1a0a214f3a5547b95a9ac79442cda, type: 3}
+    m_Music: {fileID: 8300000, guid: 91a9957bfb36d1d46b9fad8a4a9975b7, type: 3}
+  - m_MusicAssetPath: Assets/Wires/Audio/Music/Yellow Wire/Master/SP_Music_MusicIteration3_H+++_v1_Master_JJ.wav
     m_BeatRate: 0.713982
     m_BeatDelay: 0.357168
+    m_Music: {fileID: 8300000, guid: 33e1a0a214f3a5547b95a9ac79442cda, type: 3}

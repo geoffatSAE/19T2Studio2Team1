@@ -85,21 +85,27 @@ MonoBehaviour:
     m_TrailEndColor: {r: 1, g: 0.40784317, b: 0.03137255, a: 0}
   m_BorderTexture: {fileID: 2800000, guid: deff90eebe787eb4baf1deb26e423804, type: 3}
   m_MusicTracks:
-  - m_Music: {fileID: 8300000, guid: 84a6091627705d4488e0cc2c90cab128, type: 3}
+  - m_MusicAssetPath: Assets/Wires/Audio/Music/Red Wire/Master/SP_MUSIC_MusicIteration1_E_MasterV1_CR.wav
     m_BeatRate: 0.92257
     m_BeatDelay: 0.46498
-  - m_Music: {fileID: 8300000, guid: 45732b4eb4cf2784c986d5391c66d1d9, type: 3}
+    m_Music: {fileID: 8300000, guid: 84a6091627705d4488e0cc2c90cab128, type: 3}
+  - m_MusicAssetPath: Assets/Wires/Audio/Music/Red Wire/Master/SP_MUSIC_MusicIteration1_M_MasterV1_CR.wav
     m_BeatRate: 0.92257
     m_BeatDelay: 0.46498
-  - m_Music: {fileID: 8300000, guid: 0c2ca713d67ff3d4c8d9016c5bba1d69, type: 3}
+    m_Music: {fileID: 8300000, guid: 45732b4eb4cf2784c986d5391c66d1d9, type: 3}
+  - m_MusicAssetPath: Assets/Wires/Audio/Music/Red Wire/Master/SP_MUSIC_MusicIteration1_H_MasterV1_CR.wav
     m_BeatRate: 0.92257
     m_BeatDelay: 0.46498
-  - m_Music: {fileID: 8300000, guid: 97835cad436d78c49a82b5806a0df3ff, type: 3}
+    m_Music: {fileID: 8300000, guid: 0c2ca713d67ff3d4c8d9016c5bba1d69, type: 3}
+  - m_MusicAssetPath: Assets/Wires/Audio/Music/Red Wire/Master/SP_MUSIC_MusicIteration1_H+_MasterV1_CR.wav
     m_BeatRate: 0.84485
     m_BeatDelay: 0.42234
-  - m_Music: {fileID: 8300000, guid: 947169ffdfebbf44380126fa6217b044, type: 3}
+    m_Music: {fileID: 8300000, guid: 97835cad436d78c49a82b5806a0df3ff, type: 3}
+  - m_MusicAssetPath: Assets/Wires/Audio/Music/Red Wire/Master/SP_MUSIC_MusicIteration1_H++_MasterV1_CR.wav
     m_BeatRate: 0.773785
     m_BeatDelay: 0.38717
-  - m_Music: {fileID: 8300000, guid: f53465a0e4f3ef0499ef8e87ae5f523a, type: 3}
+    m_Music: {fileID: 8300000, guid: 947169ffdfebbf44380126fa6217b044, type: 3}
+  - m_MusicAssetPath: Assets/Wires/Audio/Music/Red Wire/Master/SP_MUSIC_MusicIteration1_H+++_MasterV1_CR.wav
     m_BeatRate: 0.713982
     m_BeatDelay: 0.357168
+    m_Music: {fileID: 8300000, guid: f53465a0e4f3ef0499ef8e87ae5f523a, type: 3}

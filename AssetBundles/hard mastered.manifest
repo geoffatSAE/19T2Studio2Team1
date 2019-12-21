@@ -1,0 +1,16 @@
+ManifestFileVersion: 0
+CRC: 4015672057
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 198bad3a362a59d2a304cd9aff11b5f4
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 3f7d0c5e0986ec71841622bcb2f9be1c
+HashAppended: 0
+ClassTypes:
+- Class: 83
+  Script: {instanceID: 0}
+Assets:
+- Assets/Wires/Audio/Music/Orange Wire/Master/Hard Mastered.wav
+Dependencies: []

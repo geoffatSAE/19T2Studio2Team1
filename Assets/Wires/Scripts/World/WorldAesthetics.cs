@@ -57,7 +57,6 @@ namespace TO5.Wires
 
         private Wire m_ActiveWire;                              // Wire player is either on or travelling to 
         private bool m_HaveSwitched = false;                    // If blend has switched (from old to new)
-        private int m_Intensity = 0;                            // Intensity set last
         private bool m_BoostActive = false;                     // If boost is active
 
         private TunnelVision m_TunnelInstance;                  // Tunnel instance we can also update
@@ -166,8 +165,6 @@ namespace TO5.Wires
             }
 
             SetFlyingPacketsStage(intensity);
-
-            m_Intensity = intensity;
         }
 
         /// <summary>

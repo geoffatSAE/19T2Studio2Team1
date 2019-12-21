@@ -40,8 +40,6 @@ namespace TO5.Wires
         [SerializeField] private int m_TutorialWireSegments = 20;               // Segments per wire in tutorial mode
         [SerializeField] private float m_TutorialWireRadius = 5f;               // Spawn radius of wires in tutorial mode
         [SerializeField] private float m_TutorialSparkSpeed = 1f;               // Spark speed in tutorial mode
-        [SerializeField] private float m_TutorialSparkOnInterval = 2f;          // Interval sparks remain on in tutorial mode
-        [SerializeField] private float m_TutorialSparkOffInterval = 1f;         // Interval sparks remain off in tutorial mode
         [SerializeField] private float m_TutorialJumpTime = 1.5f;               // Jump time in tutorial mode
         [SerializeField] private int m_TutorialPacketOffset = 50;               // Offset from player packets spawn in tutorial mode
         [SerializeField] private float m_TutorialPacketSpeed = 7.5f;            // Packet speed in tutorial mode

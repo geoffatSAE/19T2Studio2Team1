@@ -912,7 +912,6 @@ namespace TO5.Wires
         /// <returns>If wire has space</returns>
         public bool HasSpaceAtLocation(Vector3 position, bool ignoreZ)
         {
-            WireStageProperties wireProps = GetStageWireProperties();
             float sqrMinDistance = m_WireSpace * m_WireSpace;
 
             // Chance we might need this

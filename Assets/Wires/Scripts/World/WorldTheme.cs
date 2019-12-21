@@ -18,10 +18,7 @@ namespace TO5.Wires
         private WorldAesthetics m_WorldAesthetics;      // Handler for games aesthetics
         private Wire m_CurrentWire;                     // Current wire player is on
 
-        private bool m_GameActive = false;                  // If the game is active
-        private bool m_IsJumping;                           // If player is jumping
-        private bool m_IsDrifting;                          // If player is drifting
-        private int m_MultiplierStage;                      // Stage of multiplier
+        private int m_MultiplierStage;                  // Stage of multiplier
 
         public WorldMusic worldMusic { get { return m_WorldMusic; } }
         public WorldColor worldColor { get { return m_WorldColor; } }
@@ -51,8 +48,6 @@ namespace TO5.Wires
         public void Initialize(WireManager wireManager)
         {
             m_WireManager = wireManager;
-            m_IsJumping = false;
-            m_IsDrifting = false;
             m_MultiplierStage = 0;
 
             if (m_WireManager)
@@ -94,8 +89,6 @@ namespace TO5.Wires
 
                 m_WorldAesthetics.SetBoostParticlesEnabled(true, m_WorldAesthetics.m_BoostParticlesSpeed);
             }
-
-            m_GameActive = true;
         }
 
         /// <summary>
@@ -103,13 +96,9 @@ namespace TO5.Wires
         /// </summary>
         private void JumpToSpark(Spark spark, bool finished)
         {
-            m_IsJumping = !finished;
-
             if (finished)
             {
-                // Drifting can disable the boost particles even while active
-                //if (m_BoostActive)
-                    m_WorldAesthetics.SetBoostParticlesEnabled(true, m_WorldAesthetics.m_BoostParticlesSpeed);
+                m_WorldAesthetics.SetBoostParticlesEnabled(true, m_WorldAesthetics.m_BoostParticlesSpeed);
 
                 //StopCoroutine("BlendThemesRoutine");
                 BlendThemes(1f);        
@@ -139,8 +128,6 @@ namespace TO5.Wires
         /// <param name="isEnabled"></param>
         private void DriftingUpdated(bool isEnabled)
         {
-            m_IsDrifting = isEnabled;
-
             m_WorldMusic.FadeMusic(isEnabled);
             m_WorldColor.SetGrayscaleEnabled(isEnabled);
 
@@ -200,8 +187,6 @@ namespace TO5.Wires
         /// </summary>
         public void NotifyGameFinished()
         {
-            m_GameActive = false;
-
             if (m_WorldAesthetics)
                 m_WorldAesthetics.LockWarningSign(true);
         }

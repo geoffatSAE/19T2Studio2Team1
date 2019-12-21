@@ -76,7 +76,6 @@ namespace TO5.Wires
 
         private bool m_DisplayGameUI = true;                // If game UI should be displayed
         private int m_PreviousStage = 0;                    // Players previous multiplier stage
-        private int m_ActiveLives = 0;                      // Amount of lives player has
 
         [Header("Debug")]
         [Tooltip("Displays FPS, will be hidden in non-development builds")]
