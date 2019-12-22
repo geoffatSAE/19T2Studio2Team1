@@ -79,8 +79,9 @@ namespace TO5.Wires
 
         private ObjectPool<Spark> m_Sparks = new ObjectPool<Spark>();       // Sparks being managed
         private Coroutine m_DriftRoutine;                                   // Routine for when player is drifting 
+        private WireFactoryAsyncLoad m_FactoryAsyncLoader = null;           // Script responsible for loading music tracks
 
-        public Wire m_WirePrefab;
+        public Wire m_WirePrefab;       // The template of wires to spawn
 
         [Header("Generation")]
         [SerializeField] private float m_WireSpace = 4f;                                // Space needed for wires to spawn
@@ -137,6 +138,8 @@ namespace TO5.Wires
 
         void Awake()
         {
+            m_FactoryAsyncLoader = gameObject.AddComponent<WireFactoryAsyncLoad>();
+
             if (m_ScoreManager)
             {
                 m_ScoreManager.Initialize(this);
@@ -147,6 +150,32 @@ namespace TO5.Wires
                 {
                     m_FactoryOrder = new List<WireFactory>(m_Factories);
                     Wires.Shuffle(ref m_FactoryOrder);
+
+                    // Load in initial factories music now
+                    if (m_FactoryOrder.Count > 0)
+                    {
+                        MusicTrack track = m_FactoryOrder[0].GetMusicTrack(0);
+                        track.LoadAudioClipSync();
+                    }
+
+                    // TODO: Better method. We prob don't want to do all these loads at once!
+                    {
+                        for (int i = 0; i < m_FactoryOrder.Count; ++i)
+                        {
+                            WireFactory factory = m_FactoryOrder[i];
+                            m_FactoryAsyncLoader.LoadMusicTrack(factory, i); 
+                            m_FactoryAsyncLoader.LoadMusicTrack(factory, i + 1);    // Need to load the one after it as well
+                        }
+
+                        if (m_FactoryOrder.Count < m_ScoreManager.maxMultiplierStage + 1)
+                        {
+                            foreach (WireFactory factory in m_Factories)
+                            {
+                                for (int i = m_FactoryOrder.Count; i < m_ScoreManager.maxMultiplierStage + 1; ++i)
+                                    m_FactoryAsyncLoader.LoadMusicTrack(factory, i);
+                            }
+                        }
+                    }
                 }
             }
 

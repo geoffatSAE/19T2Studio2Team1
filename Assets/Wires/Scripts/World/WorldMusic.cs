@@ -80,13 +80,13 @@ namespace TO5.Wires
         /// <param name="track">Track to play</param>
         public void SetActiveTrack(MusicTrack track)
         {
-            if (!track.m_Music)
+            if (!track.music)
             {
                 Debug.LogWarning("Audio clip is invalid. Unable to play music", this);
                 return;
             }
 
-            AudioClip audioClip = track.m_Music;
+            AudioClip audioClip = track.music;
 
             AudioSource activeSource = m_Source1Active ? m_MusicSource1 : m_MusicSource2;
             activeSource.enabled = true;
@@ -110,13 +110,13 @@ namespace TO5.Wires
         /// <param name="track">Track to change to</param>
         public void SetPendingTrack(MusicTrack track)
         {
-            if (!track.m_Music)
+            if (!track.music)
             {
                 Debug.LogWarning("Audio clip is invalid. Unable to play music", this);
                 return;
             }
 
-            AudioClip audioClip = track.m_Music;
+            AudioClip audioClip = track.music;
 
             AudioSource activeSource = m_Source1Active ? m_MusicSource2 : m_MusicSource1;
             AudioSource fadingSource = m_Source1Active ? m_MusicSource1 : m_MusicSource2;

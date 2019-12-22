@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
-namespace TO5.Wires
+namespace TO5
 {
     /// <summary>
     /// Simple attribute that allows assets to be search in the inspector

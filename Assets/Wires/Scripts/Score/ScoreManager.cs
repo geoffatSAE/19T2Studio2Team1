@@ -110,6 +110,9 @@ namespace TO5.Wires
         // Multipliers current stage
         public int multiplierStage { get { return m_Stage; } }
 
+        // Max multiplier stage
+        public int maxMultiplierStage { get { return m_MultiplierStages; } }
+
         // Total multipler
         public float totalMultiplier { get { return m_Multiplier; } }
 

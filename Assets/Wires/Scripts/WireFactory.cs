@@ -28,17 +28,94 @@ namespace TO5.Wires
         // to avoid loading in these clips at the start of the game
         [SerializeField, ObjectAssetPath(typeof(AudioClip), "Music")]
         private string m_MusicAssetPath;
-        
+
+        private AssetBundle m_MusicAssetBundle;     // Asset bundle containing music track
+
         [Min(0.01f)] public float m_BeatRate;       // Rate of musics beat
         [Min(0.01f)] public float m_BeatDelay;      // Initial delay of musics beat
 
-        public AudioClip m_Music;                   // Music to play
+        private AudioClip m_Music = null;           // Music to play (can be null)
 
-        public bool LoadAudioClip()
+        // Get musics asset name in asset bundle
+        public string assetName { get { return Path.GetFileNameWithoutExtension(m_MusicAssetPath); } }
+
+        // Get music track if loaded or null
+        public AudioClip music { get { return m_Music; } }
+
+        /// <summary>
+        /// Loads in the music audio clip synchronously
+        /// </summary>
+        /// <returns>If audio clip was loaded in successfully</returns>
+        public bool LoadAudioClipSync()
         {
+#if UNITY_EDITOR
+            m_Music = AssetDatabase.LoadAssetAtPath<AudioClip>(m_MusicAssetPath);
+#else
+            // Only load in once
+            if (!m_MusicAssetBundle)
+            {
+                string name = Path.GetFileNameWithoutExtension(m_MusicAssetPath);
+                string bundlePath = Path.Combine(Utility.assetBundleDirectory, name);
+
+                m_MusicAssetBundle = AssetBundle.LoadFromFile(bundlePath);
+                if (m_MusicAssetBundle)
+                    m_Music = m_MusicAssetBundle.LoadAsset<AudioClip>(name);
+            }
+#endif
 
             return m_Music != null;
+        }
 
+        /// <summary>
+        /// Prepares to load the music audio clip asynchronously
+        /// </summary>
+        /// <param name="request">Output for request. Null if request failed</param>
+        /// <returns>Returns if either request has been made or music clip is already available</returns>
+        public bool LoadAudioClipAsync(ref AssetBundleCreateRequest request)
+        {
+#if UNITY_EDITOR
+            m_Music = AssetDatabase.LoadAssetAtPath<AudioClip>(m_MusicAssetPath);
+            return true;
+#else
+            // Only load in once
+            if (!m_MusicAssetBundle)
+            {
+                string name = Path.GetFileNameWithoutExtension(m_MusicAssetPath);
+                string bundlePath = Path.Combine(Utility.assetBundleDirectory, name);
+
+                request = AssetBundle.LoadFromFileAsync(bundlePath);
+                return request != null;
+            }
+
+            // Already loaded in
+            return m_Music != null;
+#endif
+        }
+
+        /// <summary>
+        /// Unloads the music audio clip
+        /// </summary>
+        public void UnloadAudioClip()
+        {
+            if (m_MusicAssetBundle)
+            {
+                // Using false, so any assets using music already
+                // do not lose their reference (aka WorldMusic)
+                m_MusicAssetBundle.Unload(false);
+                m_Music = null;
+            }
+        }
+
+        /// <summary>
+        /// Do not call this function. It is used by WireFactoryAsyncLoad script.
+        /// This function updates the asset bundle and audio clip of this music track
+        /// </summary>
+        /// <param name="assetBundle">Asset bundle that has been loaded</param>
+        /// <param name="clip">Audio clip that has been loaded</param>
+        public void SetMusicAudioClip(AssetBundle assetBundle, AudioClip clip)
+        {
+            m_MusicAssetBundle = assetBundle;
+            m_Music = clip;
         }
 
 #if UNITY_EDITOR
@@ -52,8 +129,6 @@ namespace TO5.Wires
             Object asset = AssetDatabase.LoadAssetAtPath<Object>(m_MusicAssetPath);
             if (!asset)
                 return new AssetBundleBuild();
-
-            // TODO: Check if asset importer has asset bundle already specified (use that instead)
 
             // New bundle build
             AssetBundleBuild assetBundleBuild = new AssetBundleBuild();
@@ -71,16 +146,7 @@ namespace TO5.Wires
     /// </summary>
     [CreateAssetMenu]
     public class WireFactory : ScriptableObject
-    {       
-        void OnEnable()
-        {
-            MusicTrack track = GetMusicTrack(0);
-            if (track != null)
-            {
-                track.LoadAudioClip();
-            }
-        }
-
+    {
         // The color for this factory
         public Color color { get { return m_Color; } }
 
@@ -111,15 +177,50 @@ namespace TO5.Wires
         [SerializeField] private Texture2D m_BorderTexture;                         // Texture for outer border
         [SerializeField] private MusicTrack[] m_MusicTracks;                        // Wires music tracks (for each intensity)
 
+#if UNITY_EDITOR
+        void Awake()
+        {
+            // Load now so play in editor can start fast
+            foreach (MusicTrack track in m_MusicTracks)
+                track.LoadAudioClipSync();
+        }
+#endif
+
+        void OnDestroy()
+        {
+            // Clean up
+            foreach (MusicTrack track in m_MusicTracks)
+                track.UnloadAudioClip();
+        }
+
+        public void LoadMusicTrack(int index, bool bAsync)
+        {
+
+        }
+
         /// <summary>
-        /// Get music at track
+        /// Get music track at index
         /// </summary>
         /// <param name="index">Index of track</param>
         /// <returns>Audio clip or default track</returns>
         public MusicTrack GetMusicTrack(int index)
         {
+            MusicTrack track = GetOptionalMusicTrack(index);
+            if (track == null)
+                track = new MusicTrack();
+
+            return track;
+        }
+
+        /// <summary>
+        /// Gets music track at index if it exists, otherwise null
+        /// </summary>
+        /// <param name="index">Index of track</param>
+        /// <returns>Audio clip or null</returns>
+        public MusicTrack GetOptionalMusicTrack(int index)
+        {
             if (m_MusicTracks == null || m_MusicTracks.Length == 0)
-                return new MusicTrack();
+                return null;
 
             index = Mathf.Clamp(index, 0, m_MusicTracks.Length - 1); ;
             return m_MusicTracks[index];
@@ -143,7 +244,7 @@ namespace TO5.Wires
             }
 
             // Create directory if it doesn't exist already
-            string directory = Directory.GetCurrentDirectory() + "/AssetBundles";
+            string directory = Utility.assetBundleDirectory;
             if (!Directory.Exists(directory))
             {
                 DirectoryInfo info = Directory.CreateDirectory(directory);
@@ -151,7 +252,7 @@ namespace TO5.Wires
             }
 
             if (bundleBuilds.Count > 0)
-                BuildPipeline.BuildAssetBundles(directory, bundleBuilds.ToArray(), BuildAssetBundleOptions.ChunkBasedCompression, targetPlatform);
+                BuildPipeline.BuildAssetBundles(directory, bundleBuilds.ToArray(), BuildAssetBundleOptions.None, targetPlatform);
         }
 #endif
     }
@@ -179,22 +280,10 @@ namespace TO5.Wires
 
         }
 
-        [MenuItem("TO5/Build Asset Bundles (Factories)/Active Build Target", false, 0)]
+        [MenuItem("TO5/Build Factory Asset Bundles")]
         public static void BuildAssetBundles_TargetPlatform()
         {
             BuildAssetBundles(EditorUserBuildSettings.activeBuildTarget);
-        }
-
-        //[MenuItem("TO5/Build Asset Bundles (Factories)/Android")]
-        public static void BuildAssetBundles_Android()
-        {
-            BuildAssetBundles(BuildTarget.Android);
-        }
-
-        //[MenuItem("TO5/Build Asset Bundles (Factories)/Windows")]
-        public static void BuildAssetBundles_Windows()
-        {
-            BuildAssetBundles(BuildTarget.StandaloneWindows64);
         }
     }
 #endif
