@@ -1,0 +1,16 @@
+ManifestFileVersion: 0
+CRC: 1383343981
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 1062c44e298c4f8f1c84ae42821a7a3e
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 3f7d0c5e0986ec71841622bcb2f9be1c
+HashAppended: 0
+ClassTypes:
+- Class: 83
+  Script: {instanceID: 0}
+Assets:
+- Assets/Wires/Audio/Music/Pink Wire/Master/SP_MUSIC_Musiciteration 4_M_v1_BS.wav
+Dependencies: []
