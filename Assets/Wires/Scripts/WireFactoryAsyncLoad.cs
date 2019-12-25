@@ -53,9 +53,6 @@ namespace TO5.Wires
             // Now finished, update track to include audio
             AudioClip clip = assetRequest.asset as AudioClip;
             track.SetMusicAudioClip(bundle, clip);
-
-            if (clip)
-                Debug.LogError(string.Format("Finished loading audio clip {0}", clip.name));
         }
     }
 }

@@ -14,7 +14,6 @@ namespace TO5.Wires
 
         public Transform m_ControllerOrigin;                        // Override transform for controllers origin
         public Transform m_HeadOrigin;                              // Origin of players head (headset)
-        [SerializeField] private LaserPointer m_LaserPointer;       // Laser point that visualizes players aim
 
         protected override void Update()
         {
@@ -41,16 +40,6 @@ namespace TO5.Wires
 
             Shader.SetGlobalVector(WorldSpaceControllerPosShaderName, controllerPos);
             Shader.SetGlobalVector(WorldSpaceControllerDirShaderName, controllerDir);
-        }
-
-        void LateUpdate()
-        {
-            Vector3 controllerPos = GetControllerPosition();
-            Vector3 controllerDir = GetControllerRotation() * Vector3.forward;
-
-            // Help player see what they are pointing at
-            if (m_LaserPointer)
-                m_LaserPointer.PointLaser(controllerPos, controllerDir);
         }
 
         /// <summary>
@@ -81,6 +70,12 @@ namespace TO5.Wires
                 return m_HeadOrigin.position;
 
             return base.GetPlayerPosition();
+        }
+
+        public override void GetControllerPosAndDir(ref Vector3 OutPosition, ref Vector3 OutDirection)
+        {
+            OutPosition = GetControllerPosition();
+            OutDirection = GetControllerRotation() * Vector3.forward;
         }
     }
 }

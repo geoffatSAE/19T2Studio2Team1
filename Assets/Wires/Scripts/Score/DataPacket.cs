@@ -29,7 +29,7 @@ namespace TO5.Wires
         public float m_SeekTrailsTime = 1f;                                 // Speed of trails when seeking
         public float m_SeekFadeTime = 0.25f;                                // Speed of trails after reaching target
 
-        private SphereCollider m_Collder;           // Packets collider
+        private SphereCollider m_Collider;          // Packets collider
         private float m_Speed = 0f;                 // The speed of this packet
         private bool m_Seek = false;                // If this packet should seek target
 
@@ -50,7 +50,7 @@ namespace TO5.Wires
             if (m_Trails)
                 m_Trails.enabled = false;
 
-            m_Collder = GetComponent<SphereCollider>();
+            m_Collider = GetComponent<SphereCollider>();
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace TO5.Wires
             if (m_Trails)
                 m_Trails.enabled = false;
 
-            m_Collder.enabled = true;
+            m_Collider.enabled = true;
 
             Invoke("Expire", lifetime);
         }
@@ -138,7 +138,7 @@ namespace TO5.Wires
 
             // We could potentially fly infront of the player,
             // we don't want to be in there way if that happens
-            m_Collder.enabled = false;
+            m_Collider.enabled = false;
 
             return true;
         }

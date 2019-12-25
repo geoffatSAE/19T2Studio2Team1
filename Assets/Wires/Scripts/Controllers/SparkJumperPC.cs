@@ -5,7 +5,7 @@ using UnityEngine;
 namespace TO5.Wires
 {
     /// <summary>
-    /// Player controller for PC, only used for testing in editor without a headset
+    /// Player controller for keyboard and mouse controls
     /// </summary>
     public class SparkJumperPC : SparkJumper
     {
@@ -16,28 +16,23 @@ namespace TO5.Wires
         private float m_RotationX = 0f;             // Yaw rotation
         private float m_RotationY = 0f;             // Pitch rotation
 
-        #if UNITY_EDITOR
-        public LaserPointer m_LaserPointer;         // Testing laser pointer
-        #endif
-
         void Awake()
         {
             if (!m_Camera)
                 m_Camera = GetComponentInChildren<Camera>();
+
+            if (!m_Camera)
+                Debug.LogError("SparkJumperPC expects a camera to be provided!");  
         }
 
         void Start()
         {
             Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
         }
-
+        
         protected override void Update()
         {
             base.Update();
-
-            // The transform to rotate and base tracing with
-            Transform trans = m_Camera ? m_Camera.transform : transform;
 
             float turnX = Input.GetAxis("Mouse X");
             float turnY = Input.GetAxis("Mouse Y");
@@ -51,23 +46,45 @@ namespace TO5.Wires
                 m_RotationY = Mathf.Clamp(m_RotationY + delta, -85f, 85f);
             }
 
-            trans.localEulerAngles = new Vector3(m_RotationY, m_RotationX, 0f);
+            // New rotation in local euler space
+            Vector3 newRotation = new Vector3(m_RotationY, m_RotationX, 0f);
+
+            // Consider no camera being provided
+            Ray ray = new Ray();
+            if (m_Camera)
+            {
+                m_Camera.transform.localEulerAngles = newRotation;
+                ray = m_Camera.ScreenPointToRay(Input.mousePosition);
+            }
+            else
+            {
+                transform.localEulerAngles = newRotation;
+                ray = new Ray(transform.position, transform.forward);
+            }
 
             // Left mouse
             if (Input.GetMouseButtonDown(0))
-                TraceWorld(trans.position, trans.rotation);
+                TraceWorld(ray);
 
-            Shader.SetGlobalVector(WorldSpaceControllerPosShaderName, trans.position);
-            Shader.SetGlobalVector(WorldSpaceControllerDirShaderName, trans.forward);
+            Shader.SetGlobalVector(WorldSpaceControllerPosShaderName, ray.origin);
+            Shader.SetGlobalVector(WorldSpaceControllerDirShaderName, ray.direction);
 
-            #if UNITY_EDITOR
-            if (m_LaserPointer)
-                m_LaserPointer.PointLaser(trans.position, trans.forward);
-            
+#if UNITY_EDITOR
             // Pause in editor
             if (Input.GetKeyDown(KeyCode.B))
                 Debug.Break();
-            #endif
+#endif
+        }
+
+        protected override void LateUpdate()
+        {
+            base.LateUpdate();
+
+            // Not optimal, but we need to at least wait one update
+            // This also causes jitterness mouse is moving
+            LaserPointer2D pointer2D = m_LaserPointer as LaserPointer2D;
+            if (pointer2D)
+                pointer2D.SetCrosshairPosition(Input.mousePosition);
         }
 
         // SparkJumper Interface
@@ -77,6 +94,22 @@ namespace TO5.Wires
                 return m_Camera.transform.position;
 
             return base.GetPlayerPosition();
+        }
+
+        public override void GetControllerPosAndDir(ref Vector3 OutPosition, ref Vector3 OutDirection)
+        {
+            if (m_Camera)
+            {
+                Ray ray = m_Camera.ScreenPointToRay(Input.mousePosition);
+
+                OutPosition = ray.origin;
+                OutDirection = ray.direction;
+            }
+            else
+            {
+                OutPosition = transform.position;
+                OutDirection = transform.forward;
+            }
         }
     }
 }

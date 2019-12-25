@@ -35,6 +35,7 @@ namespace TO5.Wires
         [SerializeField, Min(0.1f)] protected float m_TraceRadius = 0.5f;                   // Radius of sphere cast
         [SerializeField] private LayerMask m_InteractiveLayer = Physics.AllLayers;          // Layer for interactives
         [SerializeField] private CompanionUI m_Companion;                                   // Players companion
+        [SerializeField] protected LaserPointerBase m_LaserPointer;                         // Players laser pointer
 
         public ScreenFade m_ScreenFade;                     // Screen fade for game transitions
         public AudioSource m_SelectionAudioSource;          // Audio source for playing selection sounds
@@ -108,6 +109,15 @@ namespace TO5.Wires
                     m_IsJumping = false;
                 }
             }
+        }
+
+        protected virtual void LateUpdate()
+        {
+            Vector3 pos = Vector3.zero, dir = Vector3.forward;
+            GetControllerPosAndDir(ref pos, ref dir);
+
+            if (m_LaserPointer)
+                m_LaserPointer.PointLaser(pos, dir);
         }
 
         /// <summary>
@@ -248,6 +258,17 @@ namespace TO5.Wires
         }
 
         /// <summary>
+        /// Get the players controller position and forward direction
+        /// </summary>
+        /// <param name="OutPosition">Position of controller</param>
+        /// <param name="OutDir">Direction of controller</param>
+        public virtual void GetControllerPosAndDir(ref Vector3 OutPosition, ref Vector3 OutDirection)
+        {
+            OutPosition = Vector3.zero;
+            OutDirection = Vector3.forward;
+        }
+
+        /// <summary>
         /// Initiates a jump to new location
         /// </summary>
         private void InitiateJump(Spark spark)
@@ -283,12 +304,6 @@ namespace TO5.Wires
                 m_SelectionAudioSource.pitch = randomPitch ? Random.Range(0.8f, 1.2f) : 1f;
                 m_SelectionAudioSource.Play();
             }
-        }
-
-        void OnDrawGizmos()
-        {
-            Gizmos.color = Color.magenta;
-            Gizmos.DrawLine(transform.position, transform.position + Vector3.up * 100f);
         }
     }
 }

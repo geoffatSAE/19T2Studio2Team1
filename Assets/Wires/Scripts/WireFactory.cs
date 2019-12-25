@@ -193,11 +193,6 @@ namespace TO5.Wires
                 track.UnloadAudioClip();
         }
 
-        public void LoadMusicTrack(int index, bool bAsync)
-        {
-
-        }
-
         /// <summary>
         /// Get music track at index
         /// </summary>
