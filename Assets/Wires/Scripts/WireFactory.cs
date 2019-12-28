@@ -99,9 +99,7 @@ namespace TO5.Wires
         {
             if (m_MusicAssetBundle)
             {
-                // Using false, so any assets using music already
-                // do not lose their reference (aka WorldMusic)
-                m_MusicAssetBundle.Unload(false);
+                m_MusicAssetBundle.Unload(true);
                 m_Music = null;
             }
         }

@@ -158,24 +158,9 @@ namespace TO5.Wires
                         track.LoadAudioClipSync();
                     }
 
-                    // TODO: Better method. We prob don't want to do all these loads at once!
-                    {
-                        for (int i = 0; i < m_FactoryOrder.Count; ++i)
-                        {
-                            WireFactory factory = m_FactoryOrder[i];
-                            m_FactoryAsyncLoader.LoadMusicTrack(factory, i); 
-                            m_FactoryAsyncLoader.LoadMusicTrack(factory, i + 1);    // Need to load the one after it as well
-                        }
-
-                        if (m_FactoryOrder.Count < m_ScoreManager.maxMultiplierStage + 1)
-                        {
-                            foreach (WireFactory factory in m_Factories)
-                            {
-                                for (int i = m_FactoryOrder.Count; i < m_ScoreManager.maxMultiplierStage + 1; ++i)
-                                    m_FactoryAsyncLoader.LoadMusicTrack(factory, i);
-                            }
-                        }
-                    }
+                    // Start loading in tracks for next stages
+                    if (m_ScoreManager.maxMultiplierStage > 0)
+                        LoadTracksForStage(1);
                 }
             }
 
@@ -1143,6 +1128,14 @@ namespace TO5.Wires
 
             if (m_SparkJumper)
                 m_SparkJumper.m_JumpTime = m_ActiveWireProperties.m_JumpTime;
+
+            // Load in music tracks as required
+            {
+                UnloadTracksForStage(stage - 1);
+
+                // Start loading in tracks for the next stage
+                LoadTracksForStage(stage + 1);
+            }
         }
 
         /// <summary>
@@ -1181,6 +1174,71 @@ namespace TO5.Wires
                     m_WorldTheme.worldAesthetics.RefreshWireBasedAesthetics();
                     m_WorldTheme.worldAesthetics.SetWarningSignedLocked(locked);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Loads in the music tracks based on given stage. This stage should
+        /// be greater than the current stage to allow time for loading
+        /// </summary>
+        /// <param name="stage">Stage to load tracks for</param>
+        private void LoadTracksForStage(int stage)
+        {
+            Assert.IsNotNull(m_FactoryOrder);
+
+            if (stage < 0)
+                return;
+
+            if (stage < m_FactoryOrder.Count)
+            {
+                // Load only for current stage
+                WireFactory factory = m_FactoryOrder[stage];
+                if (factory)
+                    m_FactoryAsyncLoader.LoadMusicTrack(factory, stage);
+
+                // Load in music track for the previous stage
+                // as the theme will not change immediately
+                int prevStage = stage - 1;
+                if (prevStage >= 0)
+                {
+                    factory = m_FactoryOrder[prevStage];
+                    if (factory)
+                        m_FactoryAsyncLoader.LoadMusicTrack(factory, stage);
+                }
+            }
+            else
+            {
+                // Load tracks for all factories
+                foreach (WireFactory factory in m_Factories)
+                    if (factory)
+                        m_FactoryAsyncLoader.LoadMusicTrack(factory, stage);
+            }
+        }
+
+        /// <summary>
+        /// Unloads the music tracks used for given stage. This should
+        /// be called after having already completed the stage
+        /// </summary>
+        /// <param name="stage">Stage to unload tracks for</param>
+        private void UnloadTracksForStage(int stage)
+        {
+            Assert.IsNotNull(m_FactoryOrder);
+
+            if (stage < 0)
+                return;
+            
+            if (stage < m_FactoryOrder.Count)
+            {
+                WireFactory factory = m_FactoryOrder[stage];
+                if (factory)
+                    m_FactoryAsyncLoader.UnloadMusicTrack(factory, stage);
+            }
+            else
+            {
+                // Unload tracks for all factories
+                foreach (WireFactory factory in m_Factories)
+                    if (factory)
+                        m_FactoryAsyncLoader.UnloadMusicTrack(factory, stage);
             }
         }
 

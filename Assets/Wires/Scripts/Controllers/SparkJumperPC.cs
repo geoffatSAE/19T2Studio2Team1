@@ -28,6 +28,7 @@ namespace TO5.Wires
         void Start()
         {
             Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
         }
         
         protected override void Update()
@@ -65,6 +66,10 @@ namespace TO5.Wires
             // Left mouse
             if (Input.GetMouseButtonDown(0))
                 TraceWorld(ray);
+
+            // Force quit in game
+            if (Input.GetKeyDown(KeyCode.Escape))
+                Application.Quit();
 
             Shader.SetGlobalVector(WorldSpaceControllerPosShaderName, ray.origin);
             Shader.SetGlobalVector(WorldSpaceControllerDirShaderName, ray.direction);
