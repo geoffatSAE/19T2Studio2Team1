@@ -766,6 +766,16 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 8646348428977238135}
+    - target: {fileID: 6844594464007682437, guid: a5a33f51ce935c547bd9d87b27f3a6a2,
+        type: 3}
+      propertyPath: m_Slides.Array.data[0]
+      value: 
+      objectReference: {fileID: 2800000, guid: 71a624a1bfa47724599fdc6a6ebe0725, type: 3}
+    - target: {fileID: 6844594464007682437, guid: a5a33f51ce935c547bd9d87b27f3a6a2,
+        type: 3}
+      propertyPath: m_Slides.Array.data[1]
+      value: 
+      objectReference: {fileID: 2800000, guid: bfe91d0a04058ed40ada62ac07e9da88, type: 3}
     - target: {fileID: 4720126906848743667, guid: a5a33f51ce935c547bd9d87b27f3a6a2,
         type: 3}
       propertyPath: m_IsActive
