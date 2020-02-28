@@ -1,0 +1,16 @@
+ManifestFileVersion: 0
+CRC: 1810642822
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 738227278863dc244a8a03566edbf78e
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 3f7d0c5e0986ec71841622bcb2f9be1c
+HashAppended: 0
+ClassTypes:
+- Class: 83
+  Script: {instanceID: 0}
+Assets:
+- Assets/Wires/Audio/Music/Red Wire/Master/SP_MUSIC_MusicIteration1_H+++_MasterV1_CR.wav
+Dependencies: []

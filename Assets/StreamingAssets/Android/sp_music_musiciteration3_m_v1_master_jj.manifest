@@ -1,0 +1,16 @@
+ManifestFileVersion: 0
+CRC: 3598975383
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: ea1b39f31b3a3f6a491f21f8d246694c
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 3f7d0c5e0986ec71841622bcb2f9be1c
+HashAppended: 0
+ClassTypes:
+- Class: 83
+  Script: {instanceID: 0}
+Assets:
+- Assets/Wires/Audio/Music/Yellow Wire/Master/SP_Music_MusicIteration3_M_v1_Master_JJ.wav
+Dependencies: []

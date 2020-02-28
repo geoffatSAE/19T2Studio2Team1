@@ -1,0 +1,16 @@
+ManifestFileVersion: 0
+CRC: 2209015791
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 58eb74dcaf2e2fb36ce59f6303999fb3
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 3f7d0c5e0986ec71841622bcb2f9be1c
+HashAppended: 0
+ClassTypes:
+- Class: 83
+  Script: {instanceID: 0}
+Assets:
+- Assets/Wires/Audio/Music/Aqua Wire/Mastered/SP_MUSIC_MusicIteration1_H+_Master_BF.wav
+Dependencies: []
